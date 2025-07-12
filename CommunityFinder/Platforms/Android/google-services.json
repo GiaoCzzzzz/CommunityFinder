@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "512188802227",
+    "project_id": "communityfinder-5b794",
+    "storage_bucket": "communityfinder-5b794.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:512188802227:android:c5c3f52a05a2842e1c3cc6",
+        "android_client_info": {
+          "package_name": "com.giaocz.communityfinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "512188802227-6mhdbn6e4saosln7uhhtggq43jjo685d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHxXMcxpzMl33qgb8vkm7WBbcONKlpcz0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "512188802227-6mhdbn6e4saosln7uhhtggq43jjo685d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

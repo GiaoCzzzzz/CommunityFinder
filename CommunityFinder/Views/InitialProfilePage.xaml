@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CommunityFinder.Views.InitialProfilePage"
+             Title="InitialProfilePage">
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="15">
+            <Entry x:Name="GenderEnrty"        Placeholder="性别"  />
+            <Editor x:Name="ageEnrty"        Placeholder="年龄" HeightRequest="100" />
+            <Editor x:Name="postcodeEnrty"        Placeholder="邮政" HeightRequest="100" />
+            <Editor x:Name="occupationEnrty"        Placeholder="职业" HeightRequest="100" />
+            <Editor x:Name="nationalityEnrty"        Placeholder="国籍" HeightRequest="100" />
+            <Editor x:Name="interestEnrty"        Placeholder="爱好" HeightRequest="100" />
+            
+            <Button Text="保存" Clicked="OnSaveClicked" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

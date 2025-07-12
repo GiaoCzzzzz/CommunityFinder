@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CommunityFinder.Views.SignUpPage"
+             xmlns:viewmodels="clr-namespace:CommunityFinder.ViewModels"
+             x:DataType="viewmodels:SignUpViewModel"
+             Title="SignUpPage">
+
+
+    <StackLayout Padding="30" Spacing="15">
+        <Entry x:Name="UsernameEntry"
+             Placeholder="用户名"
+             Keyboard="Text" />
+        <Entry x:Name="EmailEntry" Placeholder="邮箱" Keyboard="Email" />
+        <Entry x:Name="PhoneEntry"
+             Placeholder="手机号"
+             Keyboard="Telephone" />
+        <Entry x:Name="PasswordEntry" Placeholder="密码" IsPassword="True" />
+        <Entry x:Name="ConfirmPasswordEntry"
+             Placeholder="确认密码"
+             IsPassword="True" />
+        
+        <Button Text="注册" Clicked="OnSignUpClicked" />
+        <Button Text="已有账号？去登录" Clicked="OnGoToLoginClicked" />
+    </StackLayout>
+</ContentPage>

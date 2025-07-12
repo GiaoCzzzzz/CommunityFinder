@@ -1,24 +1,23 @@
-﻿namespace CommunityFinder
+﻿using CommunityFinder.Views;
+using CommunityFinder.Services;
+
+namespace CommunityFinder
 {
+    
     public partial class MainPage : ContentPage
     {
-        int count = 0;
+        readonly AuthService _authService;
 
-        public MainPage()
+
+        public MainPage(AuthService authService)
         {
             InitializeComponent();
+            _authService = authService;
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
+        async void OnCounterClicked(object sender, EventArgs e)
         {
-            count++;
-
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
+            await Navigation.PushAsync(new ProfileSettingPage(_authService));
         }
     }
 

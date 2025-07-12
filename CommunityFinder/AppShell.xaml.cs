@@ -1,4 +1,6 @@
-﻿namespace CommunityFinder
+﻿
+
+namespace CommunityFinder
 {
     public partial class AppShell : Shell
     {
@@ -6,5 +8,7 @@
         {
             InitializeComponent();
         }
+
+
     }
 }

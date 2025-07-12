@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CommunityFinder.Views.ProfileSettingPage"
+             Title="ProfileSettingPage">
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="15">
+
+            <!-- 头像占位 -->
+            <Frame
+        HeightRequest="80" WidthRequest="80"
+        CornerRadius="40"
+        HorizontalOptions="Center"
+        BackgroundColor="#EEE">
+                <Image
+          Source="avatar_placeholder.png"
+          Aspect="AspectFill"/>
+            </Frame>
+
+            <!-- 显示名 -->
+            <Label Text="Display Name" />
+            <Entry x:Name="DisplayNameEntry" />
+
+            <!-- Email（只读）-->
+            <Label Text="Email" />
+            <Entry
+        x:Name="EmailEntry"
+        IsReadOnly="True"
+        TextColor="Gray"/>
+
+            <!-- Sex -->
+            <Label Text="Sex" />
+            <Picker x:Name="SexPicker" Title="Select your sex">
+                <Picker.Items>
+                    <x:String>Male</x:String>
+                    <x:String>Female</x:String>
+                    <x:String>Other</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <!-- Age -->
+            <Label Text="Age" />
+            <Entry
+        x:Name="AgeEntry"
+        Keyboard="Numeric"
+        Placeholder="e.g. 20"/>
+
+            <!-- Nationality -->
+            <Label Text="Nationality" />
+            <Entry x:Name="NationalityEntry" />
+
+            <!-- Phone number -->
+            <Label Text="Phone number" />
+            <Entry
+        x:Name="PhoneEntry"
+        Keyboard="Telephone"
+        Placeholder="Optional"/>
+
+            <!-- Occupation -->
+            <Label Text="Occupation" />
+            <Entry x:Name="OccupationEntry" />
+
+            <!-- Postal Code -->
+            <Label Text="Postal Code" />
+            <Entry x:Name="PostalCodeEntry" />
+
+            <!-- 按钮：修改密码 & 兴趣标签 -->
+            <Button
+        Text="Change password"
+        Clicked="OnChangePasswordClicked"/>
+            <Button
+        Text="Change My Interest Tags"
+        Clicked="OnChangeInterestClicked"/>
+
+            <!-- 保存按钮 -->
+            <Button
+            Text="Save"
+            BackgroundColor="#28A745"
+            TextColor="White"
+            Clicked="OnSaveClicked"/>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
