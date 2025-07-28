@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CommunityFinder.Views.LoginPage"
+             Title="LoginPage"
+             BackgroundColor="White">
+
+    <StackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+        <!-- 用户名/邮箱/手机号输入框 -->
+        <Entry x:Name="UserEntry"
+               Placeholder="用户名 / 邮箱 / 手机号"
+               FontSize="16"
+               BackgroundColor="#F0F0F0"
+               HeightRequest="50"
+               Margin="0,0,0,10"
+               />
+
+        <!-- 密码输入框 -->
+        <Entry x:Name="PasswordEntry"
+               Placeholder="密码"
+               IsPassword="True"
+               FontSize="16"
+               BackgroundColor="#F0F0F0"
+               HeightRequest="50"
+               Margin="0,0,0,10"
+               />
+
+        <!-- 登录按钮 -->
+        <Button Text="确认"
+                Clicked="OnLoginClicked"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="8"
+                HeightRequest="50"
+                />
+
+        <!-- 忘记密码链接 -->
+        <Label Text="忘记密码？"
+               TextColor="#2196F3"
+               FontSize="14"
+               HorizontalOptions="Center"
+               Margin="0,10,0,0">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnForgotPasswordClicked" />
+            </Label.GestureRecognizers>
+        </Label>
+
+        <!-- 注册引导 -->
+        <Label Text="没有账号？去注册"
+               TextColor="#2196F3"
+               FontSize="14"
+               HorizontalOptions="Center"
+               Margin="0,5,0,0">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnGoToSignUpClicked" />
+            </Label.GestureRecognizers>
+        </Label>
+    </StackLayout>
+</ContentPage>

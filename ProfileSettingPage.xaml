@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="CommunityFinder.Views.ProfileSettingPage"
+    Title="About You"
+    BackgroundColor="#FFFDE7">
+
+    <ScrollView>
+        <StackLayout Padding="30" Spacing="25" VerticalOptions="Center">
+
+            <!-- 页面标题 -->
+            <Label Text="About You"
+             FontSize="28"
+             FontAttributes="Bold"
+             HorizontalOptions="Center"
+             TextColor="#333" />
+
+            <!-- 性别选择 -->
+            <Label Text="Gender" FontSize="14" TextColor="#333" />
+            <Picker x:Name="SexPicker"
+              Title="Select your gender"
+              BackgroundColor="#F0F0F0"
+              HeightRequest="48"
+              FontSize="16">
+                <Picker.Items>
+                    <x:String>Male</x:String>
+                    <x:String>Female</x:String>
+                    <x:String>Other</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <!-- 年龄 -->
+            <Label Text="Age" FontSize="14" TextColor="#333" />
+            <Entry x:Name="AgeEntry"
+             Placeholder="Type here"
+             Keyboard="Numeric"
+             BackgroundColor="#F0F0F0"
+             HeightRequest="48"
+             FontSize="16" />
+
+            <!-- 邮政编码 -->
+            <Label Text="Postal Code" FontSize="14" TextColor="#333" />
+            <Entry x:Name="PostalCodeEntry"
+             Placeholder="000000"
+             Keyboard="Numeric"
+             BackgroundColor="#F0F0F0"
+             HeightRequest="48"
+             FontSize="16" />
+
+            <!-- 职业 -->
+            <Label Text="Occupation" FontSize="14" TextColor="#333" />
+            <Picker x:Name="OccupationPicker"
+              Title="Select your occupation"
+              BackgroundColor="#F0F0F0"
+              HeightRequest="48"
+              FontSize="16">
+                <Picker.Items>
+                    <x:String>Student</x:String>
+                    <x:String>Engineer</x:String>
+                    <x:String>Designer</x:String>
+                    <x:String>Other</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <!-- 国籍 -->
+            <Label Text="Nationality" FontSize="14" TextColor="#333" />
+            <Entry x:Name="NationalityEntry"
+             Placeholder="Type here"
+             BackgroundColor="#F0F0F0"
+             HeightRequest="48"
+             FontSize="16" />
+
+            <!-- 按钮区域 -->
+            <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+                <Button Text="Skip"
+                BackgroundColor="Transparent"
+                TextColor="#2196F3"
+                FontSize="14"
+                Command="{Binding SkipCommand}" />
+
+                <Button Text="Continue"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="8"
+                HeightRequest="50"
+                Command="{Binding ContinueCommand}" />
+            </HorizontalStackLayout>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
