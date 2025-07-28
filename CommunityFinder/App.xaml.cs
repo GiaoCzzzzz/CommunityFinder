@@ -32,24 +32,24 @@ namespace CommunityFinder
             }
         }
 
-        protected override void OnAppLinkRequestReceived(Uri uri)
-        {
-            base.OnAppLinkRequestReceived(uri);
+        //protected override void OnAppLinkRequestReceived(Uri uri)
+        //{
+        //    base.OnAppLinkRequestReceived(uri);
 
-            // 仅处理 scheme=myapp, host=reset  
-            if (uri.Scheme == "myapp" && uri.Host == "resetpassword")
-            {
-                // 解析 token 参数  
-                var query = HttpUtility.ParseQueryString(uri.Query);
-                var token = System.Web.HttpUtility.ParseQueryString(uri.Query).Get("token");
-                Dispatcher.Dispatch(async () =>
-                {
-                    var authService = _services.GetRequiredService<AuthService>();
-                    await MainPage.Navigation.PushAsync(
-                        new ResetPasswordPage(authService, token)
-                    );
-                });
-            }
-        }
+        //    // 仅处理 scheme=myapp, host=reset  
+        //    if (uri.Scheme == "myapp" && uri.Host == "resetpassword")
+        //    {
+        //        // 解析 token 参数  
+        //        var query = HttpUtility.ParseQueryString(uri.Query);
+        //        var token = System.Web.HttpUtility.ParseQueryString(uri.Query).Get("token");
+        //        Dispatcher.Dispatch(async () =>
+        //        {
+        //            var authService = _services.GetRequiredService<AuthService>();
+        //            await MainPage.Navigation.PushAsync(
+        //                new ResetPasswordPage(authService, token)
+        //            );
+        //        });
+        //    }
+        //}
     }
 }

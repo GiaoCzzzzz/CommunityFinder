@@ -23,7 +23,10 @@ public partial class ForgotPasswordPage : ContentPage
 
         var res = await _authService.SendPasswordResetEmailAsync(email);
         if (res)
+        {
             await DisplayAlert("成功", "重置邮件已发送，请查收。", "确定");
+            await Navigation.PushAsync(new VerifyTokenPage(_authService, email));
+        }
         else
             await DisplayAlert("失败", "发送失败，检查邮箱是否正确。", "确定");
     }

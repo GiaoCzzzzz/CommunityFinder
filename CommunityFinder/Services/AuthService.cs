@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks;
 using Client = Supabase.Client;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static Supabase.Gotrue.Constants;
 
 namespace CommunityFinder.Services
 {
@@ -29,7 +30,7 @@ namespace CommunityFinder.Services
         }
 
         public async Task<(bool IsSuccess, string ErrorMessage)> SignUpAsync(
-    string email, string password, string displayname, string phone)
+        string email, string password, string displayname, string phone)
         {
             var opts = new SignUpOptions
             {
@@ -116,39 +117,45 @@ namespace CommunityFinder.Services
             return ok;
         }
 
-        /// <summary>
-        /// 确认并更新密码：用用户点击邮件里的 token + 新密码 调用 REST API
-        /// </summary>
-        public async Task<(bool Success, string ErrorMessage)> ConfirmPasswordResetAsync(string token, string newPassword)
+
+        public async Task<(bool IsSuccess, string ErrorMessage)> ConfirmPasswordResetAsync(string email, string token)
         {
             try
             {
-                // TODO: 替换成你的 Supabase URL
-                var baseUrl = "https://你的-project-ref.supabase.co";
-                using var http = new HttpClient { BaseAddress = new Uri(baseUrl) };
+                var session = await _client.Auth.VerifyOTP(
+                        email.Trim().ToLower(),
+                        token.Trim(),
+                        EmailOtpType.Recovery);
+                if (session == null || string.IsNullOrEmpty(session.AccessToken))
+                    return (false, "验证码无效或已过期");    
 
-                // Supabase 要求在 Header 带上 apikey 和 Authorization
-                http.DefaultRequestHeaders.Add("apikey", AppConfig.Supabase_Key);
-                http.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", AppConfig.Supabase_Key);
+                return (true, null);
 
-                // GoTrue 文档：POST /auth/v1/recover
-                var body = new { token = token, password = newPassword };
-                var json = JsonConvert.SerializeObject(body);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                var resp = await http.PostAsync("/auth/v1/recover", content);
-
-                if (resp.IsSuccessStatusCode)
-                    return (true, null);
-
-                var err = await resp.Content.ReadAsStringAsync();
-                return (false, err);
             }
             catch (Exception ex)
             {
-                return (false, ex.Message);
+                return (false, $"重置失败：{ex.Message}");
             }
+        }
+
+        public async Task<bool> ResetPassword(string password)
+        {
+            var attrs = new UserAttributes
+            {
+                Password = password
+            };
+
+            var response = await _client.Auth.Update(attrs);
+
+            if (response != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
 
         //初始化信息//更新用户信息

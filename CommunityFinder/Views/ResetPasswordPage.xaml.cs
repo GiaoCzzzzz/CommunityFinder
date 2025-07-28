@@ -15,11 +15,10 @@ public partial class ResetPasswordPage : ContentPage
     readonly AuthService _authService;
     readonly string _token;
 
-    public ResetPasswordPage(AuthService authService, string token)
+    public ResetPasswordPage(AuthService authService)
     {
         InitializeComponent();
         _authService = authService;
-        _token = token;
     }
 
     async void OnResetClicked(object sender, EventArgs e)
@@ -31,8 +30,8 @@ public partial class ResetPasswordPage : ContentPage
             return;
         }
 
-        var (success, error) = await _authService.ConfirmPasswordResetAsync(_token, newPwd);
-        if (success)
+        var ok = await _authService.ResetPassword(newPwd);
+        if (ok)
         {
             await DisplayAlert("成功", "密码已重置，请使用新密码登录", "确定");
             // 回到登录页  
@@ -40,7 +39,7 @@ public partial class ResetPasswordPage : ContentPage
         }
         else
         {
-            await DisplayAlert("失败", error, "确定");
+            await DisplayAlert("失败", "错误设置密码", "确定");
         }
     }
 }
