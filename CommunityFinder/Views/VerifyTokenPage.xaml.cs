@@ -24,20 +24,20 @@ public partial class VerifyTokenPage : ContentPage
         var token = TokenEntry.Text?.Trim();
         if (string.IsNullOrEmpty(token))
         {
-            await DisplayAlert("提示", "请输入令牌", "确定");
+            await DisplayAlert("Warn", "Please enter the token.", "confirm");
             return;
         }
 
         (bool ok,string err) = await _authService.ConfirmPasswordResetAsync(email,token);
         if (ok)
         {
-            await DisplayAlert("成功", "令牌验证成功，请使用新密码登录", "确定");
+            await DisplayAlert("Succed", "Token verification successful. Click \"confirm\" to reset the password.", "confirm");
             // 回到登录页  
-            await Navigation.PushAsync(new ResetPasswordPage(_authService));
+            await Navigation.PushAsync(new ResetPasswordPage(_authService, email));
         }
         else
         {
-            await DisplayAlert("失败", "令牌验证失败，请检查后重试", "确定");
+            await DisplayAlert("Fail", "Token verification failed. Please check and try again.", "confirm");
         }
     }
 }

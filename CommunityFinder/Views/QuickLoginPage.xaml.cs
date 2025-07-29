@@ -24,7 +24,7 @@ public partial class QuickLoginPage : ContentPage
             await Navigation.PushAsync(new MainPage(_authService));
         }
         else
-            await DisplayAlert("失败", "邮箱或密码被更改", "确定");
+            await DisplayAlert("Fail", "Email or password has been changed", "confirm");
     }
 
     public async void OnGoToNormalLoginClicked(object sender, EventArgs e)

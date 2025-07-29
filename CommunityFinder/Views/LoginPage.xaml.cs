@@ -23,7 +23,7 @@ public partial class LoginPage : ContentPage
 
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(pwd))
         {
-            await DisplayAlert("提示", "请填写邮箱和密码", "确定");
+            await DisplayAlert("Warn", "Please enter your email address and password.", "confirm");
             return;
         }
 
@@ -36,7 +36,7 @@ public partial class LoginPage : ContentPage
             await Navigation.PushAsync(new InitialProfilePage(_authService));
         }
         else
-            await DisplayAlert("失败", "邮箱或密码错误", "确定");
+            await DisplayAlert("Fail", "Incorrect email or password", "confirm");
     }
 
     async void OnForgotPasswordClicked(object sender, EventArgs e)

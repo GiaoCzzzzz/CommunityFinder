@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Client = Supabase.Client;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Supabase.Gotrue.Constants;
+using Supabase.Realtime.Converters;
 
 namespace CommunityFinder.Services
 {
@@ -46,7 +47,7 @@ namespace CommunityFinder.Services
                 if (ok.User != null)
                     return (true, null);
                 else
-                    return (false, "注册失败，请重试");
+                    return (false, "Registration failed. Please try again.");
             }
             catch (GotrueException ex)
             {
@@ -59,9 +60,9 @@ namespace CommunityFinder.Services
 
                     // Supabase 对重复注册返回 Postgres 23505
                     if (errCode == "23505" || errMsg.Contains("already been registered"))
-                        return (false, "该邮箱已被注册，请直接登录");
+                        return (false, "This email address has been registered. Please log in directly.");
                     else if (errMsg.Contains("contain at least one character"))
-                        return (false, "需要包含只要一个大小写，数字和特殊字符");
+                        return (false, "Must contain only one uppercase or lowercase letter, one number and one special character.");
 
                     return (false, errMsg);
                 }
@@ -81,7 +82,7 @@ namespace CommunityFinder.Services
         {
             // 基本校验
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                throw new ArgumentException("Email 和 Password 都不能为空");
+                throw new ArgumentException("Both Email and Password fields cannot be left blank.");
 
             try
             {
@@ -127,7 +128,7 @@ namespace CommunityFinder.Services
                         token.Trim(),
                         EmailOtpType.Recovery);
                 if (session == null || string.IsNullOrEmpty(session.AccessToken))
-                    return (false, "验证码无效或已过期");    
+                    return (false, "The verification code is invalid or has expired.");    
 
                 return (true, null);
 
@@ -191,7 +192,7 @@ namespace CommunityFinder.Services
             }
         }
 
-        public async Task<bool> UpdateProfile(Profiles profiles)
+        public async Task<bool> UpsertProfile(Profiles profiles)
         {
             var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
             profiles.id = userGuid;
@@ -204,6 +205,19 @@ namespace CommunityFinder.Services
             return true;
         }
 
+        public async Task<bool> UpdateProfile(Profiles profiles)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            profiles.id = userGuid;
+            var resp = await _client
+            .From<Profiles>()
+                    .Where(x => x.id == userGuid)
+                    .Single();
+            resp.interest = profiles.interest;
+            await resp.Update<Profiles>();
+            return true;
+        }
+
         public async Task<Profiles> GetProfiles()
         {
             var resp = await _client
@@ -211,6 +225,24 @@ namespace CommunityFinder.Services
                 .Get();
 
             return resp.Model;
+        }
+
+        public async Task<string[]> GetInterest()
+        {
+            var resp = await _client
+                .From<Profiles>()
+                .Select(x => x.interest)
+                .Get();
+
+            return resp.Model?.interest ?? Array.Empty<string>();
+        }
+
+        //Get The Email Address
+        public string GerEmailAddress()
+        {
+            var email_address = _client.Auth.CurrentSession.User.Email;
+
+            return email_address;
         }
     }
 }

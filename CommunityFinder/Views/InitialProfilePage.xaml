@@ -10,8 +10,7 @@
             <Editor x:Name="postcodeEnrty"        Placeholder="邮政" HeightRequest="100" />
             <Editor x:Name="occupationEnrty"        Placeholder="职业" HeightRequest="100" />
             <Editor x:Name="nationalityEnrty"        Placeholder="国籍" HeightRequest="100" />
-            <Editor x:Name="interestEnrty"        Placeholder="爱好" HeightRequest="100" />
-            
+
             <Button Text="保存" Clicked="OnSaveClicked" />
         </StackLayout>
     </ScrollView>
