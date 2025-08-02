@@ -53,7 +53,7 @@ namespace CommunityFinder.Views
             if (result.IsSuccess)
             {
                 // 注册成功后，同步传回 LoginPage
-                await DisplayAlert("Succed", "Registration successful. You will be redirected to the login page shortly.", "confirm");
+                await DisplayAlert("Succed", "Registration successful. You will receive the confirm email, please check.", "confirm");
                 await Navigation.PushAsync(
                     new LoginPage(_authService, prefillEmail: email, prefillPassword: pwd)
                 );
