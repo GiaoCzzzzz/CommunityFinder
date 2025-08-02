@@ -1,26 +1,99 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="CommunityFinder.Views.SignUpPage"
-             xmlns:viewmodels="clr-namespace:CommunityFinder.ViewModels"
-             x:DataType="viewmodels:SignUpViewModel"
-             Title="SignUpPage">
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="CommunityFinder.Views.SignUpPage"
+    Title="Sign Up"
+    BackgroundColor="#FFFDE7">
 
+    <ScrollView>
+        <StackLayout Padding="30" Spacing="20" VerticalOptions="Center">
 
-    <StackLayout Padding="30" Spacing="15">
-        <Entry x:Name="UsernameEntry"
-             Placeholder="用户名"
-             Keyboard="Text" />
-        <Entry x:Name="EmailEntry" Placeholder="邮箱" Keyboard="Email" />
-        <Entry x:Name="PhoneEntry"
-             Placeholder="手机号"
-             Keyboard="Telephone" />
-        <Entry x:Name="PasswordEntry" Placeholder="密码" IsPassword="True" />
-        <Entry x:Name="ConfirmPasswordEntry"
-             Placeholder="确认密码"
-             IsPassword="True" />
-        
-        <Button Text="注册" Clicked="OnSignUpClicked" />
-        <Button Text="已有账号？去登录" Clicked="OnGoToLoginClicked" />
-    </StackLayout>
+            <!-- 页面标题 -->
+            <Label
+        Text="Sign Up"
+        FontSize="28"
+        FontAttributes="Bold"
+        HorizontalOptions="Center"
+        TextColor="#333" />
+
+            <!-- 用户名 -->
+            <Entry
+        x:Name="UsernameEntry"
+        Placeholder="用户名"
+        BackgroundColor="#F0F0F0"
+        HeightRequest="48"
+        FontSize="16" />
+
+            <!-- 邮箱 + 验证按钮 -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <Entry
+          x:Name="EmailEntry"
+          Placeholder="邮箱"
+          Keyboard="Email"
+          BackgroundColor="#F0F0F0"
+          HeightRequest="48"
+          FontSize="16"
+          Grid.Column="0" />
+                <Button
+          Text="验证"
+          BackgroundColor="#4CAF50"
+          TextColor="White"
+          FontSize="14"
+          CornerRadius="6"
+          HeightRequest="48"
+          Grid.Column="1" />
+            </Grid>
+
+            <!-- 手机号 -->
+            <Entry
+        x:Name="PhoneEntry"
+        Placeholder="手机号"
+        Keyboard="Telephone"
+        BackgroundColor="#F0F0F0"
+        HeightRequest="48"
+        FontSize="16" />
+
+            <!-- 密码 -->
+            <Entry
+        x:Name="PasswordEntry"
+        Placeholder="密码"
+        IsPassword="True"
+        BackgroundColor="#F0F0F0"
+        HeightRequest="48"
+        FontSize="16" />
+
+            <!-- 确认密码 -->
+            <Entry
+        x:Name="ConfirmPasswordEntry"
+        Placeholder="确认密码"
+        IsPassword="True"
+        BackgroundColor="#F0F0F0"
+        HeightRequest="48"
+        FontSize="16" />
+
+            <!-- 提交按钮 -->
+            <Button
+        Text="提交"
+        BackgroundColor="#4CAF50"
+        TextColor="White"
+        FontAttributes="Bold"
+        CornerRadius="8"
+        HeightRequest="50"
+        Clicked="OnSignUpClicked" />
+
+            <!-- 已有账号？去登录 -->
+            <Label
+        Text="已有账号？去登录"
+        TextColor="#2196F3"
+        FontSize="14"
+        HorizontalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnGoToLoginClicked" />
+                </Label.GestureRecognizers>
+            </Label>
+
+        </StackLayout>
+    </ScrollView>
+
 </ContentPage>
