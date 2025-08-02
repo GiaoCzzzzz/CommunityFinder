@@ -4,3 +4,9 @@
 
 问题
 前端代码需要更新。
+
+1. Add the option for new hobbies. The main point to note is that the creation of hobbies requires an update to the backend code - it is recommended that the front-end code personnel communicate with the back-end code personnel and make the changes after that.
+2. Change the English prompts.
+3. Fix the overwrite bug when communicating with the database. 
+Question
+The front-end code needs to be updated.
