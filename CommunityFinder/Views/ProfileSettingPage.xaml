@@ -17,6 +17,16 @@
                 HorizontalOptions="Center"
                 TextColor="#333" />
 
+            <!-- 电子邮箱（只读） -->
+            <Label Text="Email" FontSize="14" TextColor="#333" />
+            <Entry
+                x:Name="EmailEntry"
+                Placeholder="your.email@example.com"
+                IsReadOnly="True"
+                BackgroundColor="#F0F0F0"
+                HeightRequest="48"
+                FontSize="16" />
+
             <!-- 显示名称 -->
             <Label Text="Display Name" FontSize="14" TextColor="#333" />
             <Entry
