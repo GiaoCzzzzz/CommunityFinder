@@ -20,7 +20,7 @@ using Supabase.Realtime.Converters;
 
 namespace CommunityFinder.Services
 {
-    public class AuthService 
+    public class AuthService  //all the methods used for call Supabase
     {
         readonly Client _client;
         public Client Client => _client;
@@ -51,7 +51,7 @@ namespace CommunityFinder.Services
             }
             catch (GotrueException ex)
             {
-                // 尝试解析 JSON 错误消息
+                
                 try
                 {
                     var errObj = JObject.Parse(ex.Message);
