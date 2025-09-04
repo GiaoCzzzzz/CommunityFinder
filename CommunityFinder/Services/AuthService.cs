@@ -227,6 +227,20 @@ namespace CommunityFinder.Services
             return resp.Model;
         }
 
+        public async Task<bool> FirstProfiles()
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            var resp = await _client
+                .From<Profiles>()
+                .Where(x => x.id == userGuid)
+                .Get();
+
+            if (resp.Model == null)
+                return false;
+            else
+                return true;
+        }
+
         public async Task<string[]> GetInterest()
         {
             var resp = await _client

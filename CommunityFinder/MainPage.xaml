@@ -1,36 +1,165 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="onePA Courses"
              x:Class="CommunityFinder.MainPage">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
-            <Image
-                Source="dotnet_bot.png"
-                HeightRequest="185"
-                Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a race car number eight" />
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#E9FFD6" Offset="0.0"/>
+            <GradientStop Color="#DFF8B9" Offset="1.0"/>
+        </LinearGradientBrush>
+    </ContentPage.Background>
 
-            <Label
-                Text="Hello, World!"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- 输入控件统一外观（注意：Entry/Picker 无 CornerRadius，所以不设置） -->
+            <Style TargetType="Entry">
+                <Setter Property="HeightRequest" Value="40"/>
+                <Setter Property="BackgroundColor" Value="White"/>
+            </Style>
+            <Style TargetType="Picker">
+                <Setter Property="HeightRequest" Value="40"/>
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="TitleColor" Value="#7A7A7A"/>
+                <Setter Property="HorizontalOptions" Value="FillAndExpand"/>
+            </Style>
 
-            <Label
-                Text="Welcome to &#10;.NET Multi-platform App UI"
-                Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
+            <!-- Register 按钮（用 DataTrigger 切换状态） -->
+            <Style x:Key="RegisterButtonStyle" TargetType="Button">
+                <Setter Property="Text" Value="Register"/>
+                <Setter Property="BackgroundColor" Value="#5DBB63"/>
+                <Setter Property="TextColor" Value="White"/>
+                <Setter Property="CornerRadius" Value="22"/>
+                <Setter Property="Padding" Value="20,8"/>
+                <Setter Property="HorizontalOptions" Value="End"/>
+                <Style.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding HasVacancy}" Value="False">
+                        <Setter Property="Text" Value="Registration Closed"/>
+                        <Setter Property="BackgroundColor" Value="#9E9E9E"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-            <Button
-                x:Name="CounterBtn"
-                Text="Setting" 
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Fill" />
-        </VerticalStackLayout>
-    </ScrollView>
+            <!-- 顶部菜单样式 -->
+            <Style x:Key="TopTab" TargetType="Label">
+                <Setter Property="VerticalOptions" Value="Center"/>
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="Padding" Value="8,0"/>
+                <Setter Property="TextColor" Value="#2A2A2A"/>
+            </Style>
+            <Style x:Key="TopTabActive" BasedOn="{StaticResource TopTab}" TargetType="Label">
+                <Setter Property="TextColor" Value="#F05A5A"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="12">
+
+        <!-- 顶部导航 -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Padding="8" BackgroundColor="#FFFFFFAA" Margin="0,0,0,8"
+          HeightRequest="56">
+            <!-- 左：Logo 占位 -->
+            <Frame CornerRadius="24" HeightRequest="40" WidthRequest="40" Padding="0" HasShadow="False" VerticalOptions="Center">
+                <BoxView Color="#FFE7C4"/>
+            </Frame>
+
+            <!-- 中：Tabs -->
+            <Grid Grid.Column="1" ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="18" HorizontalOptions="Center" VerticalOptions="Center">
+                <Label Text="About Us" Style="{StaticResource TopTab}"/>
+                <Label Grid.Column="1" Text="Events" Style="{StaticResource TopTab}"/>
+                <Label Grid.Column="2" Text="Courses" Style="{StaticResource TopTabActive}"/>
+                <Label Grid.Column="3" Text="Forum" Style="{StaticResource TopTab}"/>
+            </Grid>
+
+            <!-- 右：设置图标占位 -->
+            <Frame Grid.Column="2" CornerRadius="18" HeightRequest="36" WidthRequest="36" Padding="0" HasShadow="False" VerticalOptions="Center">
+                <BoxView Color="#EDEDED"/>
+            </Frame>
+        </Grid>
+
+        <!-- 搜索与筛选 -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,Auto" ColumnDefinitions="*" Margin="0,0,0,10">
+            <!-- 第1行：What / Where + 搜索 -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,140,10,Auto,140,10,*,Auto" ColumnSpacing="0">
+                <Label Text="What" VerticalOptions="Center" Margin="0,0,6,0"/>
+                <Picker Grid.Column="1" ItemsSource="{Binding WhatOptions}" SelectedItem="{Binding SelectedWhat}" />
+
+                <BoxView Grid.Column="2" WidthRequest="10" Opacity="0"/>
+
+                <Label Grid.Column="3" Text="Where" VerticalOptions="Center" Margin="0,0,6,0"/>
+                <Picker Grid.Column="4" ItemsSource="{Binding WhereOptions}" SelectedItem="{Binding SelectedWhere}" />
+
+                <BoxView Grid.Column="5" WidthRequest="10" Opacity="0"/>
+
+                <Entry Grid.Column="6" Placeholder="Search..." Text="{Binding SearchText}" />
+                <Button Grid.Column="7" Text="🔍" WidthRequest="44" HeightRequest="40" CornerRadius="20" Clicked="OnSearchClicked"/>
+            </Grid>
+
+            <!-- 第2行：Day / Time -->
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,140,10,Auto,140" ColumnSpacing="0" Margin="0,8,0,0">
+                <Label Text="Day" VerticalOptions="Center" Margin="0,0,6,0"/>
+                <Picker Grid.Column="1" ItemsSource="{Binding DayOptions}" SelectedItem="{Binding SelectedDay}" />
+
+                <BoxView Grid.Column="2" WidthRequest="10" Opacity="0"/>
+
+                <Label Grid.Column="3" Text="Time" VerticalOptions="Center" Margin="0,0,6,0"/>
+                <Picker Grid.Column="4" ItemsSource="{Binding TimeOptions}" SelectedItem="{Binding SelectedTime}" />
+            </Grid>
+        </Grid>
+
+        <!-- 列表卡片 -->
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Courses}">
+            <!-- 空状态（英文） -->
+            <CollectionView.EmptyView>
+                <Grid Padding="20">
+                    <Label Text="No courses" HorizontalOptions="Center" VerticalOptions="Center" FontSize="16" TextColor="#666"/>
+                </Grid>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="16" Margin="0,8" HasShadow="True" BackgroundColor="White" CornerRadius="16">
+                        <Grid ColumnDefinitions="120,*" ColumnSpacing="16">
+                            <!-- 左图占位 -->
+                            <BoxView Color="#E0E0E0" WidthRequest="120" HeightRequest="96" CornerRadius="8"/>
+
+                            <!-- 右侧信息 -->
+                            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                                <Label Text="{Binding AoiL1}" TextColor="#C62828" FontAttributes="Bold" />
+                                <Label Grid.Row="1" Text="{Binding Title}" FontAttributes="Bold" FontSize="18" />
+
+                                <Label Grid.Row="2" Text="Date &amp; Time" FontAttributes="Bold" />
+                                <Label Grid.Row="3">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}Starts on {0:dddd}">
+                                            <Binding Path="StartDate"/>
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <Label Grid.Row="4">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0:dd MMM yyyy}  •  {1}">
+                                            <Binding Path="StartDate"/>
+                                            <Binding Path="SessionTime"/>
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+
+                                <!-- 右下角按钮 -->
+                                <Button Grid.Row="5" Style="{StaticResource RegisterButtonStyle}"
+                        CommandParameter="{Binding DetailUrl}"
+                        Clicked="OnRegisterClicked" />
+                            </Grid>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- 底部留白 -->
+        <BoxView Grid.Row="3" HeightRequest="8" Opacity="0"/>
+    </Grid>
 </ContentPage>

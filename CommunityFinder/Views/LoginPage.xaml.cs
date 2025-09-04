@@ -33,7 +33,14 @@ public partial class LoginPage : ContentPage
             Preferences.Set("QuickLogin", "Yes");
             Preferences.Set("Email", email);
             Preferences.Set("Password", pwd);
-            await Navigation.PushAsync(new InitialProfilePage(_authService));
+            var first = _authService.FirstProfiles();
+            if (await first)
+                await Navigation.PushAsync(new MainPage(_authService));
+            else
+            {
+                await Navigation.PushAsync(new InitialProfilePage(_authService));
+            }
+            
         }
         else
             await DisplayAlert("Fail", "Incorrect email or password", "confirm");
