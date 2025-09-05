@@ -4,8 +4,8 @@
              x:Class="CommunityFinder.Views.VerifyTokenPage"
              Title="VerifyTokenPage">
     <VerticalStackLayout Padding="30" Spacing="15">
-        <Label Text="输入验证码" FontSize="24" HorizontalOptions="Center"/>
-        <Entry x:Name="TokenEntry" Placeholder="验证码" Keyboard="Email"/>
-        <Button Text="验证" Clicked="OnVerifyClicked" HorizontalOptions="Center"/>
+        <Label Text="Enter the verification code" FontSize="24" HorizontalOptions="Center"/>
+        <Entry x:Name="TokenEntry" Placeholder="Verification code" Keyboard="Email"/>
+        <Button Text="Verification" Clicked="OnVerifyClicked" HorizontalOptions="Center"/>
     </VerticalStackLayout>
 </ContentPage>

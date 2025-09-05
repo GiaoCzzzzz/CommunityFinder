@@ -21,7 +21,7 @@ public partial class QuickLoginPage : ContentPage
         var ok = await _authService.SignInAsync(email, pwd);
         if (ok)
         {
-            await Navigation.PushAsync(new MainPage(_authService));
+            await Navigation.PushAsync(new InterestPage(_authService));
         }
         else
             await DisplayAlert("Fail", "Email or password has been changed", "confirm");

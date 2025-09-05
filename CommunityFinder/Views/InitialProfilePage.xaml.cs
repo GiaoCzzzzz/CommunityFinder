@@ -33,7 +33,7 @@ public partial class InitialProfilePage : ContentPage
             string.IsNullOrEmpty(occupation) ||
             string.IsNullOrEmpty(nationality))// Removed the extra semicolon here  
         {
-            await DisplayAlert("提示", "请完整填写所有字段", "确定");
+            await DisplayAlert("hint", "Please fill in all fields", "confirm");
             return;
         }
 
@@ -58,12 +58,12 @@ public partial class InitialProfilePage : ContentPage
         var (ok, err) = await _authService.CreateProfile(profiles);
         if (ok)
         {
-            await DisplayAlert("成功", "个人资料已保存", "确定");
+            await DisplayAlert("success", "Personal information has been saved", "confirm");
             await Navigation.PushAsync(new InterestPage(_authService));
         }
         else
         {
-            await DisplayAlert("失败", err, "确定");
+            await DisplayAlert("fail", err, "confirm");
         }
     }
 }
