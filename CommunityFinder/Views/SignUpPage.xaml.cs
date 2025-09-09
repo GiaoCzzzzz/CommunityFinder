@@ -7,6 +7,10 @@ namespace CommunityFinder.Views
     {
         readonly AuthService _authService;
 
+        // 密码可见性状态
+        bool _isPasswordVisible = false;
+        bool _isConfirmPasswordVisible = false;
+
         public SignUpPage(AuthService authService)
         {
             InitializeComponent();
@@ -22,37 +26,35 @@ namespace CommunityFinder.Views
             var confirmPwd = ConfirmPasswordEntry.Text;
 
             if (string.IsNullOrEmpty(displayName) ||
-            string.IsNullOrEmpty(phone) ||
-            string.IsNullOrEmpty(email) ||
-            string.IsNullOrEmpty(pwd))
+                string.IsNullOrEmpty(phone) ||
+                string.IsNullOrEmpty(email) ||
+                string.IsNullOrEmpty(pwd))
             {
                 await DisplayAlert("Warn", "Please complete all the fields completely.", "confirm");
                 return;
             }
 
-            if (!Regex.IsMatch(email,@"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
             {
                 await DisplayAlert("Warn", "Incorrect email format", "confirm");
                 return;
             }
 
-            // 3. 密码一致性和强度
             if (pwd != confirmPwd)
             {
                 await DisplayAlert("Warn", "The two entered passwords are not the same.", "confirm");
                 return;
             }
+
             if (pwd.Length < 6)
             {
                 await DisplayAlert("Warn", "The password must be at least 6 characters long.", "confirm");
                 return;
             }
 
-            // 4. 调用注册
             var result = await _authService.SignUpAsync(email, pwd, displayName, phone);
             if (result.IsSuccess)
             {
-                // 注册成功后，同步传回 LoginPage
                 await DisplayAlert("Succed", "Registration successful. You will receive the confirm email, please check.", "confirm");
                 await Navigation.PushAsync(
                     new LoginPage(_authService, prefillEmail: email, prefillPassword: pwd)
@@ -60,7 +62,6 @@ namespace CommunityFinder.Views
             }
             else
             {
-                // result.ErrorMessage 已包含详细提示
                 await DisplayAlert("Fail", result.ErrorMessage, "confirm");
             }
         }
@@ -68,6 +69,21 @@ namespace CommunityFinder.Views
         async void OnGoToLoginClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new LoginPage(_authService));
+        }
+
+        // 密码显示/隐藏切换
+        void OnTogglePasswordVisibility(object sender, EventArgs e)
+        {
+            _isPasswordVisible = !_isPasswordVisible;
+            PasswordEntry.IsPassword = !_isPasswordVisible;
+            TogglePasswordButton.Text = _isPasswordVisible ? "Hide" : "Show";
+        }
+
+        void OnToggleConfirmPasswordVisibility(object sender, EventArgs e)
+        {
+            _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+            ConfirmPasswordEntry.IsPassword = !_isConfirmPasswordVisible;
+            ToggleConfirmPasswordButton.Text = _isConfirmPasswordVisible ? "Hide" : "Show";
         }
     }
 }

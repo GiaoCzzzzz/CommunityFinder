@@ -23,7 +23,7 @@
                 x:Name="EmailEntry"
                 Placeholder="your.email@example.com"
                 IsReadOnly="True"
-                BackgroundColor="#F0F0F0"
+                BackgroundColor="#FFFFFF"
                 HeightRequest="48"
                 FontSize="16" />
 
@@ -32,7 +32,7 @@
             <Entry
                 x:Name="DisplayNameEntry"
                 Placeholder="Type here"
-                BackgroundColor="#F0F0F0"
+                BackgroundColor="#FFFFFF"
                 HeightRequest="48"
                 FontSize="16" />
 
@@ -41,7 +41,7 @@
             <Picker
                 x:Name="SexPicker"
                 Title="Select your gender"
-                BackgroundColor="#F0F0F0"
+                BackgroundColor="#FFFFFF"
                 HeightRequest="48"
                 FontSize="16">
                 <Picker.Items>
@@ -57,7 +57,7 @@
                 x:Name="AgeEntry"
                 Placeholder="Type here"
                 Keyboard="Numeric"
-                BackgroundColor="#F0F0F0"
+                BackgroundColor="#FFFFFF"
                 HeightRequest="48"
                 FontSize="16" />
 
@@ -66,7 +66,7 @@
             <Entry
                 x:Name="NationalityEntry"
                 Placeholder="Type here"
-                BackgroundColor="#F0F0F0"
+                BackgroundColor="#FFFFFF"
                 HeightRequest="48"
                 FontSize="16" />
 
@@ -76,7 +76,7 @@
                 x:Name="PhoneEntry"
                 Placeholder="123456"
                 Keyboard="Telephone"
-                BackgroundColor="#F0F0F0"
+                BackgroundColor="#FFFFFF"
                 HeightRequest="48"
                 FontSize="16" />
 
@@ -85,7 +85,7 @@
             <Entry
                 x:Name="OccupationEntry"
                 Placeholder="Type here"
-                BackgroundColor="#F0F0F0"
+                BackgroundColor="#FFFFFF"
                 HeightRequest="48"
                 FontSize="16" />
 
@@ -95,7 +95,7 @@
                 x:Name="PostalCodeEntry"
                 Placeholder="000000"
                 Keyboard="Numeric"
-                BackgroundColor="#F0F0F0"
+                BackgroundColor="#FFFFFF"
                 HeightRequest="48"
                 FontSize="16" />
 

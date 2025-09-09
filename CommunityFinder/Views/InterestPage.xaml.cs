@@ -46,13 +46,13 @@ public partial class InterestPage : ContentPage
         {
             // 取消选中
             _selected.Remove(tag);
-            btn.BackgroundColor = Color.FromArgb("#E0F8D8");
+            btn.BackgroundColor = Color.FromArgb("#DEF685");
         }
         else
         {
             // 选中
             _selected.Add(tag);
-            btn.BackgroundColor = Color.FromArgb("#A4D5A2");
+            btn.BackgroundColor = Color.FromArgb("#5DB634");
         }
     }
 

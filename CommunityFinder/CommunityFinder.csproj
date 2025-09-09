@@ -54,7 +54,6 @@
     <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.100" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.100" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="Supabase" Version="1.1.1" />
     <PackageReference Include="xunit" Version="2.9.3" />

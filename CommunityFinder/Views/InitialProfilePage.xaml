@@ -4,17 +4,157 @@
              x:Class="CommunityFinder.Views.InitialProfilePage"
              Title="InitialProfilePage"
              BackgroundColor="#F9FFE3">
- 
-    <ScrollView>
-        <StackLayout Padding="20" Spacing="15">
-            <Entry x:Name="GenderEnrty"        Placeholder="Gender" PlaceholderColor="#000000" />
-            <Editor x:Name="ageEnrty"        Placeholder="Age" HeightRequest="100"  PlaceholderColor="#000000"/>
-            <Editor x:Name="postcodeEnrty"        Placeholder="Post Office" HeightRequest="100"  PlaceholderColor="#000000"/>
-            <Editor x:Name="occupationEnrty"        Placeholder="Occupation" HeightRequest="100"  PlaceholderColor="#000000"/>
-            <Editor x:Name="nationalityEnrty"        Placeholder="Nationality" HeightRequest="100" PlaceholderColor="#000000" />
-            <Editor x:Name="interestEnrty"        Placeholder="Hobby" HeightRequest="100"  PlaceholderColor="#000000"/>
 
-            <Button Text="Save" Clicked="OnSaveClicked" />
-        </StackLayout>
-    </ScrollView>
+    <Grid RowDefinitions="Auto,*">
+        <!-- 顶部标题和图片区域 -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="20">
+            <!-- 左侧文字 -->
+            <StackLayout Grid.Column="0" VerticalOptions="Start">
+                <Label Text="Welcome"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="#333" />
+                <Label Text="Community Finder"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       TextColor="#000000" />
+                <Label Text="About you"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       Margin="0,10,0,0"
+                       TextColor="#000000" />
+            </StackLayout>
+
+            <!-- 右上角图片 -->
+            <Image Grid.Column="1"
+                   Source="icon1.png"
+                   WidthRequest="60"
+                   HeightRequest="60"
+                   HorizontalOptions="End"
+                   VerticalOptions="Start"
+                   Margin="0,0,10,0" />
+        </Grid>
+
+        <!-- 页面内容区域 -->
+        <ScrollView Grid.Row="1">
+            <StackLayout Padding="20" Spacing="15">
+
+                <!-- Gender -->
+                <Label Text="Gender"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="#333" />
+                <StackLayout Orientation="Horizontal" Spacing="10">
+                    <Button x:Name="MaleButton"
+                            Text="Male"
+                            BackgroundColor="#DEF685"
+                            TextColor="Black"
+                            CornerRadius="25"
+                            HeightRequest="40"
+                            WidthRequest="100"
+                            Clicked="OnGenderSelected" />
+                    <Button x:Name="FemaleButton"
+                            Text="Female"
+                            BackgroundColor="#DEF685"
+                            TextColor="Black"
+                            CornerRadius="25"
+                            HeightRequest="40"
+                            WidthRequest="100"
+                            Clicked="OnGenderSelected" />
+                </StackLayout>
+
+                <!-- Age -->
+                <Label Text="Age"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="#333" />
+                <Border BackgroundColor="#FFFFFF" Padding="5">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="25" />
+                    </Border.StrokeShape>
+                    <Entry x:Name="ageEnrty"
+                           Placeholder="Age"
+                           PlaceholderColor="#000000"
+                           Keyboard="Numeric"
+                           BackgroundColor="Transparent"
+                           HeightRequest="50" />
+                </Border>
+
+                <!-- Post Office -->
+                <Label Text="Post Office"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="#333" />
+                <Border BackgroundColor="#FFFFFF" Padding="5">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="25" />
+                    </Border.StrokeShape>
+                    <Entry x:Name="postcodeEnrty"
+                           Placeholder="Post Office"
+                           PlaceholderColor="#000000"
+                           Keyboard="Numeric"
+                           BackgroundColor="Transparent"
+                           HeightRequest="50" />
+                </Border>
+
+                <!-- Occupation -->
+                <Label Text="Occupation"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="#333" />
+                <Border BackgroundColor="#FFFFFF" Padding="10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="25" />
+                    </Border.StrokeShape>
+                    <Editor x:Name="occupationEnrty"
+                            Placeholder="Occupation"
+                            PlaceholderColor="#000000"
+                            BackgroundColor="Transparent"
+                            HeightRequest="50" />
+                </Border>
+
+                <!-- Nationality -->
+                <Label Text="Nationality"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="#333" />
+                <Border BackgroundColor="#FFFFFF" Padding="10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="25" />
+                    </Border.StrokeShape>
+                    <Editor x:Name="nationalityEnrty"
+                            Placeholder="Nationality"
+                            PlaceholderColor="#000000"
+                            BackgroundColor="Transparent"
+                            HeightRequest="50" />
+                </Border>
+
+                <!-- Hobby -->
+                <Label Text="Hobby"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="#333" />
+                <Border BackgroundColor="#FFFFFF" Padding="10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="25" />
+                    </Border.StrokeShape>
+                    <Editor x:Name="interestEnrty"
+                            Placeholder="Hobby"
+                            PlaceholderColor="#000000"
+                            BackgroundColor="Transparent"
+                            HeightRequest="50" />
+                </Border>
+
+                <!-- Save Button -->
+                <Button Text="Save"
+                        Clicked="OnSaveClicked"
+                        BackgroundColor="#4CAF50"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        CornerRadius="8"
+                        HeightRequest="50" />
+            </StackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

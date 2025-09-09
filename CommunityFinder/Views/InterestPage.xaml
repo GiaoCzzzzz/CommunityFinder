@@ -6,7 +6,7 @@
              BackgroundColor="#F9FFE3">
     <ContentPage.Resources>
         <Style x:Key="TagStyle" TargetType="Button">
-            <Setter Property="BackgroundColor" Value="#F9FFE3"/>
+            <Setter Property="BackgroundColor" Value="#DEF685"/>
             <Setter Property="TextColor" Value="#336633"/>
             <Setter Property="CornerRadius" Value="20"/>
             <Setter Property="Padding" Value="12,6"/>
