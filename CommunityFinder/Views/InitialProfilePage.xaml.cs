@@ -9,34 +9,33 @@ public partial class InitialProfilePage : ContentPage
     readonly AuthService _authService;
     public string[] _interest = new string[0];
     private string _selectedGender = string.Empty;
-    private List<string> _allOccupations;
-    private List<Country> _allCountries;
-    private string _selectedOccupation = string.Empty;
-    private string _selectedNationality = string.Empty;
 
     public InitialProfilePage(AuthService authService)
     {
         InitializeComponent();
         _authService = authService;
 
-        // 初始化年龄选择器
+        // 初始化 Age Picker
         for (int i = 1; i <= 200; i++)
         {
             agePicker.Items.Add(i.ToString());
         }
 
-        // 初始化职业列表
-        _allOccupations = new List<string>
+        // 初始化 Occupation Picker
+        var occupations = new[]
         {
             "Accountant", "Software Developer", "Architect", "Civil Engineer", "Financial Analyst",
             "Marketing Manager", "Teacher", "Human Resource", "Manager", "Electrical/Electronics",
             "Technician", "Mechanical Technician", "Nursing Assistant", "Lab Technician", "Audiologist",
             "Counselor", "Office Clerk", "Bank Teller", "Receptionist", "Executive Secretary", "Client Services Officer"
         };
-        occupationListView.ItemsSource = _allOccupations;
+        foreach (var occ in occupations)
+        {
+            occupationPicker.Items.Add(occ);
+        }
 
-        // 初始化国家列表（可扩展至300+）
-        _allCountries = new List<Country>
+        // 初始化 Nationality Picker（简化示例）
+        var countries = new List<Country>
         {
             new Country { Name = "Afghanistan", Flag = "🇦🇫" },
     new Country { Name = "Albania", Flag = "🇦🇱" },
@@ -334,13 +333,11 @@ public partial class InitialProfilePage : ContentPage
     new Country { Name = "Antarctica", Flag = "🇦🇶" },
     new Country { Name = "European Union", Flag = "🇪🇺" },
     new Country { Name = "United Nations", Flag = "🇺🇳" }
-
-            // 可继续添加
+            // 可扩展至300+国家
         };
-        nationalityListView.ItemsSource = _allCountries.Select(c => c.ToString()).ToList();
+        nationalityPicker.ItemsSource = countries;
     }
 
-    // 性别选择
     void OnGenderSelected(object sender, EventArgs e)
     {
         var button = sender as Button;
@@ -353,45 +350,13 @@ public partial class InitialProfilePage : ContentPage
         _selectedGender = button.Text;
     }
 
-    // 职业搜索
-    void OnOccupationSearchChanged(object sender, TextChangedEventArgs e)
-    {
-        var keyword = e.NewTextValue?.ToLower() ?? "";
-        var filtered = _allOccupations.Where(o => o.ToLower().Contains(keyword)).ToList();
-        occupationListView.ItemsSource = filtered;
-    }
-
-    // 职业选择
-    void OnOccupationSelected(object sender, SelectionChangedEventArgs e)
-    {
-        _selectedOccupation = e.CurrentSelection.FirstOrDefault()?.ToString() ?? "";
-    }
-
-    // 国籍搜索
-    void OnNationalitySearchChanged(object sender, TextChangedEventArgs e)
-    {
-        var keyword = e.NewTextValue?.ToLower() ?? "";
-        var filtered = _allCountries
-            .Where(c => c.Name.ToLower().Contains(keyword))
-            .Select(c => c.ToString())
-            .ToList();
-        nationalityListView.ItemsSource = filtered;
-    }
-
-    // 国籍选择
-    void OnNationalitySelected(object sender, SelectionChangedEventArgs e)
-    {
-        _selectedNationality = e.CurrentSelection.FirstOrDefault()?.ToString() ?? "";
-    }
-
-    // 保存按钮点击
     async void OnSaveClicked(object sender, EventArgs e)
     {
         var gender = _selectedGender;
         var age = agePicker.SelectedItem?.ToString();
         var postcode = postcodeEnrty.Text?.Trim();
-        var occupation = _selectedOccupation;
-        var nationality = _selectedNationality;
+        var occupation = occupationPicker.SelectedItem?.ToString();
+        var nationality = (nationalityPicker.SelectedItem as Country)?.Name;
 
         if (string.IsNullOrEmpty(gender) ||
             string.IsNullOrEmpty(age) ||
@@ -407,12 +372,6 @@ public partial class InitialProfilePage : ContentPage
         {
             await DisplayAlert("Hint", "Age must be between 1 and 200", "Confirm");
             return;
-        }
-
-        // 去除国籍中的 emoji，只保留国家名称
-        if (nationality.Contains(" "))
-        {
-            nationality = nationality.Substring(nationality.IndexOf(" ") + 1);
         }
 
         var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
@@ -445,7 +404,6 @@ public partial class InitialProfilePage : ContentPage
         }
     }
 
-    // 国家类定义
     public class Country
     {
         public string Name { get; set; }
