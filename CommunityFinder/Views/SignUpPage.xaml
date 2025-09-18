@@ -6,129 +6,85 @@
     BackgroundColor="#F9FFE3">
 
     <Grid>
-        <!-- 右上角图片 -->
-        <Image
-            Source="icon1.png"  
-            WidthRequest="60"
-            HeightRequest="60"
-            HorizontalOptions="End"
-            VerticalOptions="Start"
-            Margin="10" />
+        <Image Source="icon1.png" WidthRequest="60" HeightRequest="60"
+               HorizontalOptions="End" VerticalOptions="Start" Margin="10" />
 
-        <!-- 页面内容 -->
         <ScrollView>
             <StackLayout Padding="30" Spacing="20" VerticalOptions="Center">
 
-                <!-- 页面标题 -->
-                <Label
-                    Text="Sign Up"
-                    FontSize="28"
-                    FontAttributes="Bold"
-                    HorizontalOptions="Center"
-                    TextColor="#333" />
+                <Label Text="Sign Up" FontSize="28" FontAttributes="Bold"
+                       HorizontalOptions="Center" TextColor="#333" />
 
                 <!-- 用户名 -->
-                <Entry
-                    x:Name="UsernameEntry"
-                    Placeholder="Username"
-                    PlaceholderColor="#000000"
-                    BackgroundColor="#D9D9D9"
-                    HeightRequest="48"
-                    FontSize="16" />
+                <Entry x:Name="UsernameEntry" Placeholder="Username"
+                       PlaceholderColor="#000000" BackgroundColor="#D9D9D9"
+                       HeightRequest="48" FontSize="16"
+                       TextChanged="OnUsernameTextChanged" />
+                <Label x:Name="UsernameErrorLabel" TextColor="Red"
+                       FontSize="12" IsVisible="False" />
 
-                <!-- 邮箱 + 验证按钮 -->
+                <!-- 邮箱 -->
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                    <Entry
-                        x:Name="EmailEntry"
-                        Placeholder="Email address"
-                        PlaceholderColor="#000000"
-                        Keyboard="Email"
-                        BackgroundColor="#D9D9D9"
-                        HeightRequest="48"
-                        FontSize="16"
-                        Grid.Column="0" />
-                    <Button
-                        Text="Verification"
-                        BackgroundColor="#4CAF50"
-                        TextColor="White"
-                        FontSize="14"
-                        CornerRadius="6"
-                        HeightRequest="48"
-                        Grid.Column="1" />
+                    <Entry x:Name="EmailEntry" Placeholder="Email address"
+                           PlaceholderColor="#000000" Keyboard="Email"
+                           BackgroundColor="#D9D9D9" HeightRequest="48"
+                           FontSize="16" Grid.Column="0"
+                           TextChanged="OnEmailTextChanged" />
+                    <Button Text="Verification" BackgroundColor="#4CAF50"
+                            TextColor="White" FontSize="14" CornerRadius="6"
+                            HeightRequest="48" Grid.Column="1" />
                 </Grid>
+                <Label x:Name="EmailErrorLabel" TextColor="Red"
+                       FontSize="12" IsVisible="False" />
 
                 <!-- 手机号 -->
-                <Entry
-                    x:Name="PhoneEntry"
-                    Placeholder="Mobile phone number"
-                    PlaceholderColor="#000000"
-                    Keyboard="Telephone"
-                    BackgroundColor="#D9D9D9"
-                    HeightRequest="48"
-                    FontSize="16" />
+                <Entry x:Name="PhoneEntry" Placeholder="Mobile phone number"
+                       PlaceholderColor="#000000" Keyboard="Telephone"
+                       BackgroundColor="#D9D9D9" HeightRequest="48" FontSize="16"
+                       TextChanged="OnPhoneTextChanged" />
+                <Label x:Name="PhoneErrorLabel" TextColor="Red"
+                       FontSize="12" IsVisible="False" />
 
                 <!-- 密码 -->
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                    <Entry
-                        x:Name="PasswordEntry"
-                        Placeholder="Password"
-                        PlaceholderColor="#000000"
-                        IsPassword="True"
-                        BackgroundColor="#D9D9D9"
-                        HeightRequest="48"
-                        FontSize="16"
-                        Grid.Column="0" />
-                    <Button
-                        x:Name="TogglePasswordButton"
-                        Text="Show"
-                        BackgroundColor="#D9D9D9"
-                        TextColor="#000000"
-                        FontSize="14"
-                        HeightRequest="48"
-                        WidthRequest="60"
-                        Clicked="OnTogglePasswordVisibility"
-                        Grid.Column="1" />
+                <Grid>
+                    <Entry x:Name="PasswordEntry" Placeholder="Password"
+                           PlaceholderColor="#000000" IsPassword="True"
+                           BackgroundColor="#D9D9D9" HeightRequest="48"
+                           FontSize="16" HorizontalOptions="Fill"
+                           TextChanged="OnPasswordTextChanged" />
+                    <ImageButton x:Name="PasswordToggleButton" Source="icon4.png"
+                                 BackgroundColor="black" WidthRequest="24"
+                                 HeightRequest="24" HorizontalOptions="End"
+                                 VerticalOptions="Center" Margin="0,0,10,0"
+                                 Clicked="OnPasswordToggleClicked" />
                 </Grid>
+                <Label x:Name="PasswordErrorLabel" TextColor="Red"
+                       FontSize="12" IsVisible="False" />
 
                 <!-- 确认密码 -->
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                    <Entry
-                        x:Name="ConfirmPasswordEntry"
-                        Placeholder="Confirm Password"
-                        PlaceholderColor="#000000"
-                        IsPassword="True"
-                        BackgroundColor="#D9D9D9"
-                        HeightRequest="48"
-                        FontSize="16"
-                        Grid.Column="0" />
-                    <Button
-                        x:Name="ToggleConfirmPasswordButton"
-                        Text="Show"
-                        BackgroundColor="#D9D9D9"
-                        TextColor="#000000"
-                        FontSize="14"
-                        HeightRequest="48"
-                        WidthRequest="60"
-                        Clicked="OnToggleConfirmPasswordVisibility"
-                        Grid.Column="1" />
+                <Grid>
+                    <Entry x:Name="ConfirmPasswordEntry" Placeholder="Confirm Password"
+                           PlaceholderColor="#000000" IsPassword="True"
+                           BackgroundColor="#D9D9D9" HeightRequest="48"
+                           FontSize="16" HorizontalOptions="Fill"
+                           TextChanged="OnConfirmPasswordTextChanged" />
+                    <ImageButton x:Name="ConfirmPasswordToggleButton" Source="icon4.png"
+                                 BackgroundColor="black" WidthRequest="24"
+                                 HeightRequest="24" HorizontalOptions="End"
+                                 VerticalOptions="Center" Margin="0,0,10,0"
+                                 Clicked="OnConfirmPasswordToggleClicked" />
                 </Grid>
+                <Label x:Name="ConfirmPasswordErrorLabel" TextColor="Red"
+                       FontSize="12" IsVisible="False" />
 
-                <!-- 提交按钮 -->
-                <Button
-                    Text="Submit"
-                    BackgroundColor="#4CAF50"
-                    TextColor="White"
-                    FontAttributes="Bold"
-                    CornerRadius="8"
-                    HeightRequest="50"
-                    Clicked="OnSignUpClicked" />
+                <Button Text="Submit" BackgroundColor="#4CAF50"
+                        TextColor="White" FontAttributes="Bold"
+                        CornerRadius="8" HeightRequest="50"
+                        Clicked="OnSignUpClicked" />
 
-                <!-- 已有账号？去登录 -->
-                <Label
-                    Text="Do you already have an account? Log in"
-                    TextColor="#2196F3"
-                    FontSize="14"
-                    HorizontalOptions="Center">
+                <Label Text="Do you already have an account? Log in"
+                       TextColor="#2196F3" FontSize="14"
+                       HorizontalOptions="Center">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnGoToLoginClicked" />
                     </Label.GestureRecognizers>

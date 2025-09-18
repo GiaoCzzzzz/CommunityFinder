@@ -14,6 +14,21 @@ public partial class QuickLoginPage : ContentPage
         _authService = authService;
     }
 
+
+
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (Parent is NavigationPage navPage)
+        {
+            navPage.BarBackgroundColor = Colors.White;
+            navPage.BarTextColor = Colors.Black;
+        }
+    }
+
+
     public async void OnQuickLoginClicked(object sender, EventArgs e)
     {
         var email = Preferences.Get("Email", string.Empty);

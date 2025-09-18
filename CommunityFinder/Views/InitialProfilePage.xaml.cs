@@ -19,8 +19,8 @@ public partial class InitialProfilePage : ContentPage
         InitializeComponent();
         _authService = authService;
 
-        // 初始化年龄选择器
-        for (int i = 1; i <= 200; i++)
+        // 初始化年龄选择器（限制为 3 到 200）
+        for (int i = 3; i <= 200; i++)
         {
             agePicker.Items.Add(i.ToString());
         }
@@ -35,7 +35,7 @@ public partial class InitialProfilePage : ContentPage
         };
         occupationListView.ItemsSource = _allOccupations;
 
-        // 初始化国家列表（可扩展至300+）
+        // 初始化国家列表
         _allCountries = new List<Country>
         {
             new Country { Name = "Afghanistan", Flag = "🇦🇫" },
@@ -58,11 +58,11 @@ public partial class InitialProfilePage : ContentPage
     new Country { Name = "Belize", Flag = "🇧🇿" },
     new Country { Name = "Benin", Flag = "🇧🇯" },
     new Country { Name = "Bhutan", Flag = "🇧🇹" },
-    new Country { Name = "Bolivia", Flag = "🇧🇴" },
+    new Country { Name = "Bolivia (Plurinational State of)", Flag = "🇧🇴" },
     new Country { Name = "Bosnia and Herzegovina", Flag = "🇧🇦" },
     new Country { Name = "Botswana", Flag = "🇧🇼" },
     new Country { Name = "Brazil", Flag = "🇧🇷" },
-    new Country { Name = "Brunei", Flag = "🇧🇳" },
+    new Country { Name = "Brunei Darussalam", Flag = "🇧🇳" },
     new Country { Name = "Bulgaria", Flag = "🇧🇬" },
     new Country { Name = "Burkina Faso", Flag = "🇧🇫" },
     new Country { Name = "Burundi", Flag = "🇧🇮" },
@@ -76,13 +76,14 @@ public partial class InitialProfilePage : ContentPage
     new Country { Name = "China", Flag = "🇨🇳" },
     new Country { Name = "Colombia", Flag = "🇨🇴" },
     new Country { Name = "Comoros", Flag = "🇰🇲" },
-    new Country { Name = "Congo (Brazzaville)", Flag = "🇨🇬" },
-    new Country { Name = "Congo (Kinshasa)", Flag = "🇨🇩" },
+    new Country { Name = "Congo", Flag = "🇨🇬" },
     new Country { Name = "Costa Rica", Flag = "🇨🇷" },
     new Country { Name = "Croatia", Flag = "🇭🇷" },
     new Country { Name = "Cuba", Flag = "🇨🇺" },
     new Country { Name = "Cyprus", Flag = "🇨🇾" },
-    new Country { Name = "Czech Republic", Flag = "🇨🇿" },
+    new Country { Name = "Czechia", Flag = "🇨🇿" },
+    new Country { Name = "Democratic People's Republic of Korea", Flag = "🇰🇵" },
+    new Country { Name = "Democratic Republic of the Congo", Flag = "🇨🇩" },
     new Country { Name = "Denmark", Flag = "🇩🇰" },
     new Country { Name = "Djibouti", Flag = "🇩🇯" },
     new Country { Name = "Dominica", Flag = "🇩🇲" },
@@ -115,7 +116,7 @@ public partial class InitialProfilePage : ContentPage
     new Country { Name = "Iceland", Flag = "🇮🇸" },
     new Country { Name = "India", Flag = "🇮🇳" },
     new Country { Name = "Indonesia", Flag = "🇮🇩" },
-    new Country { Name = "Iran", Flag = "🇮🇷" },
+    new Country { Name = "Iran (Islamic Republic of)", Flag = "🇮🇷" },
     new Country { Name = "Iraq", Flag = "🇮🇶" },
     new Country { Name = "Ireland", Flag = "🇮🇪" },
     new Country { Name = "Israel", Flag = "🇮🇱" },
@@ -128,7 +129,7 @@ public partial class InitialProfilePage : ContentPage
     new Country { Name = "Kiribati", Flag = "🇰🇮" },
     new Country { Name = "Kuwait", Flag = "🇰🇼" },
     new Country { Name = "Kyrgyzstan", Flag = "🇰🇬" },
-    new Country { Name = "Laos", Flag = "🇱🇦" },
+    new Country { Name = "Lao People's Democratic Republic", Flag = "🇱🇦" },
     new Country { Name = "Latvia", Flag = "🇱🇻" },
     new Country { Name = "Lebanon", Flag = "🇱🇧" },
     new Country { Name = "Lesotho", Flag = "🇱🇸" },
@@ -147,8 +148,7 @@ public partial class InitialProfilePage : ContentPage
     new Country { Name = "Mauritania", Flag = "🇲🇷" },
     new Country { Name = "Mauritius", Flag = "🇲🇺" },
     new Country { Name = "Mexico", Flag = "🇲🇽" },
-    new Country { Name = "Micronesia", Flag = "🇫🇲" },
-    new Country { Name = "Moldova", Flag = "🇲🇩" },
+    new Country { Name = "Micronesia (Federated States of)", Flag = "🇫🇲" },
     new Country { Name = "Monaco", Flag = "🇲🇨" },
     new Country { Name = "Mongolia", Flag = "🇲🇳" },
     new Country { Name = "Montenegro", Flag = "🇲🇪" },
@@ -163,7 +163,6 @@ public partial class InitialProfilePage : ContentPage
     new Country { Name = "Nicaragua", Flag = "🇳🇮" },
     new Country { Name = "Niger", Flag = "🇳🇪" },
     new Country { Name = "Nigeria", Flag = "🇳🇬" },
-    new Country { Name = "North Korea", Flag = "🇰🇵" },
     new Country { Name = "North Macedonia", Flag = "🇲🇰" },
     new Country { Name = "Norway", Flag = "🇳🇴" },
     new Country { Name = "Oman", Flag = "🇴🇲" },
@@ -177,8 +176,10 @@ public partial class InitialProfilePage : ContentPage
     new Country { Name = "Poland", Flag = "🇵🇱" },
     new Country { Name = "Portugal", Flag = "🇵🇹" },
     new Country { Name = "Qatar", Flag = "🇶🇦" },
+    new Country { Name = "Republic of Korea", Flag = "🇰🇷" },
+    new Country { Name = "Republic of Moldova", Flag = "🇲🇩" },
     new Country { Name = "Romania", Flag = "🇷🇴" },
-    new Country { Name = "Russia", Flag = "🇷🇺" },
+    new Country { Name = "Russian Federation", Flag = "🇷🇺" },
     new Country { Name = "Rwanda", Flag = "🇷🇼" },
     new Country { Name = "Saint Kitts and Nevis", Flag = "🇰🇳" },
     new Country { Name = "Saint Lucia", Flag = "🇱🇨" },
@@ -190,25 +191,23 @@ public partial class InitialProfilePage : ContentPage
     new Country { Name = "Senegal", Flag = "🇸🇳" },
     new Country { Name = "Serbia", Flag = "🇷🇸" },
     new Country { Name = "Seychelles", Flag = "🇸🇨" },
-    new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
+new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
     new Country { Name = "Singapore", Flag = "🇸🇬" },
     new Country { Name = "Slovakia", Flag = "🇸🇰" },
     new Country { Name = "Slovenia", Flag = "🇸🇮" },
     new Country { Name = "Solomon Islands", Flag = "🇸🇧" },
     new Country { Name = "Somalia", Flag = "🇸🇴" },
     new Country { Name = "South Africa", Flag = "🇿🇦" },
-    new Country { Name = "South Korea", Flag = "🇰🇷" },
     new Country { Name = "South Sudan", Flag = "🇸🇸" },
     new Country { Name = "Spain", Flag = "🇪🇸" },
     new Country { Name = "Sri Lanka", Flag = "🇱🇰" },
+    new Country { Name = "State of Palestine", Flag = "🇵🇸" }, // UN observer
     new Country { Name = "Sudan", Flag = "🇸🇩" },
     new Country { Name = "Suriname", Flag = "🇸🇷" },
     new Country { Name = "Sweden", Flag = "🇸🇪" },
     new Country { Name = "Switzerland", Flag = "🇨🇭" },
-    new Country { Name = "Syria", Flag = "🇸🇾" },
-    new Country { Name = "Taiwan", Flag = "🇹🇼" },
+    new Country { Name = "Syrian Arab Republic", Flag = "🇸🇾" },
     new Country { Name = "Tajikistan", Flag = "🇹🇯" },
-    new Country { Name = "Tanzania", Flag = "🇹🇿" },
     new Country { Name = "Thailand", Flag = "🇹🇭" },
     new Country { Name = "Timor-Leste", Flag = "🇹🇱" },
     new Country { Name = "Togo", Flag = "🇹🇬" },
@@ -221,123 +220,32 @@ public partial class InitialProfilePage : ContentPage
     new Country { Name = "Uganda", Flag = "🇺🇬" },
     new Country { Name = "Ukraine", Flag = "🇺🇦" },
     new Country { Name = "United Arab Emirates", Flag = "🇦🇪" },
-    new Country { Name = "United Kingdom", Flag = "🇬🇧" },
-    new Country { Name = "United States", Flag = "🇺🇸" },
+    new Country { Name = "United Kingdom of Great Britain and Northern Ireland", Flag = "🇬🇧" },
+    new Country { Name = "United Republic of Tanzania", Flag = "🇹🇿" },
+    new Country { Name = "United States of America", Flag = "🇺🇸" },
     new Country { Name = "Uruguay", Flag = "🇺🇾" },
     new Country { Name = "Uzbekistan", Flag = "🇺🇿" },
     new Country { Name = "Vanuatu", Flag = "🇻🇺" },
-    new Country { Name = "Vatican City", Flag = "🇻🇦" },
-    new Country { Name = "Venezuela", Flag = "🇻🇪" },
-    new Country { Name = "Vietnam", Flag = "🇻🇳" },
+    new Country { Name = "Venezuela (Bolivarian Republic of)", Flag = "🇻🇪" },
+    new Country { Name = "Viet Nam", Flag = "🇻🇳" },
     new Country { Name = "Yemen", Flag = "🇾🇪" },
     new Country { Name = "Zambia", Flag = "🇿🇲" },
     new Country { Name = "Zimbabwe", Flag = "🇿🇼" },
-    new Country { Name = "Palestine", Flag = "🇵🇸" },
-    new Country { Name = "Kosovo", Flag = "🇽🇰" },
-    new Country { Name = "Western Sahara", Flag = "🇪🇭" },
-    new Country { Name = "Cook Islands", Flag = "🇨🇰" },
-    new Country { Name = "Niue", Flag = "🇳🇺" },
-    new Country { Name = "Saint Pierre and Miquelon", Flag = "🇵🇲" },
-    new Country { Name = "Montserrat", Flag = "🇲🇸" },
-    new Country { Name = "Guernsey", Flag = "🇬🇬" },
-    new Country { Name = "Jersey", Flag = "🇯🇪" },
-    new Country { Name = "Isle of Man", Flag = "🇮🇲" },
-    new Country { Name = "Åland Islands", Flag = "🇦🇽" },
-    new Country { Name = "American Samoa", Flag = "🇦🇸" },
-    new Country { Name = "Anguilla", Flag = "🇦🇮" },
-    new Country { Name = "Aruba", Flag = "🇦🇼" },
-    new Country { Name = "Bermuda", Flag = "🇧🇲" },
-    new Country { Name = "Bonaire, Sint Eustatius and Saba", Flag = "🇧🇶" },
-    new Country { Name = "British Virgin Islands", Flag = "🇻🇬" },
-    new Country { Name = "Cayman Islands", Flag = "🇰🇾" },
-    new Country { Name = "Christmas Island", Flag = "🇨🇽" },
-    new Country { Name = "Cocos (Keeling) Islands", Flag = "🇨🇨" },
-    new Country { Name = "Curacao", Flag = "🇨🇼" },
-    new Country { Name = "Falkland Islands", Flag = "🇫🇰" },
-    new Country { Name = "Faroe Islands", Flag = "🇫🇴" },
-    new Country { Name = "French Guiana", Flag = "🇬🇫" },
-    new Country { Name = "French Polynesia", Flag = "🇵🇫" },
-    new Country { Name = "French Southern Territories", Flag = "🇹🇫" },
-    new Country { Name = "Gibraltar", Flag = "🇬🇮" },
-    new Country { Name = "Greenland", Flag = "🇬🇱" },
-    new Country { Name = "Guadeloupe", Flag = "🇬🇵" },
-    new Country { Name = "Guam", Flag = "🇬🇺" },
-    new Country { Name = "Guernsey", Flag = "🇬🇬" },
-    new Country { Name = "Hong Kong", Flag = "🇭🇰" },
-    new Country { Name = "Isle of Man", Flag = "🇮🇲" },
-    new Country { Name = "Jersey", Flag = "🇯🇪" },
-    new Country { Name = "Macau", Flag = "🇲🇴" },
-    new Country { Name = "Martinique", Flag = "🇲🇶" },
-    new Country { Name = "Mayotte", Flag = "🇾🇹" },
-    new Country { Name = "Montserrat", Flag = "🇲🇸" },
-    new Country { Name = "New Caledonia", Flag = "🇳🇨" },
-    new Country { Name = "Niue", Flag = "🇳🇺" },
-    new Country { Name = "Norfolk Island", Flag = "🇳🇫" },
-    new Country { Name = "Northern Mariana Islands", Flag = "🇲🇵" },
-    new Country { Name = "Pitcairn Islands", Flag = "🇵🇳" },
-    new Country { Name = "Puerto Rico", Flag = "🇵🇷" },
-    new Country { Name = "Réunion", Flag = "🇷🇪" },
-    new Country { Name = "Saint Barthélemy", Flag = "🇧🇱" },
-    new Country { Name = "Saint Helena", Flag = "🇸🇭" },
-    new Country { Name = "Saint Martin", Flag = "🇲🇫" },
-    new Country { Name = "Saint Pierre and Miquelon", Flag = "🇵🇲" },
-    new Country { Name = "Sint Maarten", Flag = "🇸🇽" },
-    new Country { Name = "South Georgia and the South Sandwich Islands", Flag = "🇬🇸" },
-    new Country { Name = "Svalbard and Jan Mayen", Flag = "🇸🇯" },
-    new Country { Name = "Tokelau", Flag = "🇹🇰" },
-    new Country { Name = "Turks and Caicos Islands", Flag = "🇹🇨" },
-    new Country { Name = "U.S. Virgin Islands", Flag = "🇻🇮" },
-    new Country { Name = "Wallis and Futuna", Flag = "🇼🇫" },
-    new Country { Name = "Western Sahara", Flag = "🇪🇭" },
-    new Country { Name = "Ascension Island", Flag = "🇦🇨" },
-    new Country { Name = "Ashmore and Cartier Islands", Flag = "🇦🇺" },
-    new Country { Name = "Baker Island", Flag = "🇺🇸" },
-    new Country { Name = "Barbuda", Flag = "🇦🇬" },
-    new Country { Name = "Basque Country", Flag = "🏴" },
-    new Country { Name = "Bouvet Island", Flag = "🇧🇻" },
-    new Country { Name = "Canary Islands", Flag = "🇮🇨" },
-    new Country { Name = "Ceuta", Flag = "🇪🇸" },
-    new Country { Name = "Clipperton Island", Flag = "🇫🇷" },
-    new Country { Name = "Diego Garcia", Flag = "🇮🇴" },
-    new Country { Name = "Galápagos Islands", Flag = "🇪🇨" },
-    new Country { Name = "Gaza Strip", Flag = "🇵🇸" },
-    new Country { Name = "Golan Heights", Flag = "🇮🇱" },
-    new Country { Name = "Guantanamo Bay", Flag = "🇺🇸" },
-    new Country { Name = "Herzegovina", Flag = "🇧🇦" },
-    new Country { Name = "Kosovo", Flag = "🇽🇰" },
-    new Country { Name = "Lakshadweep", Flag = "🇮🇳" },
-    new Country { Name = "Melilla", Flag = "🇪🇸" },
-    new Country { Name = "Nagorno-Karabakh", Flag = "🇦🇲" },
-    new Country { Name = "New Siberian Islands", Flag = "🇷🇺" },
-    new Country { Name = "Niassa", Flag = "🇲🇿" },
-    new Country { Name = "North Sentinel Island", Flag = "🇮🇳" },
-    new Country { Name = "Paracel Islands", Flag = "🇨🇳" },
-    new Country { Name = "Ross Dependency", Flag = "🇳🇿" },
-    new Country { Name = "Sark", Flag = "🇬🇬" },
-    new Country { Name = "Socotra", Flag = "🇾🇪" },
-    new Country { Name = "Spratly Islands", Flag = "🇻🇳" },
-    new Country { Name = "Svalbard", Flag = "🇸🇯" },
-    new Country { Name = "Tibet", Flag = "🇨🇳" },
-    new Country { Name = "Transnistria", Flag = "🇲🇩" },
-    new Country { Name = "Tristan da Cunha", Flag = "🇸🇭" },
-    new Country { Name = "Vojvodina", Flag = "🇷🇸" },
-    new Country { Name = "Wake Island", Flag = "🇺🇸" },
-    new Country { Name = "West Bank", Flag = "🇵🇸" },
-    new Country { Name = "Xinjiang", Flag = "🇨🇳" },
-    new Country { Name = "Zanzibar", Flag = "🇹🇿" },
-    new Country { Name = "Abkhazia", Flag = "🇬🇪" },
-    new Country { Name = "South Ossetia", Flag = "🇬🇪" },
-    new Country { Name = "Azores", Flag = "🇵🇹" },
-    new Country { Name = "Madeira", Flag = "🇵🇹" },
-    new Country { Name = "Saint-Martin (France)", Flag = "🇲🇫" },
-    new Country { Name = "Saint-Martin (Netherlands)", Flag = "🇸🇽" },
-    new Country { Name = "Antarctica", Flag = "🇦🇶" },
-    new Country { Name = "European Union", Flag = "🇪🇺" },
-    new Country { Name = "United Nations", Flag = "🇺🇳" }
-
+    new Country { Name = "Holy See", Flag = "🇻🇦" } // UN observer
             // 可继续添加
         };
         nationalityListView.ItemsSource = _allCountries.Select(c => c.ToString()).ToList();
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (Parent is NavigationPage navPage)
+        {
+            navPage.BarBackgroundColor = Colors.White;
+            navPage.BarTextColor = Colors.Black;
+        }
     }
 
     // 性别选择
@@ -353,6 +261,31 @@ public partial class InitialProfilePage : ContentPage
         _selectedGender = button.Text;
     }
 
+    // 年龄选择验证
+    void OnAgeChanged(object sender, EventArgs e)
+    {
+        if (agePicker.SelectedItem is string selectedAge &&
+            int.TryParse(selectedAge, out int ageValue))
+        {
+            AgeErrorLabel.IsVisible = ageValue < 3 || ageValue > 200;
+            AgeErrorLabel.Text = "Age must be between 3 and 200";
+        }
+        else
+        {
+            AgeErrorLabel.IsVisible = true;
+            AgeErrorLabel.Text = "Please select a valid age";
+        }
+    }
+
+    // 邮政编码验证
+    void OnPostcodeChanged(object sender, TextChangedEventArgs e)
+    {
+        var text = e.NewTextValue;
+        bool isValid = text.All(char.IsDigit) && text.Length == 6;
+        PostcodeErrorLabel.IsVisible = !isValid;
+        PostcodeErrorLabel.Text = "Post Office must be exactly 6 digits";
+    }
+
     // 职业搜索
     void OnOccupationSearchChanged(object sender, TextChangedEventArgs e)
     {
@@ -365,6 +298,14 @@ public partial class InitialProfilePage : ContentPage
     void OnOccupationSelected(object sender, SelectionChangedEventArgs e)
     {
         _selectedOccupation = e.CurrentSelection.FirstOrDefault()?.ToString() ?? "";
+        occupationSearchEntry.Text = _selectedOccupation;
+        occupationListView.IsVisible = false;
+        OccupationErrorLabel.IsVisible = false;
+    }
+
+    void OnToggleOccupationListClicked(object sender, EventArgs e)
+    {
+        occupationListView.IsVisible = !occupationListView.IsVisible;
     }
 
     // 国籍搜索
@@ -382,6 +323,14 @@ public partial class InitialProfilePage : ContentPage
     void OnNationalitySelected(object sender, SelectionChangedEventArgs e)
     {
         _selectedNationality = e.CurrentSelection.FirstOrDefault()?.ToString() ?? "";
+        nationalitySearchEntry.Text = _selectedNationality;
+        nationalityListView.IsVisible = false;
+        NationalityErrorLabel.IsVisible = false;
+    }
+
+    void OnToggleNationalityListClicked(object sender, EventArgs e)
+    {
+        nationalityListView.IsVisible = !nationalityListView.IsVisible;
     }
 
     // 保存按钮点击
@@ -390,8 +339,10 @@ public partial class InitialProfilePage : ContentPage
         var gender = _selectedGender;
         var age = agePicker.SelectedItem?.ToString();
         var postcode = postcodeEnrty.Text?.Trim();
-        var occupation = _selectedOccupation;
-        var nationality = _selectedNationality;
+        var occupation = occupationSearchEntry.Text?.Trim();
+        var nationality = nationalitySearchEntry.Text?.Trim();
+
+        bool hasError = false;
 
         if (string.IsNullOrEmpty(gender) ||
             string.IsNullOrEmpty(age) ||
@@ -403,11 +354,35 @@ public partial class InitialProfilePage : ContentPage
             return;
         }
 
-        if (!int.TryParse(age, out int ageValue) || ageValue < 1 || ageValue > 200)
+        if (!int.TryParse(age, out int ageValue) || ageValue < 3 || ageValue > 200)
         {
-            await DisplayAlert("Hint", "Age must be between 1 and 200", "Confirm");
-            return;
+            AgeErrorLabel.Text = "Age must be between 3 and 200";
+            AgeErrorLabel.IsVisible = true;
+            hasError = true;
         }
+
+        if (!postcode.All(char.IsDigit) || postcode.Length != 6)
+        {
+            PostcodeErrorLabel.Text = "Post Office must be exactly 6 digits";
+            PostcodeErrorLabel.IsVisible = true;
+            hasError = true;
+        }
+
+        if (!_allOccupations.Contains(occupation))
+        {
+            OccupationErrorLabel.Text = "Please select from the list";
+            OccupationErrorLabel.IsVisible = true;
+            hasError = true;
+        }
+
+        if (!_allCountries.Select(c => c.ToString()).Contains(nationality))
+        {
+            NationalityErrorLabel.Text = "Please select from the list";
+            NationalityErrorLabel.IsVisible = true;
+            hasError = true;
+        }
+
+        if (hasError) return;
 
         // 去除国籍中的 emoji，只保留国家名称
         if (nationality.Contains(" "))
@@ -445,7 +420,6 @@ public partial class InitialProfilePage : ContentPage
         }
     }
 
-    // 国家类定义
     public class Country
     {
         public string Name { get; set; }

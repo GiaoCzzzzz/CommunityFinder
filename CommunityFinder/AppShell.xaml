@@ -5,11 +5,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:CommunityFinder"
     Shell.FlyoutBehavior="Disabled"
-    Title="CommunityFinder">
+    Shell.NavBarIsVisible="True"
+    Shell.TitleColor="Black"
+    Shell.BackgroundColor="White">
 
+    <!-- 首页 -->
     <ShellContent
         Title="Home"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
+
 
 </Shell>

@@ -18,6 +18,23 @@ public partial class VerifyTokenPage : ContentPage
         var session = _authService.Client.Auth.CurrentSession;  //直接获取当先会话的信息
     }
 
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (Parent is NavigationPage navPage)
+        {
+            navPage.BarBackgroundColor = Colors.White;
+            navPage.BarTextColor = Colors.Black;
+        }
+    }
+
+
+
+
+
+
     async void OnVerifyClicked(object sender, EventArgs e)
     {
         var email = _email?.Trim();

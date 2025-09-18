@@ -27,7 +27,8 @@
 
                 <!-- Age -->
                 <Label Text="Age" FontSize="16" FontAttributes="Bold" TextColor="#333" />
-                <Picker x:Name="agePicker" Title="Select Age" BackgroundColor="#FFFFFF" TextColor="Black" />
+                <Picker x:Name="agePicker" Title="Select Age" BackgroundColor="#FFFFFF" TextColor="Black" SelectedIndexChanged="OnAgeChanged" />
+                <Label x:Name="AgeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
                 <!-- Post Office -->
                 <Label Text="Post Office" FontSize="16" FontAttributes="Bold" TextColor="#333" />
@@ -35,30 +36,35 @@
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="25" />
                     </Border.StrokeShape>
-                    <Entry x:Name="postcodeEnrty" Placeholder="Post Office" PlaceholderColor="#000000" Keyboard="Numeric" BackgroundColor="Transparent" HeightRequest="50" />
+                    <Entry x:Name="postcodeEnrty" Placeholder="Post Office" PlaceholderColor="#000000" Keyboard="Numeric" BackgroundColor="Transparent" HeightRequest="50" TextChanged="OnPostcodeChanged" />
                 </Border>
+                <Label x:Name="PostcodeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-                <!-- Occupation Search -->
+                <!-- Occupation -->
                 <Label Text="Occupation" FontSize="16" FontAttributes="Bold" TextColor="#333" />
                 <Entry x:Name="occupationSearchEntry" Placeholder="Search Occupation" TextChanged="OnOccupationSearchChanged" />
-                <CollectionView x:Name="occupationListView" SelectionMode="Single" SelectionChanged="OnOccupationSelected">
+                <Button Text="▼ Show/Hide Occupation List" Clicked="OnToggleOccupationListClicked" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="20" HeightRequest="40" />
+                <CollectionView x:Name="occupationListView" IsVisible="False" SelectionMode="Single" SelectionChanged="OnOccupationSelected">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Label Text="{Binding}" Padding="10" BackgroundColor="#DEF685" />
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+                <Label x:Name="OccupationErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-                <!-- Nationality Search -->
+                <!-- Nationality -->
                 <Label Text="Nationality" FontSize="16" FontAttributes="Bold" TextColor="#333" />
                 <Entry x:Name="nationalitySearchEntry" Placeholder="Search Nationality" TextChanged="OnNationalitySearchChanged" />
-                <CollectionView x:Name="nationalityListView" SelectionMode="Single" SelectionChanged="OnNationalitySelected">
+                <Button Text="▼ Show/Hide Nationality List" Clicked="OnToggleNationalityListClicked" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="20" HeightRequest="40" />
+                <CollectionView x:Name="nationalityListView" IsVisible="False" SelectionMode="Single" SelectionChanged="OnNationalitySelected">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Label Text="{Binding}" Padding="10" BackgroundColor="#DEF685" />
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+                <Label x:Name="NationalityErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
                 <!-- Hobby -->
                 <Label Text="Hobby" FontSize="16" FontAttributes="Bold" TextColor="#333" />
