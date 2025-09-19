@@ -12,6 +12,23 @@ public partial class ForgotPasswordPage : ContentPage
         _authService = authService;
     }
 
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (Parent is NavigationPage navPage)
+        {
+            navPage.BarBackgroundColor = Colors.White;
+            navPage.BarTextColor = Colors.Black;
+        }
+    }
+
+
+
+
+
+
     async void OnSendResetClicked(object sender, EventArgs e)
     {
         var email = EmailEntry.Text?.Trim();

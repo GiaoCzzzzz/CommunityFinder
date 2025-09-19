@@ -2,17 +2,82 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CommunityFinder.Views.InitialProfilePage"
-             Title="InitialProfilePage">
-    <ScrollView>
-        <StackLayout Padding="20" Spacing="15">
-            <Entry x:Name="GenderEnrty"        Placeholder="性别"  />
-            <Editor x:Name="ageEnrty"        Placeholder="年龄" HeightRequest="100" />
-            <Editor x:Name="postcodeEnrty"        Placeholder="邮政" HeightRequest="100" />
-            <Editor x:Name="occupationEnrty"        Placeholder="职业" HeightRequest="100" />
-            <Editor x:Name="nationalityEnrty"        Placeholder="国籍" HeightRequest="100" />
-            <Editor x:Name="interestEnrty"        Placeholder="爱好" HeightRequest="100" />
+             Title="InitialProfilePage"
+             BackgroundColor="#F9FFE3">
 
-            <Button Text="保存" Clicked="OnSaveClicked" />
-        </StackLayout>
-    </ScrollView>
+    <Grid RowDefinitions="Auto,*">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="20">
+            <StackLayout Grid.Column="0" VerticalOptions="Start">
+                <Label Text="Welcome" FontSize="20" FontAttributes="Bold" TextColor="#333" />
+                <Label Text="Community Finder" FontSize="24" FontAttributes="Bold" TextColor="#000000" />
+                <Label Text="About you" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,0" TextColor="#000000" />
+            </StackLayout>
+            <Image Grid.Column="1" Source="icon1.png" WidthRequest="60" HeightRequest="60" HorizontalOptions="End" VerticalOptions="Start" Margin="0,0,10,0" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <StackLayout Padding="20" Spacing="15">
+
+                <!-- Gender -->
+                <Label Text="Gender" FontSize="16" FontAttributes="Bold" TextColor="#333" />
+                <StackLayout Orientation="Horizontal" Spacing="10">
+                    <Button x:Name="MaleButton" Text="Male" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="25" HeightRequest="40" WidthRequest="100" Clicked="OnGenderSelected" />
+                    <Button x:Name="FemaleButton" Text="Female" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="25" HeightRequest="40" WidthRequest="100" Clicked="OnGenderSelected" />
+                </StackLayout>
+
+                <!-- Age -->
+                <Label Text="Age" FontSize="16" FontAttributes="Bold" TextColor="#333" />
+                <Picker x:Name="agePicker" Title="Select Age" BackgroundColor="#FFFFFF" TextColor="Black" SelectedIndexChanged="OnAgeChanged" />
+                <Label x:Name="AgeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
+
+                <!-- Post Office -->
+                <Label Text="Post Office" FontSize="16" FontAttributes="Bold" TextColor="#333" />
+                <Border BackgroundColor="#FFFFFF" Padding="5">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="25" />
+                    </Border.StrokeShape>
+                    <Entry x:Name="postcodeEnrty" Placeholder="Post Office" PlaceholderColor="#000000" Keyboard="Numeric" BackgroundColor="Transparent" HeightRequest="50" TextChanged="OnPostcodeChanged" />
+                </Border>
+                <Label x:Name="PostcodeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
+
+                <!-- Occupation -->
+                <Label Text="Occupation" FontSize="16" FontAttributes="Bold" TextColor="#333" />
+                <Entry x:Name="occupationSearchEntry" Placeholder="Search Occupation" TextChanged="OnOccupationSearchChanged" />
+                <Button Text="▼ Show/Hide Occupation List" Clicked="OnToggleOccupationListClicked" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="20" HeightRequest="40" />
+                <CollectionView x:Name="occupationListView" IsVisible="False" SelectionMode="Single" SelectionChanged="OnOccupationSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Label Text="{Binding}" Padding="10" BackgroundColor="#DEF685" />
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <Label x:Name="OccupationErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
+
+                <!-- Nationality -->
+                <Label Text="Nationality" FontSize="16" FontAttributes="Bold" TextColor="#333" />
+                <Entry x:Name="nationalitySearchEntry" Placeholder="Search Nationality" TextChanged="OnNationalitySearchChanged" />
+                <Button Text="▼ Show/Hide Nationality List" Clicked="OnToggleNationalityListClicked" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="20" HeightRequest="40" />
+                <CollectionView x:Name="nationalityListView" IsVisible="False" SelectionMode="Single" SelectionChanged="OnNationalitySelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Label Text="{Binding}" Padding="10" BackgroundColor="#DEF685" />
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <Label x:Name="NationalityErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
+
+                <!-- Hobby -->
+                <Label Text="Hobby" FontSize="16" FontAttributes="Bold" TextColor="#333" />
+                <Border BackgroundColor="#FFFFFF" Padding="10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="25" />
+                    </Border.StrokeShape>
+                    <Editor x:Name="interestEnrty" Placeholder="Hobby" PlaceholderColor="#000000" BackgroundColor="Transparent" HeightRequest="50" />
+                </Border>
+
+                <!-- Save Button -->
+                <Button Text="Save" Clicked="OnSaveClicked" BackgroundColor="#4CAF50" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" />
+            </StackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

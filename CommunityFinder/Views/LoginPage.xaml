@@ -1,60 +1,90 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CommunityFinder.Views.LoginPage"
              Title="LoginPage"
-             BackgroundColor="White">
+             BackgroundColor="#F9FFE3">
 
-    <StackLayout Padding="30" Spacing="20" VerticalOptions="Center">
-        <!-- 用户名/邮箱/手机号输入框 -->
-        <Entry x:Name="EmailEntry"
-               Placeholder="用户名 / 邮箱 / 手机号"
-               FontSize="16"
-               BackgroundColor="#F0F0F0"
-               HeightRequest="50"
-               Margin="0,0,0,10"
-               />
+    <Grid>
+        <Image Source="icon1.png" WidthRequest="60" HeightRequest="60"
+               HorizontalOptions="Start" VerticalOptions="Start" Margin="10" />
 
-        <!-- 密码输入框 -->
-        <Entry x:Name="PasswordEntry"
-               Placeholder="密码"
-               IsPassword="True"
-               FontSize="16"
-               BackgroundColor="#F0F0F0"
-               HeightRequest="50"
-               Margin="0,0,0,10"
-               />
+        <ScrollView>
+            <StackLayout Padding="30" Spacing="20" VerticalOptions="Center">
 
-        <!-- 登录按钮 -->
-        <Button Text="确认"
-                Clicked="OnLoginClicked"
-                BackgroundColor="#4CAF50"
-                TextColor="White"
-                FontAttributes="Bold"
-                CornerRadius="8"
-                HeightRequest="50"
-                />
+                <Label Text="Log in" FontSize="28" FontAttributes="Bold"
+                       HorizontalOptions="Center" TextColor="#333" Margin="0,0,0,10" />
 
-        <!-- 忘记密码链接 -->
-        <Label Text="忘记密码？"
-               TextColor="#2196F3"
-               FontSize="14"
-               HorizontalOptions="Center"
-               Margin="0,10,0,0">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnForgotPasswordClicked" />
-            </Label.GestureRecognizers>
-        </Label>
+                <!-- 邮箱/用户名/手机号 -->
+                <Entry x:Name="EmailEntry"
+                       Placeholder="Username / Email / Mobile Number"
+                       PlaceholderColor="#000000"
+                       FontSize="16"
+                       BackgroundColor="#D9D9D9"
+                       HeightRequest="50"
+                       Margin="0,0,0,10"
+                       TextChanged="OnEmailTextChanged" />
+                <Label x:Name="EmailErrorLabel"
+                       TextColor="Red"
+                       FontSize="12"
+                       IsVisible="False"
+                       Margin="0,-10,0,10" />
 
-        <!-- 注册引导 -->
-        <Label Text="没有账号？去注册"
-               TextColor="#2196F3"
-               FontSize="14"
-               HorizontalOptions="Center"
-               Margin="0,5,0,0">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnGoToSignUpClicked" />
-            </Label.GestureRecognizers>
-        </Label>
-    </StackLayout>
+                <!-- 密码输入框 -->
+                <Grid Margin="0,0,0,10">
+                    <Entry x:Name="PasswordEntry"
+                           Placeholder="Password"
+                           PlaceholderColor="#000000"
+                           IsPassword="True"
+                           FontSize="16"
+                           BackgroundColor="#D9D9D9"
+                           HeightRequest="50"
+                           HorizontalOptions="Fill"
+                           TextChanged="OnPasswordTextChanged" />
+                    <ImageButton x:Name="PasswordToggleButton"
+                                 Source="icon4.png"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="24"
+                                 HeightRequest="24"
+                                 HorizontalOptions="End"
+                                 VerticalOptions="Center"
+                                 Margin="0,0,10,0"
+                                 Clicked="OnPasswordToggleClicked" />
+                </Grid>
+                <Label x:Name="PasswordErrorLabel"
+                       TextColor="Red"
+                       FontSize="12"
+                       IsVisible="False"
+                       Margin="0,-10,0,10" />
+
+                <Button Text="Confirm"
+                        Clicked="OnLoginClicked"
+                        BackgroundColor="#4CAF50"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        CornerRadius="8"
+                        HeightRequest="50" />
+
+                <Label Text="Forget password？"
+                       TextColor="#2196F3"
+                       FontSize="14"
+                       HorizontalOptions="Center"
+                       Margin="0,10,0,0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnForgotPasswordClicked" />
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <Label Text="Don't have an account? Sign up now."
+                       TextColor="#2196F3"
+                       FontSize="14"
+                       HorizontalOptions="Center"
+                       Margin="0,5,0,0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnGoToSignUpClicked" />
+                    </Label.GestureRecognizers>
+                </Label>
+
+            </StackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

@@ -227,6 +227,7 @@ namespace CommunityFinder.Services
             return resp.Model;
         }
 
+
         public async Task<bool> FirstProfiles()
         {
             var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);

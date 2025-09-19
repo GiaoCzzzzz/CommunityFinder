@@ -2,52 +2,68 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CommunityFinder.Views.InterestPage"
-             Title="InterestPage">
+             Title="InterestPage"
+             BackgroundColor="#F9FFE3">
+
     <ContentPage.Resources>
         <Style x:Key="TagStyle" TargetType="Button">
-            <Setter Property="BackgroundColor" Value="#E0F8D8"/>
+            <Setter Property="BackgroundColor" Value="#DEF685"/>
             <Setter Property="TextColor" Value="#336633"/>
             <Setter Property="CornerRadius" Value="20"/>
             <Setter Property="Padding" Value="12,6"/>
             <Setter Property="Margin" Value="4"/>
             <Setter Property="FontAttributes" Value="Bold"/>
         </Style>
+        <Style x:Key="UserTagStyle" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="#5DB634FC"/>
+            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+        </Style>
     </ContentPage.Resources>
+
     <ScrollView>
         <VerticalStackLayout Padding="24" Spacing="20">
-            <!-- 标题 -->
-            <Label Text="Welcome Community Finder"
-             FontSize="28"
-             FontAttributes="Bold"/>
-            <Label Text="Tell us about your interests"
-             FontSize="18"/>
 
-            <!-- 可点选标签容器 -->
-            <FlexLayout x:Name="TagContainer"
-                  Wrap="Wrap"
-                  Direction="Row"/>
+            <!-- 标题 -->
+            <Label Text="Welcome Community Finder" FontSize="28" FontAttributes="Bold"/>
+            <Label Text="Tell us about your interests" FontSize="18"/>
+
+            <!-- 系统默认兴趣 -->
+            <Label Text="System default interest" FontSize="16" FontAttributes="Bold" TextColor="#333"/>
+            <FlexLayout x:Name="TagContainer" Wrap="Wrap" Direction="Row"/>
+
+            <!-- 用户添加兴趣 -->
+            <Label Text="User adds interests" FontSize="16" FontAttributes="Bold" TextColor="#333"/>
+            <FlexLayout x:Name="UserTagContainer" Wrap="Wrap" Direction="Row"/>
 
             <!-- 自定义兴趣输入 -->
-            <HorizontalStackLayout Spacing="8">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                 <Entry x:Name="CustomInterestEntry"
-               HorizontalOptions="FillAndExpand"
-               Placeholder="Didn't find yours? Add one"/>
+                       Grid.Column="0"
+                       Placeholder="Didn't find yours? Add one"/>
                 <Button Text="Add"
-                Clicked="OnAddCustomInterestClicked"/>
-            </HorizontalStackLayout>
+                        Grid.Column="1"
+                        Clicked="OnAddCustomInterestClicked"/>
+            </Grid>
 
             <!-- 底部操作 -->
-            <HorizontalStackLayout Spacing="24"
-                              HorizontalOptions="Center">
+            <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="24" HorizontalOptions="Center">
                 <Button Text="Skip"
-                Clicked="OnSkipClicked"
-                BackgroundColor="Transparent"
-                TextColor="#336633"/>
+                        Grid.Column="0"
+                        Clicked="OnSkipClicked"
+                        BackgroundColor="Transparent"
+                        TextColor="#336633"/>
                 <Button Text="Continue"
-                Clicked="OnContinueClicked"
-                BackgroundColor="#5CB85C"
-                TextColor="White"/>
-            </HorizontalStackLayout>
+                        Grid.Column="1"
+                        Clicked="OnContinueClicked"
+                        BackgroundColor="#5CB85C"
+                        TextColor="White"/>
+            </Grid>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
+

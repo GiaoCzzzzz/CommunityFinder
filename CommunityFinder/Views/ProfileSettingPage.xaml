@@ -4,125 +4,51 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="CommunityFinder.Views.ProfileSettingPage"
     Title="About You"
-    BackgroundColor="#FFFDE7">
+    BackgroundColor="#F9FFE3">
 
     <ScrollView>
-        <StackLayout Padding="30" Spacing="25" VerticalOptions="Center">
+        <StackLayout Padding="30" Spacing="20" VerticalOptions="Center">
 
-            <!-- 页面标题 -->
-            <Label
-                Text="About You"
-                FontSize="28"
-                FontAttributes="Bold"
-                HorizontalOptions="Center"
-                TextColor="#333" />
+            <Label Text="About You" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#333" />
 
-            <!-- 电子邮箱（只读） -->
             <Label Text="Email" FontSize="14" TextColor="#333" />
-            <Entry
-                x:Name="EmailEntry"
-                Placeholder="your.email@example.com"
-                IsReadOnly="True"
-                BackgroundColor="#F0F0F0"
-                HeightRequest="48"
-                FontSize="16" />
+            <Entry x:Name="EmailEntry" IsReadOnly="True" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" />
 
-            <!-- 显示名称 -->
             <Label Text="Display Name" FontSize="14" TextColor="#333" />
-            <Entry
-                x:Name="DisplayNameEntry"
-                Placeholder="Type here"
-                BackgroundColor="#F0F0F0"
-                HeightRequest="48"
-                FontSize="16" />
+            <Entry x:Name="DisplayNameEntry" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" />
 
-            <!-- 性别选择 -->
             <Label Text="Gender" FontSize="14" TextColor="#333" />
-            <Picker
-                x:Name="SexPicker"
-                Title="Select your gender"
-                BackgroundColor="#F0F0F0"
-                HeightRequest="48"
-                FontSize="16">
+            <Picker x:Name="SexPicker" Title="Select your gender" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16">
                 <Picker.Items>
                     <x:String>Male</x:String>
                     <x:String>Female</x:String>
-                    <x:String>Other</x:String>
                 </Picker.Items>
             </Picker>
 
-            <!-- 年龄 -->
             <Label Text="Age" FontSize="14" TextColor="#333" />
-            <Entry
-                x:Name="AgeEntry"
-                Placeholder="Type here"
-                Keyboard="Numeric"
-                BackgroundColor="#F0F0F0"
-                HeightRequest="48"
-                FontSize="16" />
+            <Entry x:Name="AgeEntry" Keyboard="Numeric" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnAgeChanged" />
+            <Label x:Name="AgeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-            <!-- 国籍 -->
             <Label Text="Nationality" FontSize="14" TextColor="#333" />
-            <Entry
-                x:Name="NationalityEntry"
-                Placeholder="Type here"
-                BackgroundColor="#F0F0F0"
-                HeightRequest="48"
-                FontSize="16" />
+            <Picker x:Name="NationalityPicker" Title="Select your nationality" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" SelectedIndexChanged="OnNationalityChanged" />
+            <Label x:Name="NationalityErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-            <!-- 手机号码 -->
             <Label Text="Phone Number" FontSize="14" TextColor="#333" />
-            <Entry
-                x:Name="PhoneEntry"
-                Placeholder="123456"
-                Keyboard="Telephone"
-                BackgroundColor="#F0F0F0"
-                HeightRequest="48"
-                FontSize="16" />
+            <Entry x:Name="PhoneEntry" Keyboard="Telephone" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnPhoneChanged" />
+            <Label x:Name="PhoneErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-            <!-- 职业 -->
             <Label Text="Occupation" FontSize="14" TextColor="#333" />
-            <Entry
-                x:Name="OccupationEntry"
-                Placeholder="Type here"
-                BackgroundColor="#F0F0F0"
-                HeightRequest="48"
-                FontSize="16" />
+            <Picker x:Name="OccupationPicker" Title="Select your occupation" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" SelectedIndexChanged="OnOccupationChanged" />
+            <Label x:Name="OccupationErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-            <!-- 邮政编码 -->
             <Label Text="Postal Code" FontSize="14" TextColor="#333" />
-            <Entry
-                x:Name="PostalCodeEntry"
-                Placeholder="000000"
-                Keyboard="Numeric"
-                BackgroundColor="#F0F0F0"
-                HeightRequest="48"
-                FontSize="16" />
+            <Entry x:Name="PostalCodeEntry" Keyboard="Numeric" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnPostalCodeChanged" />
+            <Label x:Name="PostalCodeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-            <!-- 操作按钮 -->
             <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
-                <Button
-                    Text="Change Password"
-                    BackgroundColor="Transparent"
-                    TextColor="#2196F3"
-                    FontSize="14"
-                    Clicked="OnChangePasswordClicked" />
-
-                <Button
-                    Text="Change Interest"
-                    BackgroundColor="Transparent"
-                    TextColor="#2196F3"
-                    FontSize="14"
-                    Clicked="OnChangeInterestClicked" />
-
-                <Button
-                    Text="Save"
-                    BackgroundColor="#4CAF50"
-                    TextColor="White"
-                    FontAttributes="Bold"
-                    CornerRadius="8"
-                    HeightRequest="50"
-                    Clicked="OnSaveClicked" />
+                <Button Text="Change Password" BackgroundColor="Transparent" TextColor="#2196F3" FontSize="14" Clicked="OnChangePasswordClicked" />
+                <Button Text="Change Interest" BackgroundColor="Transparent" TextColor="#2196F3" FontSize="14" Clicked="OnChangeInterestClicked" />
+                <Button Text="Save" BackgroundColor="#4CAF50" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" Clicked="OnSaveClicked" />
             </HorizontalStackLayout>
 
         </StackLayout>

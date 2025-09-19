@@ -2,25 +2,37 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CommunityFinder.Views.QuickLoginPage"
-             Title="QuickLoginPage">
+             Title="QuickLoginPage"
+             BackgroundColor="#F9FFE3"
+             >
     <StackLayout
     Padding="30"
     Spacing="20"
     VerticalOptions="Center">
 
+        <Image
+            Source="icon2.png"  
+            WidthRequest="100"
+            HeightRequest="100"
+            HorizontalOptions="Center"
+            Margin="0,0,0,10" />
+        
+        
         <Label
-      Text="欢迎使用快速登录"
+      Text="Welcome to use the quick login function"
       FontSize="Medium"
       HorizontalOptions="Center" />
 
         <Button
       x:Name="QuickLoginButton"
-      Text="快速登录"
+            BackgroundColor="#4CAF50"
+      Text="Quick login"
       Clicked="OnQuickLoginClicked" />
 
         <Button
       x:Name="GoToNormalLoginButton"
-      Text="返回普通登录"
+            BackgroundColor="#4CAF50"
+      Text="Return to normal login"
       Clicked="OnGoToNormalLoginClicked" />
     </StackLayout>
 </ContentPage>

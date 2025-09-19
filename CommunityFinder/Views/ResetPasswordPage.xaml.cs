@@ -24,6 +24,20 @@ public partial class ResetPasswordPage : ContentPage
         _email = email;
     }
 
+
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (Parent is NavigationPage navPage)
+        {
+            navPage.BarBackgroundColor = Colors.White;
+            navPage.BarTextColor = Colors.Black;
+        }
+    }
+
+
     async void OnResetClicked(object sender, EventArgs e)
     {
         var newPwd = PasswordEntry.Text?.Trim();
