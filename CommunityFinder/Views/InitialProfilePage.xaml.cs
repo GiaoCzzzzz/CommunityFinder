@@ -11,21 +11,21 @@ public partial class InitialProfilePage : ContentPage
     private string _selectedGender = string.Empty;
     private List<string> _allOccupations;
     private List<Country> _allCountries;
+    private List<string> _allHobbies;
     private string _selectedOccupation = string.Empty;
     private string _selectedNationality = string.Empty;
+    private string _selectedHobby = string.Empty;
 
     public InitialProfilePage(AuthService authService)
     {
         InitializeComponent();
         _authService = authService;
 
-        // 初始化年龄选择器（限制为 3 到 200）
         for (int i = 3; i <= 200; i++)
         {
             agePicker.Items.Add(i.ToString());
         }
 
-        // 初始化职业列表
         _allOccupations = new List<string>
         {
             "Accountant", "Software Developer", "Architect", "Civil Engineer", "Financial Analyst",
@@ -35,7 +35,6 @@ public partial class InitialProfilePage : ContentPage
         };
         occupationListView.ItemsSource = _allOccupations;
 
-        // 初始化国家列表
         _allCountries = new List<Country>
         {
             new Country { Name = "Afghanistan", Flag = "🇦🇫" },
@@ -232,9 +231,22 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
     new Country { Name = "Zambia", Flag = "🇿🇲" },
     new Country { Name = "Zimbabwe", Flag = "🇿🇼" },
     new Country { Name = "Holy See", Flag = "🇻🇦" } // UN observer
-            // 可继续添加
         };
         nationalityListView.ItemsSource = _allCountries.Select(c => c.ToString()).ToList();
+
+        _allHobbies = new List<string>
+        {
+            "Creative Arts",
+            "Collecting",
+            "Competitive Sports & Athletics",
+            "Intellectual & Mental Pursuits",
+            "Crafts & Making (DIY)",
+            "Performance & Entertainment",
+            "Technology & Digital",
+            "Leisure & Social Activities",
+            "Others"
+        };
+        hobbyListView.ItemsSource = _allHobbies;
     }
 
     protected override void OnAppearing()
@@ -248,7 +260,6 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
         }
     }
 
-    // 性别选择
     void OnGenderSelected(object sender, EventArgs e)
     {
         var button = sender as Button;
@@ -261,7 +272,6 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
         _selectedGender = button.Text;
     }
 
-    // 年龄选择验证
     void OnAgeChanged(object sender, EventArgs e)
     {
         if (agePicker.SelectedItem is string selectedAge &&
@@ -277,16 +287,26 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
         }
     }
 
-    // 邮政编码验证
-    void OnPostcodeChanged(object sender, TextChangedEventArgs e)
+    void OnPostalCodeChanged(object sender, TextChangedEventArgs e)
     {
-        var text = e.NewTextValue;
-        bool isValid = text.All(char.IsDigit) && text.Length == 6;
-        PostcodeErrorLabel.IsVisible = !isValid;
-        PostcodeErrorLabel.Text = "Post Office must be exactly 6 digits";
+        var entry = sender as Entry;
+        if (entry == null) return;
+
+        string newText = e.NewTextValue;
+
+        // 移除不允许的字符（例如 .）
+        if (newText.Contains("."))
+        {
+            newText = newText.Replace(".", "");
+            entry.Text = newText;
+            return; // 避免重复触发验证逻辑
+        }
+
+        bool isValid = newText.All(char.IsDigit) && newText.Length == 6;
+        PostalCodeErrorLabel.IsVisible = !isValid;
+        PostalCodeErrorLabel.Text = "Postal Code must be exactly 6 digits";
     }
 
-    // 职业搜索
     void OnOccupationSearchChanged(object sender, TextChangedEventArgs e)
     {
         var keyword = e.NewTextValue?.ToLower() ?? "";
@@ -294,7 +314,6 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
         occupationListView.ItemsSource = filtered;
     }
 
-    // 职业选择
     void OnOccupationSelected(object sender, SelectionChangedEventArgs e)
     {
         _selectedOccupation = e.CurrentSelection.FirstOrDefault()?.ToString() ?? "";
@@ -303,12 +322,17 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
         OccupationErrorLabel.IsVisible = false;
     }
 
+    void OnOccupationEntered(object sender, TextChangedEventArgs e)
+    {
+        _selectedOccupation = e.NewTextValue?.Trim() ?? "";
+        OccupationErrorLabel.IsVisible = false;
+    }
+
     void OnToggleOccupationListClicked(object sender, EventArgs e)
     {
         occupationListView.IsVisible = !occupationListView.IsVisible;
     }
 
-    // 国籍搜索
     void OnNationalitySearchChanged(object sender, TextChangedEventArgs e)
     {
         var keyword = e.NewTextValue?.ToLower() ?? "";
@@ -319,7 +343,6 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
         nationalityListView.ItemsSource = filtered;
     }
 
-    // 国籍选择
     void OnNationalitySelected(object sender, SelectionChangedEventArgs e)
     {
         _selectedNationality = e.CurrentSelection.FirstOrDefault()?.ToString() ?? "";
@@ -333,14 +356,34 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
         nationalityListView.IsVisible = !nationalityListView.IsVisible;
     }
 
-    // 保存按钮点击
+    void OnHobbySearchChanged(object sender, TextChangedEventArgs e)
+    {
+        var keyword = e.NewTextValue?.ToLower() ?? "";
+        var filtered = _allHobbies.Where(h => h.ToLower().Contains(keyword)).ToList();
+        hobbyListView.ItemsSource = filtered;
+    }
+
+    void OnHobbySelected(object sender, SelectionChangedEventArgs e)
+    {
+        _selectedHobby = e.CurrentSelection.FirstOrDefault()?.ToString() ?? "";
+        hobbySearchEntry.Text = _selectedHobby;
+        hobbyListView.IsVisible = false;
+        HobbyErrorLabel.IsVisible = false;
+    }
+
+    void OnToggleHobbyListClicked(object sender, EventArgs e)
+    {
+        hobbyListView.IsVisible = !hobbyListView.IsVisible;
+    }
+
     async void OnSaveClicked(object sender, EventArgs e)
     {
         var gender = _selectedGender;
         var age = agePicker.SelectedItem?.ToString();
-        var postcode = postcodeEnrty.Text?.Trim();
+        var postcode = postalCodeEntry.Text?.Trim();
         var occupation = occupationSearchEntry.Text?.Trim();
         var nationality = nationalitySearchEntry.Text?.Trim();
+        var hobby = hobbySearchEntry.Text?.Trim();
 
         bool hasError = false;
 
@@ -348,7 +391,8 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
             string.IsNullOrEmpty(age) ||
             string.IsNullOrEmpty(postcode) ||
             string.IsNullOrEmpty(occupation) ||
-            string.IsNullOrEmpty(nationality))
+            string.IsNullOrEmpty(nationality) ||
+            string.IsNullOrEmpty(hobby))
         {
             await DisplayAlert("Hint", "Please fill in all fields", "Confirm");
             return;
@@ -363,15 +407,8 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
 
         if (!postcode.All(char.IsDigit) || postcode.Length != 6)
         {
-            PostcodeErrorLabel.Text = "Post Office must be exactly 6 digits";
-            PostcodeErrorLabel.IsVisible = true;
-            hasError = true;
-        }
-
-        if (!_allOccupations.Contains(occupation))
-        {
-            OccupationErrorLabel.Text = "Please select from the list";
-            OccupationErrorLabel.IsVisible = true;
+            PostalCodeErrorLabel.Text = "Postal Code must be exactly 6 digits";
+            PostalCodeErrorLabel.IsVisible = true;
             hasError = true;
         }
 
@@ -382,9 +419,15 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
             hasError = true;
         }
 
+        if (!_allHobbies.Contains(hobby))
+        {
+            HobbyErrorLabel.Text = "Please select from the list";
+            HobbyErrorLabel.IsVisible = true;
+            hasError = true;
+        }
+
         if (hasError) return;
 
-        // 去除国籍中的 emoji，只保留国家名称
         if (nationality.Contains(" "))
         {
             nationality = nationality.Substring(nationality.IndexOf(" ") + 1);
@@ -405,8 +448,9 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
             postcode = postcode,
             occupation = occupation,
             nationality = nationality,
-            interest = _interest
+            interest = new[] { hobby }
         };
+
 
         var (ok, err) = await _authService.CreateProfile(profiles);
         if (ok)
@@ -427,3 +471,4 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
         public override string ToString() => $"{Flag} {Name}";
     }
 }
+

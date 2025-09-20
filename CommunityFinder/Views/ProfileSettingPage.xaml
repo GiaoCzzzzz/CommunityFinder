@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="CommunityFinder.Views.ProfileSettingPage"
-    Title="About You"
-    BackgroundColor="#F9FFE3">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CommunityFinder.Views.ProfileSettingPage"
+             Title="About You"
+             BackgroundColor="#F9FFE3">
 
     <ScrollView>
         <StackLayout Padding="30" Spacing="20" VerticalOptions="Center">
@@ -29,16 +28,34 @@
             <Entry x:Name="AgeEntry" Keyboard="Numeric" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnAgeChanged" />
             <Label x:Name="AgeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
+            <!-- Nationality -->
             <Label Text="Nationality" FontSize="14" TextColor="#333" />
-            <Picker x:Name="NationalityPicker" Title="Select your nationality" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" SelectedIndexChanged="OnNationalityChanged" />
+            <Entry x:Name="NationalitySearchEntry" Placeholder="Search Nationality" TextChanged="OnNationalitySearchChanged" />
+            <Button Text="▼ Show/Hide Nationality List" Clicked="OnToggleNationalityListClicked" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="20" HeightRequest="40" />
+            <CollectionView x:Name="NationalityListView" IsVisible="False" SelectionMode="Single" SelectionChanged="OnNationalitySelected">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Label Text="{Binding}" Padding="10" BackgroundColor="#DEF685" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
             <Label x:Name="NationalityErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
             <Label Text="Phone Number" FontSize="14" TextColor="#333" />
             <Entry x:Name="PhoneEntry" Keyboard="Telephone" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnPhoneChanged" />
             <Label x:Name="PhoneErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
+            <!-- Occupation -->
             <Label Text="Occupation" FontSize="14" TextColor="#333" />
-            <Picker x:Name="OccupationPicker" Title="Select your occupation" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" SelectedIndexChanged="OnOccupationChanged" />
+            <Entry x:Name="OccupationSearchEntry" Placeholder="Search Occupation" TextChanged="OnOccupationSearchChanged" />
+            <Button Text="▼ Show/Hide Occupation List" Clicked="OnToggleOccupationListClicked" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="20" HeightRequest="40" />
+            <CollectionView x:Name="OccupationListView" IsVisible="False" SelectionMode="Single" SelectionChanged="OnOccupationSelected">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Label Text="{Binding}" Padding="10" BackgroundColor="#DEF685" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
             <Label x:Name="OccupationErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
             <Label Text="Postal Code" FontSize="14" TextColor="#333" />
@@ -54,3 +71,4 @@
         </StackLayout>
     </ScrollView>
 </ContentPage>
+

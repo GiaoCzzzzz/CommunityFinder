@@ -1,5 +1,6 @@
-using CommunityFinder.Models;
+﻿using CommunityFinder.Models;
 using CommunityFinder.Services;
+using Microsoft.Maui.Layouts;
 
 namespace CommunityFinder.Views;
 
@@ -22,7 +23,6 @@ public partial class InterestPage : ContentPage
         InitializeComponent();
         _authService = authService;
 
-        // ����ϵͳĬ����Ȥ��ǩ
         foreach (var tag in _presets)
         {
             var btn = new Button
@@ -54,9 +54,7 @@ public partial class InterestPage : ContentPage
         if (_selected.Contains(tag))
         {
             _selected.Remove(tag);
-            btn.BackgroundColor = btn.Style == Resources["UserTagStyle"]
-                ? Color.FromArgb("#5DB634FC")
-                : Color.FromArgb("#DEF685");
+            btn.BackgroundColor = Color.FromArgb("#5DB634FC");
         }
         else
         {
@@ -73,16 +71,58 @@ public partial class InterestPage : ContentPage
 
         _selected.Add(text);
 
-        var btn = new Button
+        // 创建兴趣按钮（可选中）
+        var interestButton = new Button
         {
             Text = text,
-            Style = (Style)Resources["UserTagStyle"]
+            Style = (Style)Resources["UserTagStyle"],
+            WidthRequest = 120,
+            HeightRequest = 40
         };
-        btn.Clicked += OnTagClicked;
-        UserTagContainer.Children.Add(btn);
+        interestButton.Clicked += OnTagClicked;
 
+        // 创建删除按钮（浮动在右上角）
+        var deleteButton = new Button
+        {
+            Text = "✕",
+            BackgroundColor = Colors.Transparent,
+            TextColor = Colors.Red,
+            FontSize = 10,
+            Padding = 0,
+            WidthRequest = 15,
+            HeightRequest = 15
+        };
+
+        // 包装容器
+        var wrapper = new AbsoluteLayout
+        {
+            WidthRequest = 120,
+            HeightRequest = 40,
+            Margin = 4
+        };
+
+        // 添加兴趣按钮（居中）
+        AbsoluteLayout.SetLayoutBounds(interestButton, new Rect(0, 0, 1, 1));
+        AbsoluteLayout.SetLayoutFlags(interestButton, AbsoluteLayoutFlags.All);
+
+        // 添加删除按钮（右上角）
+        AbsoluteLayout.SetLayoutBounds(deleteButton, new Rect(1, 0, 20, 20));
+        AbsoluteLayout.SetLayoutFlags(deleteButton, AbsoluteLayoutFlags.PositionProportional);
+
+        deleteButton.Clicked += (s, args) =>
+        {
+            _selected.Remove(text);
+            UserTagContainer.Children.Remove(wrapper);
+        };
+
+        wrapper.Children.Add(interestButton);
+        wrapper.Children.Add(deleteButton);
+
+        UserTagContainer.Children.Add(wrapper);
         CustomInterestEntry.Text = "";
     }
+
+
 
     private async void OnSkipClicked(object sender, EventArgs e)
     {
