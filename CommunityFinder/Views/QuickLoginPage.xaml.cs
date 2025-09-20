@@ -33,10 +33,15 @@ public partial class QuickLoginPage : ContentPage
     {
         var email = Preferences.Get("Email", string.Empty);
         var pwd = Preferences.Get("Password", string.Empty);
+        var quick = Preferences.Get("QuickLogin", "No");
         var ok = await _authService.SignInAsync(email, pwd);
         if (ok)
         {
-            await Navigation.PushAsync(new InterestPage(_authService));
+            await Navigation.PushAsync(new MainPage(_authService));
+        }
+        else if (quick == "Yes")
+        {
+            await DisplayAlert("Fail", "Has not set the QuickLogin", "confirm");
         }
         else
             await DisplayAlert("Fail", "Email or password has been changed", "confirm");

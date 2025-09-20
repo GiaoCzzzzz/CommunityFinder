@@ -66,7 +66,6 @@ public partial class LoginPage : ContentPage
             Preferences.Set("QuickLogin", "Yes");
             Preferences.Set("Email", email);
             Preferences.Set("Password", pwd);
-
             var first = _authService.FirstProfiles();
             if (await first)
                 await Navigation.PushAsync(new MainPage(_authService));
