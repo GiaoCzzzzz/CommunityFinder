@@ -7,6 +7,9 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using CommunityFinder.Models;
 using CommunityFinder.Services;
+using System.Text.RegularExpressions;
+using System.Windows.Input;
+using System.Text;
 
 namespace CommunityFinder.ViewModels
 {
@@ -16,22 +19,64 @@ namespace CommunityFinder.ViewModels
 
         public ObservableCollection<CourseItem> Courses { get; } = new();
 
-        // 筛选数据源
-        public ObservableCollection<string> WhatOptions { get; } =
-            new(new[] { "Any", "Sports and Fitness", "Lifestyle and Leisure", "Education & Enrichment" });
+        // 分类选项（三级联动）
+        public ObservableCollection<string> L1Options { get; } = new();//一二三级联动
+        public ObservableCollection<string> L2Options { get; } = new(); 
+        public ObservableCollection<string> L3Options { get; } = new(); 
 
-        public ObservableCollection<string> WhereOptions { get; } =
-            new(new[] { "Any" }); // 实际运行后会把抓到的 Outlet 去重填充
+        public bool HasL1Selected => !string.IsNullOrWhiteSpace(SelectedL1);
+        public bool HasL2Selected => !string.IsNullOrWhiteSpace(SelectedL2);
+        public bool HasL3Selected => !string.IsNullOrWhiteSpace(SelectedL3);
 
-        public ObservableCollection<string> DayOptions { get; } =
-            new(new[] { "Any", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" });
+        private string _selectedL1;
+        public string SelectedL1
+        {
+            get => _selectedL1;
+            set
+            {
+                if (_selectedL1 == value) return;
+                _selectedL1 = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasL1Selected)); 
+                RefillL2();                               
+            }
+        }
 
-        public ObservableCollection<string> TimeOptions { get; } =
-            new(new[] { "Any", "Morning", "Afternoon", "Evening" });
+        private string _selectedL2;
+        public string SelectedL2
+        {
+            get => _selectedL2;
+            set
+            {
+                if (_selectedL2 == value) return;
+                _selectedL2 = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasL2Selected)); 
+                RefillL3();                               
+            }
+        }
 
-        // 选中项 & 搜索词
-        private string _selectedWhat = "Any";
-        public string SelectedWhat { get => _selectedWhat; set { _selectedWhat = value; OnPropertyChanged(); } }
+        private string _selectedL3;
+        public string SelectedL3
+        {
+            get => _selectedL3;
+            set
+            {
+                if (_selectedL3 == value) return;
+                _selectedL3 = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasL3Selected)); 
+            }
+        }
+
+        private readonly Dictionary<string, Dictionary<string, List<string>>> _aoiTree =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        //其他分类选项
+
+        public ObservableCollection<string> WhereOptions { get; } = new(new[] { "Any" });
+        public ObservableCollection<string> DayOptions { get; } = new(new[] { "Any", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" });
+        public ObservableCollection<string> TimeOptions { get; } = new(new[] { "Any", "Morning", "Afternoon", "Evening" });
 
         private string _selectedWhere = "Any";
         public string SelectedWhere { get => _selectedWhere; set { _selectedWhere = value; OnPropertyChanged(); } }
@@ -45,15 +90,176 @@ namespace CommunityFinder.ViewModels
         private string _searchText;
         public string SearchText { get => _searchText; set { _searchText = value; OnPropertyChanged(); } }
 
+
         private bool _isBusy;
         public bool IsBusy { get => _isBusy; set { _isBusy = value; OnPropertyChanged(); } }
+
+        public ICommand ResetCommand { get; } //重置按钮
 
         public CoursesViewModel(OnePaService service = null)
         {
             _service = service ?? new OnePaService();
+            ResetCommand = new Command(ResetAoi);
         }
 
-        public async System.Threading.Tasks.Task LoadWithFiltersAsync(string baseUrl, int maxPages = 6)
+        //重置三级联动选择
+        private void ResetAoi()
+        {
+            SelectedL3 = null;
+            L3Options.Clear();
+
+            SelectedL2 = null;
+            L2Options.Clear();
+
+            SelectedL1 = null;
+
+            // 还原 L1 初值（若需要）
+            if (_aoiTree.Count > 0)
+            {
+                L1Options.Clear();
+                foreach (var l1 in _aoiTree.Keys) L1Options.Add(l1);
+            }
+        }
+
+        private bool _aoiLoaded = false;
+
+        // ========== 初始化：加载并解析分类文本 ==========
+        public async Task InitAsync()
+        {
+            if (_aoiLoaded) return;
+
+            string[] candidates = { "categories.txt", "分类.txt" };
+            string text = null;
+
+            foreach (var name in candidates)
+            {
+                try
+                {
+                    using var s = await FileSystem.OpenAppPackageFileAsync(name);
+                    using var sr = new StreamReader(s, Encoding.UTF8, true);
+                    text = await sr.ReadToEndAsync();
+                    if (!string.IsNullOrWhiteSpace(text))
+                        break;
+                }
+                catch { /* try next */ }
+            }
+
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                // 兜底：若没读到，给一个最小 demo，避免空白
+                text = "一级Education & Enrichment\n二级Enrichment Courses\n三级：\nAbacus & Mental\nLifeskills\n";
+            }
+
+            ParseAoiText(text);
+
+            // 填充 L1
+            L1Options.Clear();
+            foreach (var l1 in _aoiTree.Keys) L1Options.Add(l1);
+            if (L1Options.Count > 0) SelectedL1 = L1Options[0];
+
+            _aoiLoaded = true;
+        }
+
+        // ========== 解析分类文本 ==========
+        private void ParseAoiText(string text)
+        {
+            _aoiTree.Clear();
+
+            string currentL1 = null;
+            string currentL2 = null;
+            bool inLevel3List = false;
+
+            using var reader = new StringReader(text);
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                var t = (line ?? string.Empty).Trim();
+                if (string.IsNullOrWhiteSpace(t)) continue;
+                if (t.Equals("Courses", StringComparison.OrdinalIgnoreCase)) continue;
+
+                if (t.StartsWith("一级", StringComparison.OrdinalIgnoreCase))
+                {
+                    currentL1 = t.Substring(2).Trim();
+                    if (!_aoiTree.ContainsKey(currentL1))
+                        _aoiTree[currentL1] = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+                    currentL2 = null;
+                    inLevel3List = false;
+                    continue;
+                }
+
+                if (t.StartsWith("二级", StringComparison.OrdinalIgnoreCase))
+                {
+                    currentL2 = t.Substring(2).Trim();
+                    if (string.IsNullOrWhiteSpace(currentL1)) continue;
+                    var l2 = _aoiTree[currentL1];
+                    if (!l2.ContainsKey(currentL2))
+                        l2[currentL2] = new List<string>();
+                    inLevel3List = false;
+                    continue;
+                }
+
+                if (t.StartsWith("三级", StringComparison.OrdinalIgnoreCase))
+                {
+                    inLevel3List = true;
+                    continue;
+                }
+
+                // 普通行：若处于“三级列表”收集阶段，把它当作一个 L3 条目
+                if (inLevel3List && !string.IsNullOrWhiteSpace(currentL1) && !string.IsNullOrWhiteSpace(currentL2))
+                {
+                    _aoiTree[currentL1][currentL2].Add(t);
+                }
+            }
+        }
+
+
+        // ========== 三级联动：填充 L2/L3 ==========
+        private void RefillL2()
+        {
+            L2Options.Clear();
+            L3Options.Clear();
+            SelectedL2 = null;
+            SelectedL3 = null;
+
+            if (string.IsNullOrWhiteSpace(SelectedL1)) return;
+            if (_aoiTree.TryGetValue(SelectedL1, out var l2dict))
+            {
+                foreach (var key in l2dict.Keys) L2Options.Add(key);
+                if (L2Options.Count > 0) SelectedL2 = L2Options[0];
+            }
+        }
+
+        private void RefillL3()
+        {
+            L3Options.Clear();
+            SelectedL3 = null;
+
+            if (string.IsNullOrWhiteSpace(SelectedL1) || string.IsNullOrWhiteSpace(SelectedL2)) return;
+            if (_aoiTree.TryGetValue(SelectedL1, out var l2dict) &&
+                l2dict.TryGetValue(SelectedL2, out var l3list))
+            {
+                foreach (var s in l3list) L3Options.Add(s);
+                if (L3Options.Count > 0) SelectedL3 = L3Options[0];
+            }
+        }
+
+        // onePA 的 L2 slug 规则：去掉尾部“Courses”再 slug；L3：&/空格 -> '-'，去标点
+        private static string Slug(string s, bool dropCoursesWord = false)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return string.Empty;
+            if (dropCoursesWord) s = Regex.Replace(s, @"\s*Courses\s*$", "", RegexOptions.IgnoreCase);
+            s = s.Trim().ToLowerInvariant();
+            s = s.Replace("&", "-").Replace("/", "-");
+            s = Regex.Replace(s, @"[^\w\s-]", "");
+            s = Regex.Replace(s, @"\s+", "-");
+            s = Regex.Replace(s, "-{2,}", "-").Trim('-');
+            return s;
+        }
+
+        /// <summary>
+        /// 按 3 级选择拼 URL 请求 onePA，并在本地再做 Where/Day/Time/关键字过滤。
+        /// </summary>
+        public async System.Threading.Tasks.Task SearchByAoiAsync(int maxPages = 8)
         {
             if (IsBusy) return;
             IsBusy = true;
@@ -61,72 +267,81 @@ namespace CommunityFinder.ViewModels
             {
                 Courses.Clear();
 
-                // 1) 先抓全量（可翻页）
-                var all = await _service.FetchAllPagesAsync(baseUrl, maxPages);
+                // 必须选满 L1/L2/L3
+                if (string.IsNullOrWhiteSpace(SelectedL1) ||
+                    string.IsNullOrWhiteSpace(SelectedL2) ||
+                    string.IsNullOrWhiteSpace(SelectedL3))
+                {
+                    return;
+                }
 
-                // 2) 本地筛选
+                // 构造 URL 所需参数：
+                // aoilname = L3 原文（去掉尾空格）；aoil2 = L2 的 slug(去 'Courses')；aoil3 = L3 的 slug
+                var aoilname = (SelectedL3 ?? "").Trim();
+                var aoil2 = Slug(SelectedL2, dropCoursesWord: true);
+                var aoil3 = Slug(SelectedL3);
+
+                var outletParam =
+                    (string.IsNullOrWhiteSpace(SelectedWhere) || SelectedWhere.Equals("Any", StringComparison.OrdinalIgnoreCase))
+                    ? ""
+                    : SelectedWhere;
+
+                var url = OnePaService.BuildSearchUrl(
+                    l1: aoilname,
+                    l2: aoil2,
+                    l3: aoil3,
+                    course: SearchText ?? "",
+                    outlet: outletParam,
+                    includeFull: true,
+                    page: 1
+                );
+
+                // 抓取（自动翻页到无数据或 maxPages）
+                var all = await _service.FetchAllPagesAsync(url, maxPages);
+
+                // 本地再次过滤（容错：无法解析则“保留”，避免误筛光）
                 IEnumerable<CourseItem> query = all;
 
-                // What：按 AoiL1
-                if (!string.Equals(SelectedWhat, "Any", StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrWhiteSpace(SelectedDay) &&
+                    !SelectedDay.Equals("Any", StringComparison.OrdinalIgnoreCase))
                 {
-                    // 选项和 AoiL1 名称不完全一致也没关系，做包含匹配
-                    var target = SelectedWhat.ToLowerInvariant();
-                    query = query.Where(c => (c.AoiL1 ?? "").ToLowerInvariant().Contains(target));
+                    query = query.Where(c =>
+                        !c.StartDate.HasValue ||
+                        c.StartDate.Value.ToString("dddd", CultureInfo.InvariantCulture)
+                          .Equals(SelectedDay, StringComparison.OrdinalIgnoreCase));
                 }
 
-                // Where：按 Outlet 包含
-                if (!string.Equals(SelectedWhere, "Any", StringComparison.OrdinalIgnoreCase) &&
-                    !string.IsNullOrWhiteSpace(SelectedWhere))
-                {
-                    var w = SelectedWhere.ToLowerInvariant();
-                    query = query.Where(c => (c.Outlet ?? "").ToLowerInvariant().Contains(w));
-                }
-
-                // Day：按 StartDate 的 DayOfWeek
-                if (!string.Equals(SelectedDay, "Any", StringComparison.OrdinalIgnoreCase))
-                {
-                    query = query.Where(c => c.StartDate.HasValue &&
-                                             c.StartDate.Value.ToString("dddd", CultureInfo.InvariantCulture)
-                                               .Equals(SelectedDay, StringComparison.OrdinalIgnoreCase));
-                }
-
-                // Time：简单按开始时间段（早<12、午12-18、晚≥18）
-                if (!string.Equals(SelectedTime, "Any", StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrWhiteSpace(SelectedTime) &&
+                    !SelectedTime.Equals("Any", StringComparison.OrdinalIgnoreCase))
                 {
                     query = query.Where(c =>
                     {
-                        if (string.IsNullOrWhiteSpace(c.SessionTime)) return false;
-                        // 例："07:00 PM - 08:30 PM"
+                        if (string.IsNullOrWhiteSpace(c.SessionTime)) return true;
                         var parts = c.SessionTime.Split('-', StringSplitOptions.TrimEntries);
-                        if (parts.Length == 0) return false;
+                        if (parts.Length == 0) return true;
                         if (!DateTime.TryParse(parts[0], CultureInfo.InvariantCulture, DateTimeStyles.None, out var t0))
-                            return false;
-                        var hour = t0.Hour;
+                            return true;
+                        var h = t0.Hour;
                         return SelectedTime switch
                         {
-                            "Morning" => hour < 12,
-                            "Afternoon" => hour >= 12 && hour < 18,
-                            "Evening" => hour >= 18,
+                            "Morning" => h < 12,
+                            "Afternoon" => h >= 12 && h < 18,
+                            "Evening" => h >= 18,
                             _ => true
                         };
                     });
                 }
 
-                // 文本搜索（Title 内包含）
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
                     var kw = SearchText.ToLowerInvariant();
                     query = query.Where(c => (c.Title ?? "").ToLowerInvariant().Contains(kw));
                 }
 
-                // 排序 & 回填
-                var result = query.OrderBy(c => c.StartDate ?? DateTime.MaxValue).ToList();
-
-                foreach (var c in result)
+                foreach (var c in query.OrderBy(c => c.StartDate ?? DateTime.MaxValue))
                     Courses.Add(c);
 
-                // 更新 Where 选项（抓到后去重填充）
+                // Where 下拉去重刷新（基于拉到的“全部”结果）
                 var outlets = all.Select(c => c.Outlet)
                                  .Where(s => !string.IsNullOrWhiteSpace(s))
                                  .Distinct()
@@ -134,7 +349,10 @@ namespace CommunityFinder.ViewModels
                                  .ToList();
                 UpdateWhereOptions(outlets);
             }
-            finally { IsBusy = false; }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         private void UpdateWhereOptions(List<string> outlets)
@@ -142,7 +360,6 @@ namespace CommunityFinder.ViewModels
             WhereOptions.Clear();
             WhereOptions.Add("Any");
             foreach (var o in outlets) WhereOptions.Add(o);
-            // 如果之前选择的项不在新列表里，回退到 Any
             if (!WhereOptions.Contains(SelectedWhere))
                 SelectedWhere = "Any";
         }
@@ -151,34 +368,5 @@ namespace CommunityFinder.ViewModels
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-
-        //测试抓取
-        private string _status;
-        public string Status { get => _status; set { _status = value; OnPropertyChanged(); } }
-
-        public async Task DebugLoadOnceAsync(string url)
-        {
-            IsBusy = true;
-            try
-            {
-                Courses.Clear();
-                Status = "Fetching…";
-                var (items, raw, error) = await _service.DebugFetchOnceAsync(url);
-
-                if (error != null)
-                {
-                    Status = "Error: " + error.Split('\n').FirstOrDefault();
-                    return;
-                }
-
-                foreach (var c in items.OrderBy(c => c.StartDate ?? DateTime.MaxValue))
-                    Courses.Add(c);
-
-                Status = $"Fetched: {items.Count} item(s).";
-                if (items.Count == 0 && raw != null)
-                    Status += " Raw head: " + raw; // 方便判断是否拿到 HTML/错误 JSON
-            }
-            finally { IsBusy = false; }
-        }
     }
 }

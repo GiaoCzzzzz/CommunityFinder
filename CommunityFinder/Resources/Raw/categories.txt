@@ -1,0 +1,419 @@
+Courses
+一级Education & Enrichment
+二级Enrichment Courses
+三级：
+Abacus & Mental
+Lifeskills
+Playgroup
+Science/Engineering
+
+二级Preschool Courses
+三级：
+Phonics & Reading
+Chinese Language
+English Language
+Hindi Language
+Malay Language
+Mathematics 
+Mixed Subjects
+Science
+Tamil Language
+
+二级Primary Tuition Courses
+三级：
+Science
+Chinese Language
+English Language
+Higher Chinese
+Hindi Language
+Malay Language
+Mathematics
+Mixed Subjects
+Tamil Language
+
+二级Secondary & Post Secondary Tuition Courses
+三级：
+English Language
+Tamil Language
+Science
+Physics
+Mixed Subjects
+Mathematics
+Malay Language
+Literature
+History
+Hindi Language
+Higher Chinese
+Geography
+Economics
+Combined Science
+Chinese Language
+Chemistry
+Biology
+Additional Mathematics
+Accounting
+
+二级Speech & Drama Courses
+三级：
+Acting & Hosting
+Music & Movement
+Speech & Drama (Chinese)
+Speech & Drama (English)
+Speech & Drama (Malay)
+Speech & Drama (Tamil)
+Theater & Playwriting
+
+一级Health & Wellness
+二级Aromatherapy Courses
+三级：
+Aromatherapy
+
+二级Grooming & Skincare Courses
+三级：
+Bodycare
+Grooming
+Hair & Nail
+Make-up
+Skincare
+
+二级Personal Health & Nutrition Courses
+三级：
+Caregiving
+Health
+
+二级Traditional Chinese Medicine Courses
+三级：
+Massage
+TCM
+
+一级Lifelong Learning
+二级Business & Entrepreneurship Courses
+三级：
+Business & Entrepreneurship
+
+二级Digital, Tech & Innovation Courses
+三级：
+Digital Innovation
+Infocomm Security
+Mobile App Application
+Software Application
+
+二级DIY & Maintenance Courses
+三级：
+DIY & Maintenance
+Motoring
+
+二级Jobskills Courses
+三级：
+Jobskills
+
+二级Personal Development Courses
+三级：
+Parenting
+Personal Development
+Emergency Preparedness-CERTS
+Emergency Preparedness-Life Saving
+Language
+
+一级Lifestyle & Leisure
+二级Beverages Courses
+三级：
+Popular Categories
+Coffee
+Distilled
+Juice
+Fermented
+Tea
+
+二级Culinary Courses
+三级：
+Chinese Cooking
+Food Presentation
+Halal Cooking
+Healthy Cooking
+Indian Cooking
+International Cuisine
+Japanese Cuisine
+Korean Cuisine
+Malay Cooking
+Singapore Delights
+South East Asian Cuisine
+Vegetarian Cooking
+Western Cuisine
+
+二级Dance Courses
+三级：
+American Style Ballroom
+Line Dance
+Argentine Tango
+B-Boy
+Ballet
+Ballroom Dance
+Belly Dance
+Bollywood Dance
+Break Dance
+Burlesque
+Cha Cha
+Chinese Dance
+Creative Movement
+Folk Dance
+Fusion Dance
+Hawaiian Dance
+Hip-Hop 
+Indian Dance
+Japanese Dance
+Jazz Dance
+K-Pop
+Korean Dance
+Latin
+Malay Dance
+Mambo
+Modern Dance
+Rumba
+Salsa
+Samba
+Social Dance
+Spanish Dance
+Tap Dance
+Waacking
+Waltz
+
+二级Handicrafts & Hobbies Courses
+三级：
+Balloon Craft
+Brick Art
+Clay Craft
+Fabric Craft
+Fashion
+Floral Art/Gift Wrapping
+Gardening
+Glass/Marble Craft
+Interior Design & Decor
+Jewellery Craft
+Leather Craft
+Magic Art
+Paper Craft
+Pets
+Philately
+Photography/Videography
+Recycled Craft
+Rubber/Plastic Craft
+Soap/Candle Craft
+Tile/Stone Craft
+Toy Craft
+Wood Craft
+
+二级Intellectual & Board Games Courses
+三级：
+Chess
+Bingo
+Board Games
+Carrom
+Contract Bridge
+Cup Stacking
+Dominoes
+E-Games
+IQ Games
+Mahjong
+Othello/Reversi
+Scrabble
+Subbuteo
+Sudoku
+Traditional Games
+Weiqi/Xiangqi
+
+二级Music & Vocal Courses
+三级：
+Karaoke Singing
+Acapella
+Accordion
+Angklung
+Bagpipe 
+Beatbox
+Cajon
+Cantonese Opera
+Cello
+Chinese Opera
+Choir
+Digital Music
+Dikir Barat
+Dizi
+Drum
+Electone
+Erhu
+Flute
+Folk Singing
+Gamelan
+Gendang
+Guitar
+Guzheng
+Harmonica
+Harp
+Hokkien Opera
+Hu Lu Si
+Keyboard
+Kompang
+Mirdangam
+Music Appreciation
+Musical Games
+Ocarina
+Orchestra
+Organ
+Peking Opera
+Percussion
+Piano
+Pipa 
+Ruan
+Saxophone
+Sheng
+Sitar
+Song Writing
+Symphonic Band
+Tabla
+Teochew Opera
+Ukulele
+Veena
+Violin
+Vocal Training
+Yang Qin
+
+二级Pastry & Baking Courses
+三级：
+Bread
+Cake
+Cookies
+Dessert
+Dim Sum
+Halal Baking
+Healthy Baking
+Kueh
+Savory
+
+二级Visual Arts Courses
+三级：
+Art Theory/Therapy
+Kids Arts & Craft 
+Asian Art
+Calligraphy
+Cartoon Art
+Ceramic Art
+Drawing/Sketching
+Mixed Media
+Western Art
+
+一级Sports & Fitness
+二级Body, Mind & Strength Courses
+三级：
+Yoga
+Body Conditioning
+Bodybuilding & Sculpting
+Boxing
+Brisk Walking
+Meridien Exercise
+Pilates
+Qigong
+Running
+
+二级Dance Fitness Courses
+三级：
+Zumba
+Aerobics
+Aspire to Perspire
+Babywearing
+Bokwa
+Bollywood/Bhangra
+Boogie Bounce Xtreme
+Boogie Sport
+Booiaka
+Combat Fit
+Fight Do
+Hoop Fitness
+Hot Hula Fitness
+Jumping Fitness
+K-Kardio
+KpopX Fitness
+Kukuwa Fitness
+Masala Bhangra
+Megadanz
+Party Jamz
+Piloxing
+Pound
+Salsation
+U-Jam Fitness
+Ubound
+Urbhanize
+
+二级Martial Arts Courses
+三级：
+Chinese Martial Arts
+International Martial Arts
+Japanese/Korean Martial Arts
+Malay/Indian Martial Arts
+
+二级Outdoor & Adventure Courses
+三级：
+Abseiling
+Archery Tag
+Campcraft Skills
+Camps
+Eco Programmes
+Laser Tag
+Outdoor Adventure
+Outdoor Challenge
+Sports Climbing
+
+二级Recreational Sports & Games Courses
+三级：
+Basketball
+Badminton
+Baseball
+Bowling
+Cricket
+Cuesports
+Curling
+Cycling
+Dart
+Dodgeball
+Floorball
+Fuzionball
+Gateball
+Golf
+Handball
+Hockey
+Kinball
+Multi-Sport
+Netball
+Performing Sports
+Petanque
+Pickleball
+Rugby
+Sepak Takraw
+Shooting
+Soccer
+Squash
+Table Tennis
+Tchoukball
+Tennis
+Touch Rugby
+Traditional Games
+Volleyball
+Woodball
+
+二级Water Sports Courses
+三级：
+Dragon Boat
+Aqua Fitness
+Bell Boating
+Canoeing
+Environmental
+Kayaking
+Lifesaving
+Power Pleasure Craft
+Sailing
+Sea Rafting
+Stand Up Paddling
+Swimming/Water Survival
+Wakeboarding
+Wakesurfing
+Water Polo
+Windsurfing

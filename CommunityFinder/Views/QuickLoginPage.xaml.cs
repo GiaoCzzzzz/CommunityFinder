@@ -37,7 +37,7 @@ public partial class QuickLoginPage : ContentPage
         var ok = await _authService.SignInAsync(email, pwd);
         if (ok)
         {
-            await Navigation.PushAsync(new InterestPage(_authService));
+            await Navigation.PushAsync(new MainPage(_authService));
         }
         else if (quick == "Yes")
         {

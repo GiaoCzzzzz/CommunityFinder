@@ -27,7 +27,7 @@ namespace CommunityFinder
         private async void OnSearchClicked(object sender, EventArgs e)
         {
             //await _vm.LoadWithFiltersAsync(BaseUrl, maxPages: 8);
-            await _vm.DebugLoadOnceAsync(BaseUrl);
+            await _vm.SearchByAoiAsync(maxPages: 8);
         }
 
         private async void OnRegisterClicked(object sender, EventArgs e)
@@ -51,7 +51,8 @@ namespace CommunityFinder
         {
             base.OnAppearing();
             if (_vm.Courses.Count == 0)
-                await _vm.DebugLoadOnceAsync(BaseUrl); // 先确认能直接拿到
+                await _vm.SearchByAoiAsync(maxPages: 8);
+            await _vm.InitAsync();
         }
     }
 
