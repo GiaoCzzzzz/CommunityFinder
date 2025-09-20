@@ -12,6 +12,8 @@ public partial class ProfileSettingPage : ContentPage
 
     List<Country> _countries = new();
     List<string> _occupations = new();
+    string _selectedNationality = string.Empty;
+    string _selectedOccupation = string.Empty;
 
     public ProfileSettingPage(AuthService authService)
     {
@@ -19,7 +21,6 @@ public partial class ProfileSettingPage : ContentPage
         _authService = authService;
         _email = _authService.GerEmailAddress();
 
-        // 使用你指定的国家列表
         _countries = new List<Country>
         {
             new Country { Name = "Afghanistan", Flag = "🇦🇫" },
@@ -223,8 +224,8 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
             "Software Developer", "Teacher", "Designer", "Engineer", "Accountant"
         };
 
-        NationalityPicker.ItemsSource = _countries.Select(c => c.ToString()).ToList();
-        OccupationPicker.ItemsSource = _occupations;
+        NationalityListView.ItemsSource = _countries.Select(c => c.ToString()).ToList();
+        OccupationListView.ItemsSource = _occupations;
     }
 
     protected override async void OnAppearing()
@@ -243,15 +244,27 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
 
         _profile = await _authService.GetProfiles();
 
+        // 显示已保存的用户信息
         EmailEntry.Text = _email;
         DisplayNameEntry.Text = _profile.username;
         SexPicker.SelectedItem = _profile.gender;
         AgeEntry.Text = _profile.age.ToString();
-        NationalityPicker.SelectedItem = _countries.Select(c => c.ToString()).FirstOrDefault(n => n.Contains(_profile.nationality));
-        PhoneEntry.Text = "12345678"; // 可替换为真实数据
-        OccupationPicker.SelectedItem = _occupations.FirstOrDefault(o => o == _profile.occupation);
         PostalCodeEntry.Text = _profile.postcode;
+        PhoneEntry.Text = _profile.phone; // ✅ 读取真实电话字段
+
+        // 设置国籍搜索框和内部变量
+        var fullNationality = _countries
+            .Select(c => c.ToString())
+            .FirstOrDefault(n => n.Contains(_profile.nationality));
+        NationalitySearchEntry.Text = fullNationality;
+        _selectedNationality = fullNationality ?? "";
+
+        // 设置职业搜索框和内部变量
+        var matchedOccupation = _occupations.FirstOrDefault(o => o == _profile.occupation);
+        OccupationSearchEntry.Text = matchedOccupation;
+        _selectedOccupation = matchedOccupation ?? "";
     }
+
 
     void OnAgeChanged(object sender, TextChangedEventArgs e)
     {
@@ -267,20 +280,62 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
 
     void OnPostalCodeChanged(object sender, TextChangedEventArgs e)
     {
-        PostalCodeErrorLabel.IsVisible = !(e.NewTextValue.All(char.IsDigit) && e.NewTextValue.Length == 6);
+        var entry = sender as Entry;
+        if (entry == null) return;
+
+        string newText = e.NewTextValue;
+        if (newText.Contains("."))
+        {
+            newText = newText.Replace(".", "");
+            entry.Text = newText;
+            return;
+        }
+
+        PostalCodeErrorLabel.IsVisible = !(newText.All(char.IsDigit) && newText.Length == 6);
         PostalCodeErrorLabel.Text = "Postal code must be 6 digits";
     }
 
-    void OnNationalityChanged(object sender, EventArgs e)
+    void OnNationalitySearchChanged(object sender, TextChangedEventArgs e)
     {
-        NationalityErrorLabel.IsVisible = NationalityPicker.SelectedItem == null;
-        NationalityErrorLabel.Text = "Please select a nationality";
+        var keyword = e.NewTextValue?.ToLower() ?? "";
+        var filtered = _countries
+            .Where(c => c.Name.ToLower().Contains(keyword))
+            .Select(c => c.ToString())
+            .ToList();
+        NationalityListView.ItemsSource = filtered;
     }
 
-    void OnOccupationChanged(object sender, EventArgs e)
+    void OnToggleNationalityListClicked(object sender, EventArgs e)
     {
-        OccupationErrorLabel.IsVisible = OccupationPicker.SelectedItem == null;
-        OccupationErrorLabel.Text = "Please select an occupation";
+        NationalityListView.IsVisible = !NationalityListView.IsVisible;
+    }
+
+    void OnNationalitySelected(object sender, SelectionChangedEventArgs e)
+    {
+        _selectedNationality = e.CurrentSelection.FirstOrDefault()?.ToString() ?? "";
+        NationalitySearchEntry.Text = _selectedNationality;
+        NationalityListView.IsVisible = false;
+        NationalityErrorLabel.IsVisible = false;
+    }
+
+    void OnOccupationSearchChanged(object sender, TextChangedEventArgs e)
+    {
+        var keyword = e.NewTextValue?.ToLower() ?? "";
+        var filtered = _occupations.Where(o => o.ToLower().Contains(keyword)).ToList();
+        OccupationListView.ItemsSource = filtered;
+    }
+
+    void OnToggleOccupationListClicked(object sender, EventArgs e)
+    {
+        OccupationListView.IsVisible = !OccupationListView.IsVisible;
+    }
+
+    void OnOccupationSelected(object sender, SelectionChangedEventArgs e)
+    {
+        _selectedOccupation = e.CurrentSelection.FirstOrDefault()?.ToString() ?? "";
+        OccupationSearchEntry.Text = _selectedOccupation;
+        OccupationListView.IsVisible = false;
+        OccupationErrorLabel.IsVisible = false;
     }
 
     async void OnChangePasswordClicked(object sender, EventArgs e)
@@ -307,8 +362,8 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
         _profile.username = DisplayNameEntry.Text?.Trim();
         _profile.gender = SexPicker.SelectedItem?.ToString() ?? "";
         _profile.age = int.Parse(AgeEntry.Text);
-        _profile.nationality = NationalityPicker.SelectedItem?.ToString()?.Split(' ').Last() ?? "";
-        _profile.occupation = OccupationPicker.SelectedItem?.ToString() ?? "";
+        _profile.nationality = _selectedNationality.Contains(" ") ? _selectedNationality.Split(' ').Last() : _selectedNationality;
+        _profile.occupation = _selectedOccupation;
         _profile.postcode = PostalCodeEntry.Text?.Trim();
         _profile.interest = _interest;
 
@@ -329,6 +384,7 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
     {
         public string Name { get; set; }
         public string Flag { get; set; }
+
         public override string ToString() => $"{Flag} {Name}";
     }
 }

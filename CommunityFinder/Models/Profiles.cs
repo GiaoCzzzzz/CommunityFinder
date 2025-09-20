@@ -39,5 +39,7 @@ namespace CommunityFinder.Models
         [Column("interest")]
         public string[] interest { get; set; }
 
+        public string phone { get; set; }
+
     }
 }

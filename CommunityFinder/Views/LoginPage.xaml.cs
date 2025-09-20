@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using CommunityFinder.Services;
 
 namespace CommunityFinder.Views;
@@ -33,6 +34,7 @@ public partial class LoginPage : ContentPage
 
         bool hasError = false;
 
+        // 邮箱验证
         if (string.IsNullOrEmpty(email))
         {
             EmailErrorLabel.Text = "Email is required.";
@@ -40,15 +42,17 @@ public partial class LoginPage : ContentPage
             hasError = true;
         }
 
+        // 密码验证
         if (string.IsNullOrEmpty(pwd))
         {
             PasswordErrorLabel.Text = "Password is required.";
             PasswordErrorLabel.IsVisible = true;
             hasError = true;
         }
-        else if (pwd.Length < 6)
+        else if (!IsValidPassword(pwd))
         {
-            PasswordErrorLabel.Text = "Password must be at least 6 characters.";
+            PasswordErrorLabel.Text =
+                "Password must be at least 6 characters,\ncontain one letter, one number,\nand one special character.";
             PasswordErrorLabel.IsVisible = true;
             hasError = true;
         }
@@ -105,19 +109,31 @@ public partial class LoginPage : ContentPage
 
     private void OnPasswordTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (string.IsNullOrEmpty(e.NewTextValue))
+        var pwd = e.NewTextValue;
+
+        if (string.IsNullOrEmpty(pwd))
         {
             PasswordErrorLabel.Text = "Password is required.";
             PasswordErrorLabel.IsVisible = true;
         }
-        else if (e.NewTextValue.Length < 6)
+        else if (!IsValidPassword(pwd))
         {
-            PasswordErrorLabel.Text = "Password must be at least 6 characters.";
+            PasswordErrorLabel.Text =
+                "Password must be at least 6 characters,\ncontain one letter, one number,\nand one special character.";
             PasswordErrorLabel.IsVisible = true;
         }
         else
         {
             PasswordErrorLabel.IsVisible = false;
         }
+    }
+
+    private bool IsValidPassword(string password)
+    {
+        if (password.Length < 6) return false;
+        bool hasLetter = password.Any(char.IsLetter);
+        bool hasDigit = password.Any(char.IsDigit);
+        bool hasSpecial = password.Any(ch => !char.IsLetterOrDigit(ch));
+        return hasLetter && hasDigit && hasSpecial;
     }
 }

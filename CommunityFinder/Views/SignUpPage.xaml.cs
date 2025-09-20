@@ -71,9 +71,9 @@ namespace CommunityFinder.Views
                 PasswordErrorLabel.IsVisible = true;
                 hasError = true;
             }
-            else if (pwd.Length < 6)
+            else if (!IsValidPassword(pwd))
             {
-                PasswordErrorLabel.Text = "Password must be at least 6 characters.";
+                PasswordErrorLabel.Text = "Password must be at least 6 characters,\ncontain one letter, one number,\nand one special character.";
                 PasswordErrorLabel.IsVisible = true;
                 hasError = true;
             }
@@ -92,12 +92,12 @@ namespace CommunityFinder.Views
             var result = await _authService.SignUpAsync(email, pwd, displayName, phone);
             if (result.IsSuccess)
             {
-                await DisplayAlert("Succed", "Registration successful. You will receive the confirm email, please check.", "confirm");
+                await DisplayAlert("Success", "Registration successful. You will receive the confirmation email, please check.", "Confirm");
                 await Navigation.PushAsync(new LoginPage(_authService, prefillEmail: email, prefillPassword: pwd));
             }
             else
             {
-                await DisplayAlert("Fail", result.ErrorMessage, "confirm");
+                await DisplayAlert("Fail", result.ErrorMessage, "Confirm");
             }
         }
 
@@ -152,14 +152,16 @@ namespace CommunityFinder.Views
 
         private void OnPasswordTextChanged(object sender, TextChangedEventArgs e)
         {
-            if (string.IsNullOrEmpty(e.NewTextValue))
+            var pwd = e.NewTextValue;
+
+            if (string.IsNullOrEmpty(pwd))
             {
                 PasswordErrorLabel.Text = "Password is required.";
                 PasswordErrorLabel.IsVisible = true;
             }
-            else if (e.NewTextValue.Length < 6)
+            else if (!IsValidPassword(pwd))
             {
-                PasswordErrorLabel.Text = "Password must be at least 6 characters.";
+                PasswordErrorLabel.Text = "Password must be at least 6 characters,\ncontain one letter, one number,\nand one special character.";
                 PasswordErrorLabel.IsVisible = true;
             }
             else
@@ -185,6 +187,15 @@ namespace CommunityFinder.Views
             {
                 ConfirmPasswordErrorLabel.IsVisible = false;
             }
+        }
+
+        private bool IsValidPassword(string password)
+        {
+            if (password.Length < 6) return false;
+            bool hasLetter = password.Any(char.IsLetter);
+            bool hasDigit = password.Any(char.IsDigit);
+            bool hasSpecial = password.Any(ch => !char.IsLetterOrDigit(ch));
+            return hasLetter && hasDigit && hasSpecial;
         }
     }
 }
