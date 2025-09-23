@@ -35,12 +35,12 @@
                 <Setter Property="CornerRadius" Value="22"/>
                 <Setter Property="Padding" Value="20,8"/>
                 <Setter Property="HorizontalOptions" Value="End"/>
-                <Style.Triggers>
+                <!--<Style.Triggers>
                     <DataTrigger TargetType="Button" Binding="{Binding HasVacancy}" Value="False">
                         <Setter Property="Text" Value="Registration Closed"/>
                         <Setter Property="BackgroundColor" Value="#9E9E9E"/>
                     </DataTrigger>
-                </Style.Triggers>
+                </Style.Triggers> -->
             </Style>
 
             <!-- 顶部菜单样式 -->
@@ -77,7 +77,8 @@
 
             <!-- 右：设置图标占位 -->
             <Frame Grid.Column="2" CornerRadius="18" HeightRequest="36" WidthRequest="36" Padding="0" HasShadow="False" VerticalOptions="Center">
-                <BoxView Color="#EDEDED"/>
+                <Button Grid.Column="10" Text="" WidthRequest="44" HeightRequest="40" CornerRadius="20"
+                Clicked="OnSettingClicked"/>
             </Frame>
         </Grid>
 
@@ -95,7 +96,7 @@
 
                 <!-- L2 -->
                 <VerticalStackLayout WidthRequest="200" Spacing="4"
-                       IsVisible="{Binding HasL1Selected}">
+                       IsVisible="{Binding HasL1Selected}" Opacity="0" x:Name="L2Panel">
                     <Label Text="Category" />
                     <Picker ItemsSource="{Binding L2Options}"
             SelectedItem="{Binding SelectedL2}"
@@ -104,7 +105,7 @@
 
                 <!-- L3 -->
                 <VerticalStackLayout WidthRequest="220" Spacing="4"
-                       IsVisible="{Binding HasL2Selected}">
+                       IsVisible="{Binding HasL2Selected}" Opacity="0" x:Name="L3Panel">
                     <Label Text="Topic" />
                     <Picker ItemsSource="{Binding L3Options}"
             SelectedItem="{Binding SelectedL3}"
@@ -131,54 +132,66 @@
         </Grid>
 
         <!-- 列表卡片 -->
-        <CollectionView Grid.Row="2" ItemsSource="{Binding Courses}">
-            <!-- 空状态（英文） -->
-            <CollectionView.EmptyView>
-                <Grid Padding="20">
-                    <Label Text="No courses" HorizontalOptions="Center" VerticalOptions="Center" FontSize="16" TextColor="#666"/>
-                </Grid>
-            </CollectionView.EmptyView>
+        <Grid Grid.Row="2" x:Name="ListRegion">
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame Padding="16" Margin="0,8" HasShadow="True" BackgroundColor="White" CornerRadius="16">
-                        <Grid ColumnDefinitions="120,*" ColumnSpacing="16">
-                            <!-- 左图占位 -->
-                            <BoxView Color="#E0E0E0" WidthRequest="120" HeightRequest="96" CornerRadius="8"/>
+            <CollectionView Grid.Row="2" ItemsSource="{Binding Courses}">
+                <!-- 空状态（英文） -->
+                <CollectionView.EmptyView>
+                    <Grid Padding="20">
+                        <Label Text="No courses" HorizontalOptions="Center" VerticalOptions="Center" FontSize="16" TextColor="#666"/>
+                    </Grid>
+                </CollectionView.EmptyView>
 
-                            <!-- 右侧信息 -->
-                            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
-                                <Label Text="{Binding AoiL1}" TextColor="#C62828" FontAttributes="Bold" />
-                                <Label Grid.Row="1" Text="{Binding Title}" FontAttributes="Bold" FontSize="18" />
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="16" Margin="0,8" HasShadow="True" BackgroundColor="White" CornerRadius="16">
+                            <Grid ColumnDefinitions="120,*" ColumnSpacing="16">
+                                <!-- 左图占位 -->
+                                <BoxView Color="#E0E0E0" WidthRequest="120" HeightRequest="96" CornerRadius="8"/>
 
-                                <Label Grid.Row="2" Text="Date &amp; Time" FontAttributes="Bold" />
-                                <Label Grid.Row="3">
-                                    <Label.Text>
-                                        <MultiBinding StringFormat="{}Starts on {0:dddd}">
-                                            <Binding Path="StartDate"/>
-                                        </MultiBinding>
-                                    </Label.Text>
-                                </Label>
+                                <!-- 右侧信息 -->
+                                <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                                    <Label Text="{Binding AoiL1}" TextColor="#C62828" FontAttributes="Bold" />
+                                    <Label Grid.Row="1" Text="{Binding Title}" FontAttributes="Bold" FontSize="18" />
 
-                                <Label Grid.Row="4">
-                                    <Label.Text>
-                                        <MultiBinding StringFormat="{}{0:dd MMM yyyy}  •  {1}">
-                                            <Binding Path="StartDate"/>
-                                            <Binding Path="SessionTime"/>
-                                        </MultiBinding>
-                                    </Label.Text>
-                                </Label>
+                                    <Label Grid.Row="2" Text="Date &amp; Time" FontAttributes="Bold" />
+                                    <Label Grid.Row="3">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}Starts on {0:dddd}">
+                                                <Binding Path="StartDate"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
 
-                                <!-- 右下角按钮 -->
-                                <Button Grid.Row="5" Style="{StaticResource RegisterButtonStyle}"
+                                    <Label Grid.Row="4">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0:dd MMM yyyy}  •  {1}">
+                                                <Binding Path="StartDate"/>
+                                                <Binding Path="SessionTime"/>
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+
+                                    <!-- 右下角按钮 -->
+                                    <Button Grid.Row="5" Style="{StaticResource RegisterButtonStyle}" 
                         CommandParameter="{Binding DetailUrl}"
                         Clicked="OnRegisterClicked" />
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        
+            <!--加载动画-->
+            <Grid BackgroundColor="#80000000"
+        IsVisible="{Binding IsBusy}" InputTransparent="False">
+                <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="True" WidthRequest="48" HeightRequest="48"/>
+                    <Label Text="Loading..." TextColor="White" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                </StackLayout>
+            </Grid>
+        </Grid>
 
         <!-- 底部留白 -->
         <BoxView Grid.Row="3" HeightRequest="8" Opacity="0"/>

@@ -21,6 +21,14 @@ namespace CommunityFinder
             InitializeComponent();
             BindingContext = _vm;
             _authService = authService;
+
+            _vm.PropertyChanged += async (s, e) =>
+            {
+                if (e.PropertyName == nameof(CoursesViewModel.HasL1Selected) && _vm.HasL1Selected && L2Panel.Opacity < 1)
+                    await L2Panel.FadeTo(1, 180);
+                if (e.PropertyName == nameof(CoursesViewModel.HasL2Selected) && _vm.HasL2Selected && L3Panel.Opacity < 1)
+                    await L3Panel.FadeTo(1, 180);
+            };
         }
 
 
@@ -29,6 +37,12 @@ namespace CommunityFinder
             //await _vm.LoadWithFiltersAsync(BaseUrl, maxPages: 8);
             await _vm.SearchByAoiAsync(maxPages: 8);
         }
+
+        private async void OnSettingClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new ProfileSettingPage(_authService));
+        }
+
 
         private async void OnRegisterClicked(object sender, EventArgs e)
         {

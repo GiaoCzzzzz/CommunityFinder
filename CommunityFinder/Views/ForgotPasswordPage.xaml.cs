@@ -25,10 +25,6 @@ public partial class ForgotPasswordPage : ContentPage
     }
 
 
-
-
-
-
     async void OnSendResetClicked(object sender, EventArgs e)
     {
         var email = EmailEntry.Text?.Trim();

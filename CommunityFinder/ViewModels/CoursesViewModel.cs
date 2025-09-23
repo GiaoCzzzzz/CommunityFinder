@@ -357,11 +357,28 @@ namespace CommunityFinder.ViewModels
 
         private void UpdateWhereOptions(List<string> outlets)
         {
+            // 记住用户当前的选择
+            var prev = SelectedWhere;
+
+            // 重建选项
             WhereOptions.Clear();
             WhereOptions.Add("Any");
-            foreach (var o in outlets) WhereOptions.Add(o);
-            if (!WhereOptions.Contains(SelectedWhere))
+            foreach (var o in outlets)
+                WhereOptions.Add(o);
+
+            // 恢复选择：如果之前选的还在列表里，就还原；不在就把它补回去再选中
+            if (!string.IsNullOrWhiteSpace(prev) && !prev.Equals("Any", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!WhereOptions.Contains(prev))
+                    WhereOptions.Add(prev); // 服务器结果里没有时也保留用户选择，避免误导
+
+                SelectedWhere = prev;
+            }
+            else
+            {
+                // 之前就是 Any，就保持 Any
                 SelectedWhere = "Any";
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

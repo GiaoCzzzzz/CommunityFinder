@@ -366,7 +366,7 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
         _profile.occupation = _selectedOccupation;
         _profile.postcode = PostalCodeEntry.Text?.Trim();
         _profile.interest = _interest;
-
+        _profile.phone = PhoneEntry.Text?.Trim();
         var result = await _authService.UpsertProfile(_profile);
 
         if (result)
