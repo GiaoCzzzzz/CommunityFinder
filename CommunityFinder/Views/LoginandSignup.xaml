@@ -7,8 +7,17 @@
 
     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="30">
 
+        <!-- 顶部图标 -->
         <Image Source="icon1.png" WidthRequest="150" HeightRequest="150" HorizontalOptions="Center" />
 
+        <!-- 应用名称 -->
+        <Label Text="Community Finder"
+               FontSize="24"
+               FontAttributes="Bold"
+               TextColor="Black"
+               HorizontalOptions="Center" />
+
+        <!-- 登录按钮 -->
         <Button Text="Login"
                 x:Name="LoginButton"
                 BackgroundColor="green"
@@ -19,6 +28,7 @@
                 HeightRequest="50"
                 Clicked="OnLoginClicked" />
 
+        <!-- 注册按钮 -->
         <Button Text="Sign Up"
                 x:Name="SignupButton"
                 BackgroundColor="#CC1416"
