@@ -1,156 +1,184 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
+using System.Text.Json;
 using System.Text.RegularExpressions;
-using HtmlAgilityPack;
 using CommunityFinder.Models;
+using FluentAssertions.Equivalency.Tracing;
 
 namespace CommunityFinder.Services
 {
-    internal class CourseDetailService
+    /// <summary>
+    /// 解析课程详情页 HTML 里的 window.reactComponents.push({ component:"CourseDetails", data:{...} })
+    /// </summary>
+    public class CourseDetailService
     {
-        private readonly HttpClient _http = new();
+        private readonly HttpClient _http;
 
-        public CourseDetailService()
+        public CourseDetailService(HttpClient? http = null)
         {
-            _http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (MAUI App)");
+            var handler = new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                AllowAutoRedirect = true,
+                UseCookies = true,
+                CookieContainer = new CookieContainer(),
+            };
+
+            _http = http ?? new HttpClient(handler);
+            _http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) MAUI-App");
+            _http.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "text/html,application/xhtml+xml,application/json");
+            _http.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "en-US,en;q=0.9");
             _http.DefaultRequestHeaders.Referrer = new Uri("https://www.onepa.gov.sg/");
-            _http.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "text/html,application/xhtml+xml");
         }
 
-        public async Task<CourseDetail> GetCourseDetailAsync(string detailUrl)
+        public async Task<CourseDetail?> GetCourseDetailAsync(string detailUrl)
         {
-            // 允许传入相对路径
+            if (string.IsNullOrWhiteSpace(detailUrl)) return null;
             if (!detailUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                 detailUrl = $"https://www.onepa.gov.sg{detailUrl}";
 
             var html = await _http.GetStringAsync(detailUrl);
+            return ParseFromRawHtml(html);
+        }
 
-            var doc = new HtmlDocument();
-            doc.LoadHtml(html);
+        /// <summary>供调试或离线测试：直接喂 HTML 源码解析。</summary>
+        public CourseDetail? ParseFromRawHtml(string html)
+        {
+            if (string.IsNullOrWhiteSpace(html)) return null;
 
-            var detail = new CourseDetail();
+            // 抓取所有 window.reactComponents.push({...});
+            var matches = Regex.Matches(
+                html,
+                @"window\.reactComponents\.push\(\s*(\{.*?\})\s*\);",
+                RegexOptions.Singleline | RegexOptions.Compiled);
 
-            // ===== 顶部基础 =====
-            detail.Title = FirstText(doc, "//h1") ?? "";
-            detail.RefCode = MatchText(html, @"Ref\s*Code:\s*([A-Z0-9]+)") ?? "";
-            detail.OrganizerName = FirstText(doc, "//a[contains(@href,'/cc/') or contains(@href,'/rc/')]");
-            detail.OrganizerUrl = FirstAttr(doc, "//a[contains(@href,'/cc/') or contains(@href,'/rc/')]", "href");
-            detail.Language = TryAfterLabel(doc, "ENGLISH") != null ? "ENGLISH" :
-                              TryAfterLabel(doc, "CHINESE") != null ? "CHINESE" : null;
-
-            // 封面图（页面顶部 hero 图）— 若找不到就先留空
-            detail.HeaderImageUrl = FirstAttr(doc, "//img[contains(@src,'/courses/') or contains(@class,'hero')]", "src");
-
-            // ===== 右侧卡片：Date & Time / Price =====
-            // 整块文本抓取后用正则拆
-            var rightCardNode = FindSectionNode(doc, "Date & Time")?.ParentNode?.ParentNode ?? doc.DocumentNode;
-            var cardText = Clean(rightCardNode?.InnerText ?? string.Empty);
-
-            detail.StartDayText = MatchText(cardText, @"Starts on\s+[A-Za-z]+");
-            detail.DateRangeText = MatchText(cardText, @"\b\d{2}\s[A-Za-z]{3}\s\d{4}\s*-\s*\d{2}\s[A-Za-z]{3}\s\d{4}\b");
-            detail.SessionsText = MatchText(cardText, @"\b\d+\s+sessions\s+[0-9:APM ]+\s*-\s*[0-9:APM ]+\b");
-            detail.RegClosingText = MatchText(cardText, @"Registration Closing Date:\s*[^\n\r]+");
-
-            var price = MatchText(cardText, @"From\s*\$?([\d,]+(?:\.\d{2})?)\s*to\s*\$?([\d,]+(?:\.\d{2})?)");
-            if (!string.IsNullOrEmpty(price))
+            foreach (Match m in matches)
             {
-                detail.PriceText = price;
-                var m = Regex.Match(price, @"From\s*\$?([\d,]+(?:\.\d{2})?)\s*to\s*\$?([\d,]+(?:\.\d{2})?)");
-                if (m.Success)
+                var json = WebUtility.HtmlDecode(m.Groups[1].Value);
+                if (string.IsNullOrWhiteSpace(json)) continue;
+
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement;
+
+                if (!root.TryGetProperty("component", out var comp) ||
+                    comp.ValueKind != JsonValueKind.String ||
+                    !string.Equals(comp.GetString(), "CourseDetails", StringComparison.Ordinal))
                 {
-                    detail.PriceMin = TryDec(m.Groups[1].Value);
-                    detail.PriceMax = TryDec(m.Groups[2].Value);
+                    continue;
                 }
-            }
 
-            // ===== 主体区块：Course Description / Requirements and Remarks / Venue / Organising Committee / Trainers =====
-            detail.Description = SectionText(doc, "Course Description");
-            detail.Requirements = SectionText(doc, "Requirements and Remarks");
-            detail.Venue = SectionText(doc, "Venue");
+                var data = root.GetProperty("data");
 
-            // Organising Committee（名称+链接）
-            var orgNode = FindSectionNode(doc, "Organising Committee");
-            if (orgNode != null)
-            {
-                var a = orgNode.SelectSingleNode(".//following::a[1]");
-                detail.OrganisingCommitteeName = Clean(a?.InnerText);
-                detail.OrganisingCommitteeUrl = a?.GetAttributeValue("href", null);
-            }
-
-            // Training Provider(s)：允许多条
-            var trainerHeader = FindSectionNode(doc, "Training Provider");
-            if (trainerHeader != null)
-            {
-                // 往后找卡片块
-                var trainerCards = trainerHeader.ParentNode.SelectNodes(".//following::*[self::div or self::section][.//img or .//a[contains(.,'View Trainer')]]");
-                if (trainerCards != null)
+                string? S(Func<JsonElement> g, string? fallback = null)
                 {
-                    foreach (var card in trainerCards)
+                    try
                     {
-                        var tr = new Trainer();
-                        // 姓名
-                        tr.Name = FirstText(card, ".//strong | .//h4 | .//h3") ?? Clean(card.InnerText).Split('\n').FirstOrDefault();
-                        // 照片
-                        tr.PhotoUrl = FirstAttr(card, ".//img", "src");
-                        // Profile 链接
-                        tr.ProfileUrl = FirstAttr(card, ".//a[contains(translate(.,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'view trainer')]", "href");
-                        // 简介：取段落
-                        tr.Bio = FirstText(card, ".//p");
+                        var v = g();
+                        return v.ValueKind == JsonValueKind.String ? v.GetString() : fallback;
+                    }
+                    catch { return fallback; }
+                }
+
+                // sessions / price / trainer / venue 可能不存在，先 Try
+                JsonElement sessions = default, price = default, trainer = default, venue = default;
+                bool hasSessions = data.TryGetProperty("sessions", out sessions);
+                bool hasPrice = data.TryGetProperty("price", out price);
+                bool hasTrainer = data.TryGetProperty("trainer", out trainer);
+                bool hasVenue = data.TryGetProperty("venue", out venue);
+
+                // 右侧卡片
+                var startDate = hasSessions ? S(() => sessions.GetProperty("startDate")) : null;
+                var endDate = hasSessions ? S(() => sessions.GetProperty("endDate")) : null;
+                var startTime = hasSessions ? S(() => sessions.GetProperty("startTime")) : null;
+                var endTime = hasSessions ? S(() => sessions.GetProperty("endTime")) : null;
+                var day = hasSessions ? S(() => sessions.GetProperty("day")) : null;
+
+                var memberPrice = hasPrice ? S(() => price.GetProperty("memberPrice")) : null;
+                var nonMemberPrice = hasPrice ? S(() => price.GetProperty("nonMemberPrice")) : null;
+                var priceText = hasPrice ? S(() => price.GetProperty("priceText")) : null;
+
+                // 主体
+                var detail = new CourseDetail
+                {
+                    CourseCode = S(() => data.GetProperty("courseCode")),
+                    Title = S(() => data.GetProperty("heading")),
+                    ImageUrl = S(() => data.GetProperty("image").GetProperty("src")),
+                    Language = S(() => data.GetProperty("language")),
+                    OrganizerName = S(() => data.GetProperty("mainOrganisingCommitteeName"))
+                                 ?? S(() => data.GetProperty("organisingCommitteeName")),
+                    OrganizerUrl = S(() => data.GetProperty("outletUrl")),
+                    RegistrationClosingDate = S(() => data.GetProperty("registrationClosingDate")),
+                    Description = S(() => data.GetProperty("description")),
+                    Requirements = S(() => data.GetProperty("prerequisite")),
+                };
+
+                // 时间与日期展示（有就格式化，没有就保留原字符串）
+                if (DateTime.TryParse(startDate, out var sd))
+                    detail.StartDayText = $"Starts on {sd:dddd}";
+                detail.DateRangeText = FormatDateRange(startDate, endDate);
+
+                if (!string.IsNullOrWhiteSpace(startTime) || !string.IsNullOrWhiteSpace(endTime))
+                {
+                    detail.SessionsText = string.IsNullOrWhiteSpace(day)
+                        ? $"{startTime} - {endTime}"
+                        : $"{day} {startTime} - {endTime}";
+                }
+
+                // 价格展示优先 priceText，然后 Member/Non-member 拼出来
+                if (!string.IsNullOrWhiteSpace(priceText))
+                    detail.PriceText = priceText;
+                else if (!string.IsNullOrWhiteSpace(memberPrice) && !string.IsNullOrWhiteSpace(nonMemberPrice))
+                    detail.PriceText = $"Member: {memberPrice} • Public: {nonMemberPrice}";
+                else if (!string.IsNullOrWhiteSpace(memberPrice))
+                    detail.PriceText = $"Member: {memberPrice}";
+                else if (!string.IsNullOrWhiteSpace(nonMemberPrice))
+                    detail.PriceText = $"Public: {nonMemberPrice}";
+
+                // 场地：venue.address.sessionList[0].venueName / addressLine 可组合
+                if (hasVenue && venue.TryGetProperty("address", out var addr) &&
+                    addr.TryGetProperty("sessionList", out var sl) &&
+                    sl.ValueKind == JsonValueKind.Array && sl.GetArrayLength() > 0)
+                {
+                    var v0 = sl[0];
+                    var vName = S(() => v0.GetProperty("venueName"));
+                    var vAddr = S(() => v0.GetProperty("addressLine"));
+                    detail.Venue = string.Join(" • ", new[] { vName, vAddr }.Where(x => !string.IsNullOrWhiteSpace(x)));
+                }
+
+                // 讲师
+                if (hasTrainer && trainer.TryGetProperty("trainerResults", out var trs) &&
+                    trs.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var t in trs.EnumerateArray())
+                    {
+                        var tr = new Trainer
+                        {
+                            Name = S(() => t.GetProperty("trainerName")),
+                            Bio = S(() => t.GetProperty("trainerShortDesc")),
+                            PhotoUrl = S(() => t.GetProperty("trainerProfilePhoto")),
+                            ProfileUrl = S(() => t.GetProperty("trainerUrl"))
+                        };
                         if (!string.IsNullOrWhiteSpace(tr.Name) || !string.IsNullOrWhiteSpace(tr.Bio))
                             detail.Trainers.Add(tr);
                     }
                 }
+
+                return detail;
             }
 
-            return detail;
+            return null;
         }
 
-        // ===== helpers =====
-        private static string FirstText(HtmlDocument doc, string xpath) =>
-            Clean(doc.DocumentNode.SelectSingleNode(xpath)?.InnerText);
-        private static string FirstText(HtmlNode node, string xpath) =>
-            Clean(node?.SelectSingleNode(xpath)?.InnerText);
-        private static string FirstAttr(HtmlDocument doc, string xpath, string attr) =>
-            doc.DocumentNode.SelectSingleNode(xpath)?.GetAttributeValue(attr, null);
-        private static string FirstAttr(HtmlNode node, string xpath, string attr) =>
-            node?.SelectSingleNode(xpath)?.GetAttributeValue(attr, null);
-
-        private static HtmlNode FindSectionNode(HtmlDocument doc, string title) =>
-            doc.DocumentNode.SelectSingleNode($"//h2[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'{title.ToLower()}')]")
-            ?? doc.DocumentNode.SelectSingleNode($"//h3[contains(translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'{title.ToLower()}')]");
-
-        private static string SectionText(HtmlDocument doc, string title)
+        private static string? FormatDateRange(string? start, string? end)
         {
-            var h = FindSectionNode(doc, title);
-            if (h == null) return null;
-            // 通常正文在下一个块级节点里
-            var body = h.SelectSingleNode("./following-sibling::*[1]") ?? h.ParentNode?.SelectSingleNode("./following-sibling::*[1]");
-            var text = Clean(body?.InnerText);
-            return string.IsNullOrWhiteSpace(text) ? null : text;
-        }
-
-        private static string TryAfterLabel(HtmlDocument doc, string label) =>
-            doc.DocumentNode.SelectSingleNode($"//text()[contains(.,'{label}')]")?.InnerText;
-
-        private static string MatchText(string input, string pattern)
-        {
-            if (string.IsNullOrEmpty(input)) return null;
-            var m = Regex.Match(input, pattern, RegexOptions.IgnoreCase);
-            return m.Success ? m.Value.Trim() : null;
-        }
-
-        private static string Clean(string s) =>
-            string.IsNullOrWhiteSpace(s) ? null :
-            Regex.Replace(System.Net.WebUtility.HtmlDecode(s), @"\s+", " ").Trim();
-
-        private static decimal? TryDec(string s)
-        {
-            if (string.IsNullOrWhiteSpace(s)) return null;
-            s = s.Replace(",", "");
-            return decimal.TryParse(s, out var v) ? v : null;
+            string F(string? s)
+            {
+                if (DateTime.TryParse(s, out var dt)) return dt.ToString("dd MMM yyyy");
+                return s ?? string.Empty;
+            }
+            var a = F(start); var b = F(end);
+            if (!string.IsNullOrWhiteSpace(a) && !string.IsNullOrWhiteSpace(b)) return $"{a} - {b}";
+            if (!string.IsNullOrWhiteSpace(a)) return a;
+            return !string.IsNullOrWhiteSpace(b) ? b : null;
         }
     }
 }

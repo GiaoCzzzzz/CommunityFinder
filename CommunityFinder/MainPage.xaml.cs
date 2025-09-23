@@ -2,6 +2,7 @@
 using CommunityFinder.ViewModels;
 using CommunityFinder.Views;
 using CommunityFinder.Services;
+using CommunityFinder.Models;
 
 namespace CommunityFinder
 {
@@ -67,6 +68,14 @@ namespace CommunityFinder
             if (_vm.Courses.Count == 0)
                 await _vm.SearchByAoiAsync(maxPages: 8);
             await _vm.InitAsync();
+        }
+
+        private async void OnItemTapped(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection?.FirstOrDefault() is CourseItem item && !string.IsNullOrWhiteSpace(item.DetailUrl))
+            {
+                await Navigation.PushAsync(new CourseDetailPage(item.DetailUrl));
+            }
         }
     }
 

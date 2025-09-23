@@ -134,7 +134,7 @@
         <!-- 列表卡片 -->
         <Grid Grid.Row="2" x:Name="ListRegion">
 
-            <CollectionView Grid.Row="2" ItemsSource="{Binding Courses}">
+            <CollectionView Grid.Row="2" ItemsSource="{Binding Courses}" SelectionMode="Single" SelectionChanged="OnItemTapped">
                 <!-- 空状态（英文） -->
                 <CollectionView.EmptyView>
                     <Grid Padding="20">
