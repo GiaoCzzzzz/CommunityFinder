@@ -1,4 +1,5 @@
 using CommunityFinder.Services;
+using System.Text.RegularExpressions;   
 
 namespace CommunityFinder.Views;
 
@@ -54,15 +55,15 @@ public partial class ResetPasswordPage : ContentPage
             return;
         }
 
-        var ok = await _authService.ResetPassword(newPwd);
-        if (ok)
+        var result = await _authService.ResetPassword(newPwd);
+        if (result.IsSuccess)
         {
             await DisplayAlert("Success", "Your password has been reset. Please log in using the new password.", "confirm");
             await Navigation.PushAsync(new LoginPage(_authService, prefillEmail: _email, prefillPassword: newPwd));
         }
         else
         {
-            await DisplayAlert("Fail", "Incorrect password setting. Please try again.", "confirm");
+            await DisplayAlert("Fail", result.ErrorMessage, "confirm");
         }
     }
 

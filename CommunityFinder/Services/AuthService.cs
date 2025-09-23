@@ -139,22 +139,43 @@ namespace CommunityFinder.Services
             }
         }
 
-        public async Task<bool> ResetPassword(string password)
+        public async Task<(bool IsSuccess, string ErrorMessage)> ResetPassword(string password)
         {
             var attrs = new UserAttributes
             {
                 Password = password
             };
 
-            var response = await _client.Auth.Update(attrs);
+            try
+            {
+                var response = await _client.Auth.Update(attrs);
 
-            if (response != null)
-            {
-                return true;
+                if (response != null)
+                {
+                    return (true, null);
+                }
+                else
+                {
+                    return (false, "Failed to update password.");
+                }
             }
-            else
+            catch (GotrueException ex)
             {
-                return false;
+                var errObj = JObject.Parse(ex.Message);
+                var errCode = errObj["error_code"]?.ToString();
+                var errMsg = errObj["msg"]?.ToString() ?? ex.Message;
+
+                if (!string.IsNullOrEmpty(errMsg) &&
+                    (errMsg.Contains("different from old", StringComparison.OrdinalIgnoreCase) ||
+                     errMsg.Contains("same as the old", StringComparison.OrdinalIgnoreCase)))
+                {
+                    return (false, errMsg);
+                }
+                return (false, $"Error {errCode}: {errMsg}");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Unexpected error: {ex.Message}");
             }
 
         }
