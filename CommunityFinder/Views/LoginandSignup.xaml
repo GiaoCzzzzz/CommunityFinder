@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CommunityFinder.Views.LoginandSignup"
+             BackgroundColor="#F9FFE3"
+             Title="Welcome">
+
+    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="30">
+
+        <Image Source="icon1.png" WidthRequest="150" HeightRequest="150" HorizontalOptions="Center" />
+
+        <Button Text="Login"
+                x:Name="LoginButton"
+                BackgroundColor="green"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="10"
+                WidthRequest="200"
+                HeightRequest="50"
+                Clicked="OnLoginClicked" />
+
+        <Button Text="Sign Up"
+                x:Name="SignupButton"
+                BackgroundColor="#CC1416"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="10"
+                WidthRequest="200"
+                HeightRequest="50"
+                Clicked="OnSignupClicked" />
+
+    </VerticalStackLayout>
+</ContentPage>

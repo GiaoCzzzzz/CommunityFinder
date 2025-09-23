@@ -22,14 +22,8 @@ namespace CommunityFinder
             // 2. new 一个 AuthService 和你要展示的页面  
             var authService = new AuthService(client);
             //var profileService = new ProfileService(client);
-            if (Preferences.Get("QuickLogin", string.Empty) == "Yes") { 
-            // 3. 包裹在 NavigationPage 里  
-                MainPage = new NavigationPage(new QuickLoginPage(authService));
-            }
-            else
-            {
-                MainPage = new NavigationPage(new LoginPage(authService));
-            }
+            MainPage = new NavigationPage(new LoginandSignup(authService));
+
         }
 
         //protected override void OnAppLinkRequestReceived(Uri uri)
