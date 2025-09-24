@@ -29,7 +29,7 @@ namespace CommunityFinder.Views
             var email = EmailEntry.Text?.Trim();
             var pwd = PasswordEntry.Text;
             var displayName = UsernameEntry.Text?.Trim();
-            var phone = PhoneEntry.Text?.Trim();
+            //var phone = PhoneEntry.Text?.Trim();
             var confirmPwd = ConfirmPasswordEntry.Text;
 
             bool hasError = false;
@@ -43,12 +43,12 @@ namespace CommunityFinder.Views
             }
 
             // 手机号验证
-            if (string.IsNullOrEmpty(phone))
-            {
-                PhoneErrorLabel.Text = "Phone number is required.";
-                PhoneErrorLabel.IsVisible = true;
-                hasError = true;
-            }
+            //if (string.IsNullOrEmpty(phone))
+            //{
+            //    PhoneErrorLabel.Text = "Phone number is required.";
+            //    PhoneErrorLabel.IsVisible = true;
+            //    hasError = true;
+            //}
 
             // 邮箱验证
             if (string.IsNullOrEmpty(email))
@@ -89,7 +89,7 @@ namespace CommunityFinder.Views
             if (hasError)
                 return;
 
-            var result = await _authService.SignUpAsync(email, pwd, displayName, phone);
+            var result = await _authService.SignUpAsync(email, pwd, displayName,"Please Enter Phone number");
             if (result.IsSuccess)
             {
                 await DisplayAlert("Success", "Registration successful. You will receive the confirmation email, please check.", "Confirm");
@@ -125,12 +125,12 @@ namespace CommunityFinder.Views
                 UsernameErrorLabel.Text = "Username is required.";
         }
 
-        private void OnPhoneTextChanged(object sender, TextChangedEventArgs e)
-        {
-            PhoneErrorLabel.IsVisible = string.IsNullOrWhiteSpace(e.NewTextValue);
-            if (PhoneErrorLabel.IsVisible)
-                PhoneErrorLabel.Text = "Phone number is required.";
-        }
+        //private void OnPhoneTextChanged(object sender, TextChangedEventArgs e)
+        //{
+        //    PhoneErrorLabel.IsVisible = string.IsNullOrWhiteSpace(e.NewTextValue);
+        //    if (PhoneErrorLabel.IsVisible)
+        //        PhoneErrorLabel.Text = "Phone number is required.";
+        //}
 
         private void OnEmailTextChanged(object sender, TextChangedEventArgs e)
         {

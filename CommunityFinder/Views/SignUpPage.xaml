@@ -35,7 +35,7 @@
                 <Label x:Name="EmailErrorLabel" TextColor="Red"
                        FontSize="12" IsVisible="False" />
 
-                <!-- 手机号 -->
+                <!-- 手机号 
                 <Entry x:Name="PhoneEntry" Placeholder="Mobile phone number"
                        PlaceholderColor="#000000" Keyboard="Telephone"
                        BackgroundColor="#D9D9D9" HeightRequest="48" FontSize="16"
@@ -43,7 +43,7 @@
                 <Label x:Name="PhoneErrorLabel" TextColor="Red"
                        FontSize="12" IsVisible="False" />
 
-                <!-- 密码 -->
+                <密码 -->
                 <Grid>
                     <Entry x:Name="PasswordEntry" Placeholder="Password"
                            PlaceholderColor="#000000" IsPassword="True"

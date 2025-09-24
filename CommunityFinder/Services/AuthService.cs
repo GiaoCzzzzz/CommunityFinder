@@ -43,7 +43,7 @@ namespace CommunityFinder.Services
             };
             try
             {
-                var ok = await _client.Auth.SignUp(email, password, opts);
+                var ok = await _client.Auth.SignUp(email,password, opts);
                 if (ok.User != null)
                     return (true, null);
                 else
@@ -241,8 +241,10 @@ namespace CommunityFinder.Services
 
         public async Task<Profiles> GetProfiles()
         {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
             var resp = await _client
                 .From<Profiles>()
+                .Where(x => x.id == userGuid)
                 .Get();
 
             return resp.Model;
