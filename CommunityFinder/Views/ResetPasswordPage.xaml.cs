@@ -1,5 +1,4 @@
-using CommunityFinder.Services;
-using System.Text.RegularExpressions;   
+ï»¿using CommunityFinder.Services;
 
 namespace CommunityFinder.Views;
 
@@ -31,15 +30,9 @@ public partial class ResetPasswordPage : ContentPage
         var newPwd = PasswordEntry.Text?.Trim();
         var confirmPwd = ConfirmEntry.Text?.Trim();
 
-        if (string.IsNullOrWhiteSpace(newPwd))
+        if (string.IsNullOrWhiteSpace(newPwd) || string.IsNullOrWhiteSpace(confirmPwd))
         {
-            await DisplayAlert("Warn", "Please enter a new password.", "confirm");
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(confirmPwd))
-        {
-            await DisplayAlert("Warn", "Please confirm your new password.", "confirm");
+            await DisplayAlert("Warn", "Please fill in both password fields.", "confirm");
             return;
         }
 
@@ -51,7 +44,7 @@ public partial class ResetPasswordPage : ContentPage
 
         if (newPwd != confirmPwd)
         {
-            await DisplayAlert("Warn", "The two entered passwords are not the same.", "confirm");
+            await DisplayAlert("Warn", "Passwords do not match.", "confirm");
             return;
         }
 
@@ -69,51 +62,70 @@ public partial class ResetPasswordPage : ContentPage
 
     private void OnPasswordTextChanged(object sender, TextChangedEventArgs e)
     {
-        var pwd = e.NewTextValue;
+        var pwd = e.NewTextValue ?? string.Empty;
+        UpdateRuleDisplay(pwd, PasswordRuleLength, PasswordRuleUpper, PasswordRuleLower, PasswordRuleDigit, PasswordRuleSpecial, PasswordRulesStack);
 
-        if (string.IsNullOrEmpty(pwd))
-        {
-            PasswordErrorLabel.Text = "Password is required.";
-            PasswordErrorLabel.IsVisible = true;
-        }
-        else if (!IsValidPassword(pwd))
-        {
-            PasswordErrorLabel.Text =
-                "Password must be at least 6 characters,\ncontain one letter, one number,\nand one special character.";
-            PasswordErrorLabel.IsVisible = true;
-        }
-        else
-        {
-            PasswordErrorLabel.IsVisible = false;
-        }
-
-        // Í¬²½¼ì²éÈ·ÈÏÃÜÂëÒ»ÖÂÐÔ
+        // åŒæ­¥æ£€æŸ¥ç¡®è®¤å¯†ç ä¸€è‡´æ€§
         OnConfirmPasswordTextChanged(sender, null);
     }
 
     private void OnConfirmPasswordTextChanged(object sender, TextChangedEventArgs e)
     {
-        var pwd = PasswordEntry.Text;
-        var confirm = ConfirmEntry.Text;
+        var confirm = ConfirmEntry.Text ?? string.Empty;
+        UpdateRuleDisplay(confirm, ConfirmRuleLength, ConfirmRuleUpper, ConfirmRuleLower, ConfirmRuleDigit, ConfirmRuleSpecial, ConfirmRulesStack);
 
+        var pwd = PasswordEntry.Text ?? string.Empty;
         if (!string.IsNullOrEmpty(confirm) && pwd != confirm)
         {
-            ConfirmErrorLabel.Text = "Passwords do not match.";
-            ConfirmErrorLabel.IsVisible = true;
+            ConfirmMismatchLabel.Text = "âœ— Passwords do not match";
+            ConfirmMismatchLabel.TextColor = Colors.Red;
+            ConfirmRulesStack.IsVisible = true;
         }
         else
         {
-            ConfirmErrorLabel.IsVisible = false;
+            ConfirmMismatchLabel.Text = string.Empty;
         }
+    }
+
+    private void UpdateRuleDisplay(string pwd, Label length, Label upper, Label lower, Label digit, Label special, StackLayout container)
+    {
+        bool valid = true;
+
+        bool isLength = pwd.Length >= 6;
+        length.Text = isLength ? "âœ“ At least 6 characters" : "âœ— At least 6 characters";
+        length.TextColor = isLength ? Colors.Green : Colors.Red;
+        valid &= isLength;
+
+        bool hasUpper = pwd.Any(char.IsUpper);
+        upper.Text = hasUpper ? "âœ“ At least one uppercase letter" : "âœ— At least one uppercase letter";
+        upper.TextColor = hasUpper ? Colors.Green : Colors.Red;
+        valid &= hasUpper;
+
+        bool hasLower = pwd.Any(char.IsLower);
+        lower.Text = hasLower ? "âœ“ At least one lowercase letter" : "âœ— At least one lowercase letter";
+        lower.TextColor = hasLower ? Colors.Green : Colors.Red;
+        valid &= hasLower;
+
+        bool hasDigit = pwd.Any(char.IsDigit);
+        digit.Text = hasDigit ? "âœ“ At least one digit" : "âœ— At least one digit";
+        digit.TextColor = hasDigit ? Colors.Green : Colors.Red;
+        valid &= hasDigit;
+
+        bool hasSpecial = pwd.Any(ch => !char.IsLetterOrDigit(ch));
+        special.Text = hasSpecial ? "âœ“ At least one special character" : "âœ— At least one special character";
+        special.TextColor = hasSpecial ? Colors.Green : Colors.Red;
+        valid &= hasSpecial;
+
+        container.IsVisible = !valid;
     }
 
     private bool IsValidPassword(string password)
     {
-        if (password.Length < 6) return false;
-        bool hasLetter = password.Any(char.IsLetter);
-        bool hasDigit = password.Any(char.IsDigit);
-        bool hasSpecial = password.Any(ch => !char.IsLetterOrDigit(ch));
-        return hasLetter && hasDigit && hasSpecial;
+        return password.Length >= 6 &&
+               password.Any(char.IsUpper) &&
+               password.Any(char.IsLower) &&
+               password.Any(char.IsDigit) &&
+               password.Any(ch => !char.IsLetterOrDigit(ch));
     }
 
     private void OnTogglePasswordClicked(object sender, EventArgs e)

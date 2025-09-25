@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+ï»¿using System.Text.RegularExpressions;
 using CommunityFinder.Services;
 
 namespace CommunityFinder.Views
@@ -27,14 +27,13 @@ namespace CommunityFinder.Views
         async void OnSignUpClicked(object sender, EventArgs e)
         {
             var email = EmailEntry.Text?.Trim();
-            var pwd = PasswordEntry.Text;
+            var pwd = PasswordEntry.Text ?? string.Empty;
+            var confirmPwd = ConfirmPasswordEntry.Text ?? string.Empty;
             var displayName = UsernameEntry.Text?.Trim();
-            //var phone = PhoneEntry.Text?.Trim();
-            var confirmPwd = ConfirmPasswordEntry.Text;
 
             bool hasError = false;
 
-            // ÓÃ»§ÃûÑéÖ¤
+            // ç”¨æˆ·åéªŒè¯
             if (string.IsNullOrEmpty(displayName))
             {
                 UsernameErrorLabel.Text = "Username is required.";
@@ -42,15 +41,7 @@ namespace CommunityFinder.Views
                 hasError = true;
             }
 
-            // ÊÖ»úºÅÑéÖ¤
-            //if (string.IsNullOrEmpty(phone))
-            //{
-            //    PhoneErrorLabel.Text = "Phone number is required.";
-            //    PhoneErrorLabel.IsVisible = true;
-            //    hasError = true;
-            //}
-
-            // ÓÊÏäÑéÖ¤
+            // é‚®ç®±éªŒè¯
             if (string.IsNullOrEmpty(email))
             {
                 EmailErrorLabel.Text = "Email is required.";
@@ -64,32 +55,35 @@ namespace CommunityFinder.Views
                 hasError = true;
             }
 
-            // ÃÜÂëÑéÖ¤
-            if (string.IsNullOrEmpty(pwd))
+            // å¯†ç éªŒè¯
+            if (!IsValidPassword(pwd))
             {
-                PasswordErrorLabel.Text = "Password is required.";
-                PasswordErrorLabel.IsVisible = true;
-                hasError = true;
-            }
-            else if (!IsValidPassword(pwd))
-            {
-                PasswordErrorLabel.Text = "Password must be at least 6 characters,\ncontain one letter, one number,\nand one special character.";
-                PasswordErrorLabel.IsVisible = true;
+                PasswordRulesStack.IsVisible = true;
                 hasError = true;
             }
 
-            // È·ÈÏÃÜÂëÑéÖ¤
+            // ç¡®è®¤å¯†ç éªŒè¯
             if (pwd != confirmPwd)
             {
-                ConfirmPasswordErrorLabel.Text = "Passwords do not match.";
-                ConfirmPasswordErrorLabel.IsVisible = true;
+                ConfirmMismatchLabel.Text = "âœ— Passwords do not match";
+                ConfirmMismatchLabel.TextColor = Colors.Red;
+                ConfirmRulesStack.IsVisible = true;
                 hasError = true;
+            }
+            else if (!IsValidPassword(confirmPwd))
+            {
+                ConfirmRulesStack.IsVisible = true;
+                hasError = true;
+            }
+            else
+            {
+                ConfirmMismatchLabel.Text = string.Empty;
             }
 
             if (hasError)
                 return;
 
-            var result = await _authService.SignUpAsync(email, pwd, displayName,"Please Enter Phone number");
+            var result = await _authService.SignUpAsync(email, pwd, displayName, "Please Enter Phone number");
             if (result.IsSuccess)
             {
                 await DisplayAlert("Success", "Registration successful. You will receive the confirmation email, please check.", "Confirm");
@@ -125,13 +119,6 @@ namespace CommunityFinder.Views
                 UsernameErrorLabel.Text = "Username is required.";
         }
 
-        //private void OnPhoneTextChanged(object sender, TextChangedEventArgs e)
-        //{
-        //    PhoneErrorLabel.IsVisible = string.IsNullOrWhiteSpace(e.NewTextValue);
-        //    if (PhoneErrorLabel.IsVisible)
-        //        PhoneErrorLabel.Text = "Phone number is required.";
-        //}
-
         private void OnEmailTextChanged(object sender, TextChangedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(e.NewTextValue))
@@ -152,50 +139,70 @@ namespace CommunityFinder.Views
 
         private void OnPasswordTextChanged(object sender, TextChangedEventArgs e)
         {
-            var pwd = e.NewTextValue;
+            var pwd = e.NewTextValue ?? string.Empty;
+            UpdateRuleDisplay(pwd, PasswordRuleLength, PasswordRuleUpper, PasswordRuleLower, PasswordRuleDigit, PasswordRuleSpecial, PasswordRulesStack);
 
-            if (string.IsNullOrEmpty(pwd))
-            {
-                PasswordErrorLabel.Text = "Password is required.";
-                PasswordErrorLabel.IsVisible = true;
-            }
-            else if (!IsValidPassword(pwd))
-            {
-                PasswordErrorLabel.Text = "Password must be at least 6 characters,\ncontain one letter, one number,\nand one special character.";
-                PasswordErrorLabel.IsVisible = true;
-            }
-            else
-            {
-                PasswordErrorLabel.IsVisible = false;
-            }
-
-            // Í¬Ê±¼ì²éÈ·ÈÏÃÜÂëÊÇ·ñÒ»ÖÂ
+            // åŒæ­¥æ£€æŸ¥ç¡®è®¤å¯†ç ä¸€è‡´æ€§
             OnConfirmPasswordTextChanged(sender, null);
         }
 
         private void OnConfirmPasswordTextChanged(object sender, TextChangedEventArgs e)
         {
-            var pwd = PasswordEntry.Text;
-            var confirm = ConfirmPasswordEntry.Text;
+            var confirm = ConfirmPasswordEntry.Text ?? string.Empty;
+            UpdateRuleDisplay(confirm, ConfirmRuleLength, ConfirmRuleUpper, ConfirmRuleLower, ConfirmRuleDigit, ConfirmRuleSpecial, ConfirmRulesStack);
 
+            var pwd = PasswordEntry.Text ?? string.Empty;
             if (!string.IsNullOrEmpty(confirm) && pwd != confirm)
             {
-                ConfirmPasswordErrorLabel.Text = "Passwords do not match.";
-                ConfirmPasswordErrorLabel.IsVisible = true;
+                ConfirmMismatchLabel.Text = "âœ— Passwords do not match";
+                ConfirmMismatchLabel.TextColor = Colors.Red;
+                ConfirmRulesStack.IsVisible = true;
             }
             else
             {
-                ConfirmPasswordErrorLabel.IsVisible = false;
+                ConfirmMismatchLabel.Text = string.Empty;
             }
+        }
+
+        private void UpdateRuleDisplay(string pwd, Label length, Label upper, Label lower, Label digit, Label special, StackLayout container)
+        {
+            bool valid = true;
+
+            bool isLength = pwd.Length >= 6;
+            length.Text = isLength ? "âœ“ At least 6 characters" : "âœ— At least 6 characters";
+            length.TextColor = isLength ? Colors.Green : Colors.Red;
+            valid &= isLength;
+
+            bool hasUpper = pwd.Any(char.IsUpper);
+            upper.Text = hasUpper ? "âœ“ At least one uppercase letter" : "âœ— At least one uppercase letter";
+            upper.TextColor = hasUpper ? Colors.Green : Colors.Red;
+            valid &= hasUpper;
+
+            bool hasLower = pwd.Any(char.IsLower);
+            lower.Text = hasLower ? "âœ“ At least one lowercase letter" : "âœ— At least one lowercase letter";
+            lower.TextColor = hasLower ? Colors.Green : Colors.Red;
+            valid &= hasLower;
+
+            bool hasDigit = pwd.Any(char.IsDigit);
+            digit.Text = hasDigit ? "âœ“ At least one digit" : "âœ— At least one digit";
+            digit.TextColor = hasDigit ? Colors.Green : Colors.Red;
+            valid &= hasDigit;
+
+            bool hasSpecial = pwd.Any(ch => !char.IsLetterOrDigit(ch));
+            special.Text = hasSpecial ? "âœ“ At least one special character" : "âœ— At least one special character";
+            special.TextColor = hasSpecial ? Colors.Green : Colors.Red;
+            valid &= hasSpecial;
+
+            container.IsVisible = !valid;
         }
 
         private bool IsValidPassword(string password)
         {
-            if (password.Length < 6) return false;
-            bool hasLetter = password.Any(char.IsLetter);
-            bool hasDigit = password.Any(char.IsDigit);
-            bool hasSpecial = password.Any(ch => !char.IsLetterOrDigit(ch));
-            return hasLetter && hasDigit && hasSpecial;
+            return password.Length >= 6 &&
+                   password.Any(char.IsUpper) &&
+                   password.Any(char.IsLower) &&
+                   password.Any(char.IsDigit) &&
+                   password.Any(ch => !char.IsLetterOrDigit(ch));
         }
     }
 }

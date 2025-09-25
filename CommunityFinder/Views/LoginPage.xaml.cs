@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+ï»¿using System.Text.RegularExpressions;
 using CommunityFinder.Services;
 
 namespace CommunityFinder.Views;
@@ -30,11 +30,11 @@ public partial class LoginPage : ContentPage
     async void OnLoginClicked(object sender, EventArgs e)
     {
         var email = EmailEntry.Text?.Trim();
-        var pwd = PasswordEntry.Text;
+        var pwd = PasswordEntry.Text ?? string.Empty;
 
         bool hasError = false;
 
-        // ÓÊÏäÑéÖ¤
+        // é‚®ç®±éªŒè¯
         if (string.IsNullOrEmpty(email))
         {
             EmailErrorLabel.Text = "Email is required.";
@@ -42,18 +42,10 @@ public partial class LoginPage : ContentPage
             hasError = true;
         }
 
-        // ÃÜÂëÑéÖ¤
-        if (string.IsNullOrEmpty(pwd))
+        // å¯†ç éªŒè¯
+        if (!IsValidPassword(pwd))
         {
-            PasswordErrorLabel.Text = "Password is required.";
-            PasswordErrorLabel.IsVisible = true;
-            hasError = true;
-        }
-        else if (!IsValidPassword(pwd))
-        {
-            PasswordErrorLabel.Text =
-                "Password must be at least 6 characters,\ncontain one letter, one number,\nand one special character.";
-            PasswordErrorLabel.IsVisible = true;
+            PasswordRulesStack.IsVisible = true;
             hasError = true;
         }
 
@@ -109,31 +101,48 @@ public partial class LoginPage : ContentPage
 
     private void OnPasswordTextChanged(object sender, TextChangedEventArgs e)
     {
-        var pwd = e.NewTextValue;
+        var pwd = e.NewTextValue ?? string.Empty;
+        UpdateRuleDisplay(pwd);
+    }
 
-        if (string.IsNullOrEmpty(pwd))
-        {
-            PasswordErrorLabel.Text = "Password is required.";
-            PasswordErrorLabel.IsVisible = true;
-        }
-        else if (!IsValidPassword(pwd))
-        {
-            PasswordErrorLabel.Text =
-                "Password must be at least 6 characters,\ncontain one letter, one number,\nand one special character.";
-            PasswordErrorLabel.IsVisible = true;
-        }
-        else
-        {
-            PasswordErrorLabel.IsVisible = false;
-        }
+    private void UpdateRuleDisplay(string pwd)
+    {
+        bool valid = true;
+
+        bool isLength = pwd.Length >= 6;
+        PasswordRuleLength.Text = isLength ? "âœ“ At least 6 characters" : "âœ— At least 6 characters";
+        PasswordRuleLength.TextColor = isLength ? Colors.Green : Colors.Red;
+        valid &= isLength;
+
+        bool hasUpper = pwd.Any(char.IsUpper);
+        PasswordRuleUpper.Text = hasUpper ? "âœ“ At least one uppercase letter" : "âœ— At least one uppercase letter";
+        PasswordRuleUpper.TextColor = hasUpper ? Colors.Green : Colors.Red;
+        valid &= hasUpper;
+
+        bool hasLower = pwd.Any(char.IsLower);
+        PasswordRuleLower.Text = hasLower ? "âœ“ At least one lowercase letter" : "âœ— At least one lowercase letter";
+        PasswordRuleLower.TextColor = hasLower ? Colors.Green : Colors.Red;
+        valid &= hasLower;
+
+        bool hasDigit = pwd.Any(char.IsDigit);
+        PasswordRuleDigit.Text = hasDigit ? "âœ“ At least one digit" : "âœ— At least one digit";
+        PasswordRuleDigit.TextColor = hasDigit ? Colors.Green : Colors.Red;
+        valid &= hasDigit;
+
+        bool hasSpecial = pwd.Any(ch => !char.IsLetterOrDigit(ch));
+        PasswordRuleSpecial.Text = hasSpecial ? "âœ“ At least one special character" : "âœ— At least one special character";
+        PasswordRuleSpecial.TextColor = hasSpecial ? Colors.Green : Colors.Red;
+        valid &= hasSpecial;
+
+        PasswordRulesStack.IsVisible = !valid;
     }
 
     private bool IsValidPassword(string password)
     {
-        if (password.Length < 6) return false;
-        bool hasLetter = password.Any(char.IsLetter);
-        bool hasDigit = password.Any(char.IsDigit);
-        bool hasSpecial = password.Any(ch => !char.IsLetterOrDigit(ch));
-        return hasLetter && hasDigit && hasSpecial;
+        return password.Length >= 6 &&
+               password.Any(char.IsUpper) &&
+               password.Any(char.IsLower) &&
+               password.Any(char.IsDigit) &&
+               password.Any(ch => !char.IsLetterOrDigit(ch));
     }
 }

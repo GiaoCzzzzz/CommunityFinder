@@ -53,11 +53,15 @@
                                  Aspect="AspectFit"
                                  Scale="0.6"/>
                 </Grid>
-                <Label x:Name="PasswordErrorLabel"
-                       TextColor="Red"
-                       FontSize="12"
-                       IsVisible="False"
-                       Margin="0,-10,0,10" />
+
+                <!-- 密码规则提示 -->
+                <StackLayout x:Name="PasswordRulesStack" IsVisible="False" Spacing="2">
+                    <Label x:Name="PasswordRuleLength" FontSize="12" TextColor="Red" />
+                    <Label x:Name="PasswordRuleUpper" FontSize="12" TextColor="Red" />
+                    <Label x:Name="PasswordRuleLower" FontSize="12" TextColor="Red" />
+                    <Label x:Name="PasswordRuleDigit" FontSize="12" TextColor="Red" />
+                    <Label x:Name="PasswordRuleSpecial" FontSize="12" TextColor="Red" />
+                </StackLayout>
 
                 <Button Text="Confirm"
                         Clicked="OnLoginClicked"
