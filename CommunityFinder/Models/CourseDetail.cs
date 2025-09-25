@@ -2,6 +2,8 @@
 
 namespace CommunityFinder.Models
 {
+
+    // 课程详情的储存
     public class CourseDetail
     {
         // 顶部

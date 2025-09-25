@@ -6,6 +6,7 @@ using CommunityFinder.Services;
 
 namespace CommunityFinder.ViewModels
 {
+    // 课程详情页的 ViewModel
     public class CourseDetailViewModel : INotifyPropertyChanged
     {
         private readonly CourseDetailService _service = new();

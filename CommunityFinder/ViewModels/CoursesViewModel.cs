@@ -12,6 +12,8 @@ using System.Windows.Input;
 using System.Text;
 
 namespace CommunityFinder.ViewModels
+
+//Mainpage 的 ViewModel
 {
     public class CoursesViewModel : INotifyPropertyChanged
     {

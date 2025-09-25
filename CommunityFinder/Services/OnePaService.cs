@@ -9,6 +9,8 @@ using CommunityFinder.Models;
 
 namespace CommunityFinder.Services
 {
+
+    // 这个类用来与 OnePa.gov.sg 的 API 交互，获取课程信息，抓取课程列表的Fetch的JSON
     public class OnePaService
     {
         private readonly HttpClient _http;

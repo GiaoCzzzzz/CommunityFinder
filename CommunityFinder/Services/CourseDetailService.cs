@@ -6,7 +6,7 @@ using CommunityFinder.Models;
 namespace CommunityFinder.Services
 {
     /// <summary>
-    /// 解析课程详情页 HTML 里的 window.reactComponents.push({ component:"CourseDetails", data:{...} })
+    /// 解析课程详情页 HTML 里的 window.reactComponents.push({ component:"CourseDetails", data:{...} }) 也就是 doc 里的 JSON 数据。
     /// </summary>
     public class CourseDetailService
     {

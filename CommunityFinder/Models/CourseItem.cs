@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//这个是用来存储课程信息的类
+
 namespace CommunityFinder.Models
 {
     public class CourseItem
