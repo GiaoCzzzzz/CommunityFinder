@@ -13,7 +13,9 @@
 6.对数据进行分类处理
 
 
+
 关于前端的建议 
+
 Mainpage 和 CourseDetail 页面的基本前段样式已经大致做好了
 
 阶段2的代码使用MVVM结构，所以每个阶段2的page都会有一个对应的ViewModel在ViewModel文件夹！！！！请注意
