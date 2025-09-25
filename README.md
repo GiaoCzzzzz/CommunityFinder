@@ -16,7 +16,7 @@
 
 关于前端的建议 
 
-Mainpage 和 CourseDetail 页面的基本前段样式已经大致做好了
+Mainpage 和 CourseDetail 页面的基本前端样式已经大致做好了 --- 有些部分我（ccz）并没有完全对照figma，而是对照OnePA
 
 阶段2的代码使用MVVM结构，所以每个阶段2的page都会有一个对应的ViewModel在ViewModel文件夹！！！！请注意
 
