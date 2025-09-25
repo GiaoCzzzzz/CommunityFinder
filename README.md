@@ -7,6 +7,8 @@
 6. 对数据进行分类处理
 
 关于前端的建议
+Mainpage 和 CourseDetail 页面的基本前段样式已经大致做好了
+
 1. 添加加载动画？
 2. Mainpage 页面的课程筛选器无法正常显示
 3. Mainpage 和 CourseDetail 页面没有响应式布局（当屏幕过小时缺失一些内容）
