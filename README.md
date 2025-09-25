@@ -12,6 +12,6 @@
 Mainpage 和 CourseDetail 页面的基本前段样式已经大致做好了
 阶段2的代码使用MVVM结构，所以每个阶段2的page都会有一个对应的ViewModel在ViewModel文件夹！！！！请注意
 
-添加加载动画？
-1.Mainpage 页面的课程筛选器无法正常显示
-2.Mainpage 和 CourseDetail 页面没有响应式布局（当屏幕过小时缺失一些内容）
+1.添加加载动画？
+2.Mainpage 页面的课程筛选器无法正常显示
+3.Mainpage 和 CourseDetail 页面没有响应式布局（当屏幕过小时缺失一些内容）
