@@ -18,6 +18,21 @@ namespace CommunityFinder.Models
         public int MaxVacancy { get; set; }
         public double? MinPrice { get; set; }
         public double? MaxPrice { get; set; }
+
+        public string PriceRangeDisplay
+        {
+            get
+            {
+                if (MinPrice.HasValue && MaxPrice.HasValue)
+                    return $"From ${MinPrice:0.00} to ${MaxPrice:0.00}";
+                if (MinPrice.HasValue)
+                    return $"${MinPrice:0.00}";
+                if (MaxPrice.HasValue)
+                    return $"${MaxPrice:0.00}";
+                return "Price unavailable";
+            }
+        }
+
         public string DetailUrl { get; set; }      // 绝对或相对链接
         public bool HasVacancy => MaxVacancy <= 0 ? false : Vacancy > 0;
 
@@ -47,8 +62,8 @@ namespace CommunityFinder.Models
 
         public static CourseItem FromOnePa(OnePaResult r)
         {
-            double? min = r.Price?.MinPrice ?? r.MinPriceTop;
-            double? max = r.Price?.MaxPrice ?? r.MaxPriceTop;
+            double? min = r.MinPriceTop ?? r.Price?.MinPrice;
+            double? max = r.MaxPriceTop ?? r.Price?.MaxPrice;
 
             var url = string.IsNullOrWhiteSpace(r.ProductUrl) ? r.Share?.Url : r.ProductUrl;
             if (!string.IsNullOrWhiteSpace(url) && url.StartsWith("/"))

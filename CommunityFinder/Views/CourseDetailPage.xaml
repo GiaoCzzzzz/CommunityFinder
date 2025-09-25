@@ -6,12 +6,21 @@
 
     <Grid RowDefinitions="Auto,*">
 
-        <!-- 顶部横幅（用图片；无图时用深色占位） -->
-        <Grid HeightRequest="180" BackgroundColor="#333">
-            <Image Source="{Binding Detail.ImageUrl}" Aspect="AspectFill" Opacity="0.35"/>
-            <VerticalStackLayout Padding="16,24,16,16" VerticalOptions="End" Spacing="6">
+        <!-- 顶部横幅：图片 + 标题 + 课程码 + 名额 -->
+        <Grid HeightRequest="250" BackgroundColor="#333">
+            <Image Source="{Binding Detail.ImageUrl}" Aspect="AspectFill" Opacity="0.35">
+                <Image.HeightRequest>
+                    <OnPlatform x:TypeArguments="x:Double" Default="250" />
+                </Image.HeightRequest>
+            </Image>
+            <VerticalStackLayout Padding="16,28,16,16" VerticalOptions="End" Spacing="6">
                 <Label Text="{Binding Detail.Title}" FontAttributes="Bold" FontSize="22" TextColor="White"/>
-                <Label Text="{Binding Detail.CourseCode, StringFormat='Ref Code: {0}'}" TextColor="#EEEEEE"/>
+                <HorizontalStackLayout Spacing="12">
+                    <Label Text="{Binding Detail.CourseCode, StringFormat='Ref Code: {0}'}" TextColor="#EEEEEE"/>
+                    <!-- 👤 名额（Booked/Max） -->
+                    <Label Text="{Binding Detail.VacancyText, StringFormat='👤 {0}'}"
+                 TextColor="#EEEEEE" IsVisible="{Binding Detail.VacancyText}" />
+                </HorizontalStackLayout>
             </VerticalStackLayout>
         </Grid>
 
@@ -31,9 +40,10 @@
                         <Label Text="{Binding Detail.Description}" LineBreakMode="WordWrap"/>
                     </VerticalStackLayout>
 
-                    <VerticalStackLayout IsVisible="{Binding Detail.HasRequirements}">
+                    <!-- ✅ 合并展示 Requirements + Remarks -->
+                    <VerticalStackLayout IsVisible="{Binding Detail.HasReqAndRemarks}">
                         <Label Text="Requirements and Remarks" FontSize="18" FontAttributes="Bold"/>
-                        <Label Text="{Binding Detail.Requirements}" LineBreakMode="WordWrap"/>
+                        <Label Text="{Binding Detail.RequirementsAndRemarks}" LineBreakMode="WordWrap"/>
                     </VerticalStackLayout>
 
                     <VerticalStackLayout IsVisible="{Binding Detail.HasVenue}">
@@ -41,6 +51,7 @@
                         <Label Text="{Binding Detail.Venue}" LineBreakMode="WordWrap"/>
                     </VerticalStackLayout>
 
+                    <!-- Trainers -->
                     <VerticalStackLayout IsVisible="{Binding Detail.HasTrainers}">
                         <Label Text="Training Provider(s)" FontSize="18" FontAttributes="Bold"/>
                         <CollectionView ItemsSource="{Binding Detail.Trainers}">
