@@ -221,7 +221,79 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
 
         _occupations = new List<string>
         {
-            "Software Developer", "Teacher", "Designer", "Engineer", "Accountant"
+              // --- Business & Finance ---
+  "Accountant", "Financial Analyst", "Auditor", "Bank Teller", "Investment Banker",
+  "Tax Consultant", "Economist", "Actuary", "Loan Officer", "Business Analyst",
+  "Management Consultant", "Project Manager", "Product Manager", "Marketing Manager",
+  "Sales Manager", "Customer Service Representative", "Human Resources Manager",
+  "Recruiter", "Executive Secretary", "Office Clerk", "Client Services Officer",
+
+  // --- Information Technology ---
+  "Software Developer", "Web Developer", "Frontend Developer", "Backend Developer",
+  "Full Stack Developer", "Mobile App Developer", "Game Developer", "Database Administrator",
+  "System Administrator", "Cloud Architect", "DevOps Engineer", "Cybersecurity Specialist",
+  "Data Scientist", "Data Analyst", "Machine Learning Engineer", "AI Prompt Engineer",
+  "Blockchain Developer", "IT Support Specialist", "Network Engineer",
+
+  // --- Engineering & Technical ---
+  "Civil Engineer", "Mechanical Engineer", "Electrical Engineer", "Electronics Engineer",
+  "Chemical Engineer", "Aerospace Engineer", "Biomedical Engineer", "Environmental Engineer",
+  "Industrial Engineer", "Marine Engineer", "Robotics Engineer", "Materials Engineer",
+  "Mining Engineer", "Petroleum Engineer", "Nuclear Engineer", "Sound Engineer",
+  "Technician", "Mechanical Technician", "Lab Technician",
+
+  // --- Science & Research ---
+  "Scientist", "Physicist", "Chemist", "Biologist", "Geologist", "Astronomer",
+  "Meteorologist", "Ecologist", "Pharmacologist", "Medical Researcher", "Geneticist",
+  "Anthropologist", "Sociologist", "Political Scientist", "Psychologist", "Archaeologist",
+  "Historian", "Linguist", "Statistician", "Research Assistant",
+
+  // --- Education ---
+  "Teacher", "Primary School Teacher", "Secondary School Teacher", "University Professor",
+  "Lecturer", "Tutor", "Researcher", "Trainer", "Education Consultant", "School Principal",
+  "Special Education Teacher", "Curriculum Developer", "Librarian",
+
+  // --- Healthcare & Medicine ---
+  "Doctor", "Surgeon", "General Practitioner", "Pediatrician", "Psychiatrist",
+  "Dentist", "Pharmacist", "Nurse", "Nursing Assistant", "Paramedic",
+  "Physiotherapist", "Occupational Therapist", "Audiologist", "Speech Therapist",
+  "Radiologist", "Cardiologist", "Dermatologist", "Gynecologist", "Veterinarian",
+  "Counselor", "Public Health Specialist",
+
+  // --- Arts, Design & Media ---
+  "Artist", "Painter", "Sculptor", "Graphic Designer", "UI/UX Designer",
+  "Interior Designer", "Fashion Designer", "Animator", "Illustrator", "Photographer",
+  "Videographer", "Film Director", "Actor", "Musician", "Singer", "Dancer",
+  "Writer", "Journalist", "Editor", "Copywriter", "Translator", "Interpreter",
+  "Content Creator", "Social Media Manager",
+
+  // --- Law & Government ---
+  "Lawyer", "Judge", "Prosecutor", "Legal Assistant", "Paralegal",
+  "Politician", "Diplomat", "Civil Servant", "Police Officer", "Detective",
+  "Firefighter", "Soldier", "Customs Officer", "Intelligence Analyst",
+
+  // --- Service Industry ---
+  "Chef", "Cook", "Waiter", "Barista", "Bartender", "Hotel Manager",
+  "Receptionist", "Tour Guide", "Flight Attendant", "Travel Agent",
+  "Retail Worker", "Shop Assistant", "Cashier", "Delivery Driver",
+  "Taxi Driver", "Bus Driver", "Truck Driver", "Housekeeper", "Babysitter",
+  "Security Guard", "Personal Trainer", "Beautician", "Hairdresser",
+
+  // --- Construction & Manufacturing ---
+  "Architect", "Construction Worker", "Carpenter", "Electrician", "Plumber",
+  "Welder", "Machinist", "Factory Worker", "Production Manager",
+  "Surveyor", "Quantity Surveyor", "Building Inspector",
+
+  // --- Agriculture & Natural Resources ---
+  "Farmer", "Agricultural Technician", "Horticulturist", "Fisherman",
+  "Forester", "Miner", "Butcher", "Food Scientist", "Agronomist",
+  "Environmental Scientist", "Conservation Officer",
+
+  // --- Emerging & Modern Professions ---
+  "E-commerce Manager", "SEO Specialist", "Digital Marketing Specialist",
+  "Data Labeling Specialist", "Influencer", "Podcaster", "Game Streamer",
+  "Sustainability Consultant", "Climate Change Analyst", "ESG Analyst",
+  "Metaverse Developer", "Virtual Reality Designer", "Renewable Energy Engineer"
         };
 
         NationalityListView.ItemsSource = _countries.Select(c => c.ToString()).ToList();

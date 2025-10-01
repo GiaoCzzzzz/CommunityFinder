@@ -54,12 +54,12 @@ public partial class InterestPage : ContentPage
         if (_selected.Contains(tag))
         {
             _selected.Remove(tag);
-            btn.BackgroundColor = Color.FromArgb("#5DB634FC");
+            btn.BackgroundColor = Color.FromArgb("#5DB634");
         }
         else
         {
             _selected.Add(tag);
-            btn.BackgroundColor = Color.FromArgb("#5DB634");
+            btn.BackgroundColor = Color.FromArgb("#DEF685");
         }
     }
 
