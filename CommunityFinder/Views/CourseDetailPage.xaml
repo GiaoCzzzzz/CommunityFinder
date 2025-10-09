@@ -19,13 +19,13 @@
                     <Label Text="{Binding Detail.CourseCode, StringFormat='Ref Code: {0}'}" TextColor="#EEEEEE"/>
                     <!-- 👤 名额（Booked/Max） -->
                     <Label Text="{Binding Detail.VacancyText, StringFormat='👤 {0}'}"
-                 TextColor="#EEEEEE" IsVisible="{Binding Detail.VacancyText}" />
+                           TextColor="#EEEEEE" IsVisible="{Binding Detail.VacancyText}" />
                 </HorizontalStackLayout>
             </VerticalStackLayout>
         </Grid>
 
         <!-- 主体 -->
-        <Grid Grid.Row="1" ColumnDefinitions="*,320" Padding="16" ColumnSpacing="16">
+        <Grid Grid.Row="1" ColumnDefinitions="*,160" Padding="16" ColumnSpacing="16">
 
             <!-- 左列：正文 -->
             <ScrollView Grid.Column="0">
@@ -77,7 +77,7 @@
                 </VerticalStackLayout>
             </ScrollView>
 
-            <!-- 右列：日期/价格卡片 -->
+            <!-- 右列：日期/价格卡片（宽度缩小为 160） -->
             <Grid Grid.Column="1">
                 <Frame Padding="16" CornerRadius="12" HasShadow="True" BackgroundColor="White">
                     <VerticalStackLayout Spacing="8">
@@ -93,7 +93,7 @@
                         <Label Text="{Binding Detail.PriceText}" />
 
                         <Button Text="Book now" BackgroundColor="#E53935" TextColor="White" CornerRadius="8" Margin="0,8,0,0"
-                    Clicked="OnBookNowClicked"/>
+                                Clicked="OnBookNowClicked"/>
                     </VerticalStackLayout>
                 </Frame>
 
