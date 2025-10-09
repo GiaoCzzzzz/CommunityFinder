@@ -12,8 +12,12 @@ public partial class LoginPage : ContentPage
         InitializeComponent();
         _authService = authService;
 
-        EmailEntry.Text = prefillEmail;
-        PasswordEntry.Text = prefillPassword;
+        //EmailEntry.Text = prefillEmail;
+        //PasswordEntry.Text = prefillPassword;
+
+        // For testing purpose
+        EmailEntry.Text = "chen2004peter@gmail.com";
+        PasswordEntry.Text = "Ccz8855110123_";
     }
 
     protected override void OnAppearing()
@@ -60,7 +64,9 @@ public partial class LoginPage : ContentPage
             Preferences.Set("Password", pwd);
             var first = _authService.FirstProfiles();
             if (await first)
+            {
                 await Navigation.PushAsync(new MainPage(_authService));
+            }
             else
                 await Navigation.PushAsync(new InitialProfilePage(_authService));
         }

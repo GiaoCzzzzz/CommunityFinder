@@ -422,6 +422,21 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
         await Navigation.PushAsync(new InterestPage(_authService));
     }
 
+    async void OnLanguageClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new LanguagePage());
+    }
+
+    async void OnThemeClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new ThemePage());
+    }
+
+    async void OnHistoryClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new HistoryPage(_authService));
+    }
+
     async void OnSaveClicked(object sender, EventArgs e)
     {
         if (AgeErrorLabel.IsVisible || PhoneErrorLabel.IsVisible || PostalCodeErrorLabel.IsVisible ||
@@ -451,6 +466,8 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
             await DisplayAlert("Error", "Failed to save. Please try again.", "OK");
         }
     }
+
+
 
     public class Country
     {

@@ -282,6 +282,181 @@ namespace CommunityFinder.Services
 
             return email_address;
         }
+
+        //以下的方式是用来把课程传到数据库，其次把状态传到数据库
+        public async Task<bool> InsertCourses(CourseItem item)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            var resp = await _client
+                .From<CourseItem>()
+                .Upsert(
+                    new[] { item },
+                    new Supabase.Postgrest.QueryOptions { OnConflict = "ClassId" }
+                );
+            return true;
+        }
+
+        //传入和删除CourseItem的History
+        public async Task<bool> AddHistoryAsync(string classId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+
+            // 获取当前用户的历史
+            var resp = await _client
+                .From<CourseStatus>()
+                .Where(x => x.id == userGuid)
+                .Single();
+
+            // 如果没有记录则初始化
+            if (resp == null)
+            {
+                resp = new CourseStatus
+                {
+                    id = userGuid,
+                    history = new[] { classId }
+                };
+                await _client.From<CourseStatus>().Insert(new[] { resp });
+                return true;
+            }
+
+            var history = resp.history?.ToList() ?? new List<string>();
+            if (!history.Contains(classId))
+                history.Add(classId);
+
+            resp.history = history.ToArray();
+            await resp.Update<CourseStatus>();
+            return true;
+        }
+
+        public async Task<bool> RemoveHistoryAsync(string classId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+
+            var resp = await _client
+                .From<CourseStatus>()
+                .Where(x => x.id == userGuid)
+                .Single();
+
+            var history = resp.history?.ToList() ?? new List<string>();
+            if (history.Contains(classId))
+                history.Remove(classId);
+
+            resp.history = history.ToArray();
+            await resp.Update<CourseStatus>();
+            return true;
+        }
+
+        public async Task<bool> AddViewCountAsync(string classId)
+        {
+            var course = await _client.From<CourseItem>().Where(x => x.ClassId == classId).Single();
+            if (course != null)
+            {
+                course.ViewCount = course.ViewCount + 1;
+                await course.Update<CourseItem>();
+            }
+            return true;
+        }
+
+        //传入删除点赞和收藏
+        public async Task<bool> LikeCourseAsync(string classId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            var resp = await _client.From<CourseStatus>().Where(x => x.id == userGuid).Single();
+            if (resp == null)
+            {
+                resp = new CourseStatus { id = userGuid, likes = new[] { classId } };
+                await _client.From<CourseStatus>().Insert(new[] { resp });
+            }
+            else
+            {
+                var liked = resp.likes?.ToList() ?? new List<string>();
+                if (!liked.Contains(classId))
+                    liked.Add(classId);
+                resp.likes = liked.ToArray();
+                await resp.Update<CourseStatus>();
+            }
+
+            // 更新课程点赞数
+            var course = await _client.From<CourseItem>().Where(x => x.ClassId == classId).Single();
+            if (course != null)
+            {
+                course.LikeCount = course.LikeCount + 1;
+                await course.Update<CourseItem>();
+            }
+            return true;
+        }
+
+        public async Task<bool> UnlikeCourseAsync(string classId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            var resp = await _client.From<CourseStatus>().Where(x => x.id == userGuid).Single();
+            if (resp == null) return true;
+            var liked = resp.likes?.ToList() ?? new List<string>();
+            if (liked.Contains(classId))
+                liked.Remove(classId);
+            resp.likes = liked.ToArray();
+            await resp.Update<CourseStatus>();
+
+            // 更新课程点赞数
+            var course = await _client.From<CourseItem>().Where(x => x.ClassId == classId).Single();
+            if (course != null && course.LikeCount > 0)
+            {
+                course.LikeCount -= 1;
+                await course.Update<CourseItem>();
+            }
+            return true;
+        }
+
+        public async Task<bool> FavoriteCourseAsync(string classId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            var resp = await _client.From<CourseStatus>().Where(x => x.id == userGuid).Single();
+            if (resp == null)
+            {
+                resp = new CourseStatus { id = userGuid, favorites = new[] { classId } };
+                await _client.From<CourseStatus>().Insert(new[] { resp });
+            }
+            else
+            {
+                var favorite = resp.favorites?.ToList() ?? new List<string>();
+                if (!favorite.Contains(classId))
+                    favorite.Add(classId);
+                resp.favorites = favorite.ToArray();
+                await resp.Update<CourseStatus>();
+            }
+
+            // 更新课程收藏数
+            var course = await _client.From<CourseItem>().Where(x => x.ClassId == classId).Single();
+            if (course != null)
+            {
+                course.FavoriteCount = course.FavoriteCount + 1;
+                await course.Update<CourseItem>();
+            }
+            return true;
+        }
+
+        public async Task<bool> UnfavoriteCourseAsync(string classId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            var resp = await _client.From<CourseStatus>().Where(x => x.id == userGuid).Single();
+            if (resp == null) return true;
+            var favorite = resp.favorites?.ToList() ?? new List<string>();
+            if (favorite.Contains(classId))
+                favorite.Remove(classId);
+            resp.favorites = favorite.ToArray();
+            await resp.Update<CourseStatus>();
+
+            // 更新课程收藏数
+            var course = await _client.From<CourseItem>().Where(x => x.ClassId == classId).Single();
+            if (course != null && course.FavoriteCount > 0)
+            {
+                course.FavoriteCount -= 1;
+                await course.Update<CourseItem>();
+            }
+            return true;
+        }
+
+
     }
 }
 

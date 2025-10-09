@@ -97,6 +97,26 @@
                     </VerticalStackLayout>
                 </Frame>
 
+                <Grid Padding="0" HorizontalOptions="End" VerticalOptions="End"
+      Margin="0,0,16,16" RowDefinitions="Auto" ColumnDefinitions="Auto,20,Auto,20,Auto">
+
+                    <!-- 点赞按钮 -->
+                    <Button Command="{Binding LikeCommand}"
+            Text="{Binding IsLiked, Converter={StaticResource ThumbTextConverter}}"
+            BackgroundColor="Transparent" FontSize="24" Grid.Column="0" WidthRequest="28" HeightRequest="28"/>
+                    <Label Text="{Binding LikeCount}" VerticalOptions="Center"/>
+
+                    <!-- 收藏按钮 -->
+                    <Button Command="{Binding FavoriteCommand}"
+            Text="{Binding IsFavorited, Converter={StaticResource StarTextConverter}}"
+            BackgroundColor="Transparent" FontSize="24" Grid.Column="2" WidthRequest="28" HeightRequest="28"/>
+                    <Label Text="{Binding FavoriteCount}" VerticalOptions="Center"/>
+
+                    <!-- 浏览次数图标 -->
+                    <Label Text="👁" FontSize="24" VerticalOptions="Center"/>
+                    <Label Text="{Binding ViewCount}" VerticalOptions="Center"/>
+                </Grid  >
+
                 <!-- 局部加载遮罩（只盖住右侧卡片区域） -->
                 <Grid IsVisible="{Binding IsBusy}" BackgroundColor="#66000000" InputTransparent="False">
                     <ActivityIndicator IsRunning="True" IsVisible="True"

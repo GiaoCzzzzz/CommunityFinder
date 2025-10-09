@@ -1,3 +1,4 @@
+using CommunityFinder.Services;
 using CommunityFinder.ViewModels;
 using Microsoft.Maui.ApplicationModel;
 
@@ -5,20 +6,27 @@ namespace CommunityFinder.Views
 {
     public partial class CourseDetailPage : ContentPage
     {
-        private readonly CourseDetailViewModel _vm = new();
+        private readonly CourseDetailViewModel _vm;
         private readonly string _detailUrl;
+        readonly AuthService _authService;
 
-        public CourseDetailPage(string detailUrl)
+        public CourseDetailPage(string detailUrl, AuthService authService)
         {
             InitializeComponent();
+            _vm = new CourseDetailViewModel(authService);
             BindingContext = _vm;
+            
             _detailUrl = detailUrl;
+            _authService = authService;
+
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             await _vm.LoadAsync(_detailUrl);
+            if (_vm.Detail?.CourseCode != null)
+                await _vm.LoadStatusAsync(_vm.Detail.CourseCode);
         }
 
         private async void OnBookNowClicked(object sender, EventArgs e)

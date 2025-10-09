@@ -74,7 +74,9 @@ namespace CommunityFinder
         {
             if (e.CurrentSelection?.FirstOrDefault() is CourseItem item && !string.IsNullOrWhiteSpace(item.DetailUrl))
             {
-                await Navigation.PushAsync(new CourseDetailPage(item.DetailUrl));
+                await _authService.InsertCourses(item);
+                await _authService.AddHistoryAsync(item.ClassId);
+                await Navigation.PushAsync(new CourseDetailPage(item.DetailUrl, _authService));
             }
         }
     }

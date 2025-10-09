@@ -45,6 +45,13 @@
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Models\CourseCache.cs" />
+    <Compile Remove="Models\CourseFavorite.cs" />
+    <Compile Remove="Models\CourseStat.cs" />
+    <Compile Remove="Models\UserLastView.cs" />
+    <Compile Remove="Services\HistoryService.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Platforms\Android\google-services.json" />
   </ItemGroup>
   <ItemGroup>
@@ -70,10 +77,16 @@
     <MauiXaml Update="Views\ForgotPasswordPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Views\HistoryPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Views\InitialProfilePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Views\InterestPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Views\LanguagePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Views\LoginPage.xaml">
@@ -89,6 +102,9 @@
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Views\SignUpPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Views\ThemePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Views\VerifyTokenPage.xaml">

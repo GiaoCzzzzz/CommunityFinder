@@ -6,69 +6,87 @@
              BackgroundColor="#F9FFE3">
 
     <ScrollView>
-        <StackLayout Padding="30" Spacing="20" VerticalOptions="Center">
 
-            <Label Text="About You" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#333" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-            <Label Text="Email" FontSize="14" TextColor="#333" />
-            <Entry x:Name="EmailEntry" IsReadOnly="True" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" />
+            <!-- 左侧纵向导航 -->
+            <VerticalStackLayout Grid.Column="0" Padding="12" Spacing="8"
+                             BackgroundColor="#F2F4F7">
+                <Button Text="Account" FontAttributes="Bold" Padding="10,8"
+                   BackgroundColor="#E5E7EB" TextColor="Black"/>
+                <Button Text="Language"  Clicked="OnLanguageClicked"  />
+                <Button Text="Theme"     Clicked="OnThemeClicked"     />
+                <Button Text="History"   Clicked="OnHistoryClicked"   />
+            </VerticalStackLayout>
 
-            <Label Text="Display Name" FontSize="14" TextColor="#333" />
-            <Entry x:Name="DisplayNameEntry" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" />
+            <StackLayout Padding="30" Spacing="20" VerticalOptions="Center" Grid.Column="1">
 
-            <Label Text="Gender" FontSize="14" TextColor="#333" />
-            <Picker x:Name="SexPicker" Title="Select your gender" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16">
-                <Picker.Items>
-                    <x:String>Male</x:String>
-                    <x:String>Female</x:String>
-                </Picker.Items>
-            </Picker>
+                <Label Text="About You" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#333" />
 
-            <Label Text="Age" FontSize="14" TextColor="#333" />
-            <Entry x:Name="AgeEntry" Keyboard="Numeric" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnAgeChanged" />
-            <Label x:Name="AgeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
+                <Label Text="Email" FontSize="14" TextColor="#333" />
+                <Entry x:Name="EmailEntry" IsReadOnly="True" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" />
 
-            <!-- Nationality -->
-            <Label Text="Nationality" FontSize="14" TextColor="#333" />
-            <Entry x:Name="NationalitySearchEntry" Placeholder="Search Nationality" TextChanged="OnNationalitySearchChanged" />
-            <Button Text="▼ Show/Hide Nationality List" Clicked="OnToggleNationalityListClicked" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="20" HeightRequest="40" />
-            <CollectionView x:Name="NationalityListView" IsVisible="False" SelectionMode="Single" SelectionChanged="OnNationalitySelected">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Label Text="{Binding}" Padding="10" BackgroundColor="#DEF685" />
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-            <Label x:Name="NationalityErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
+                <Label Text="Display Name" FontSize="14" TextColor="#333" />
+                <Entry x:Name="DisplayNameEntry" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" />
 
-            <Label Text="Phone Number" FontSize="14" TextColor="#333" />
-            <Entry x:Name="PhoneEntry" Keyboard="Telephone" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnPhoneChanged" />
-            <Label x:Name="PhoneErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
+                <Label Text="Gender" FontSize="14" TextColor="#333" />
+                <Picker x:Name="SexPicker" Title="Select your gender" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16">
+                    <Picker.Items>
+                        <x:String>Male</x:String>
+                        <x:String>Female</x:String>
+                    </Picker.Items>
+                </Picker>
 
-            <!-- Occupation -->
-            <Label Text="Occupation" FontSize="14" TextColor="#333" />
-            <Entry x:Name="OccupationSearchEntry" Placeholder="Search Occupation" TextChanged="OnOccupationSearchChanged" />
-            <Button Text="▼ Show/Hide Occupation List" Clicked="OnToggleOccupationListClicked" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="20" HeightRequest="40" />
-            <CollectionView x:Name="OccupationListView" IsVisible="False" SelectionMode="Single" SelectionChanged="OnOccupationSelected">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Label Text="{Binding}" Padding="10" BackgroundColor="#DEF685" />
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-            <Label x:Name="OccupationErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
+                <Label Text="Age" FontSize="14" TextColor="#333" />
+                <Entry x:Name="AgeEntry" Keyboard="Numeric" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnAgeChanged" />
+                <Label x:Name="AgeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-            <Label Text="Postal Code" FontSize="14" TextColor="#333" />
-            <Entry x:Name="PostalCodeEntry" Keyboard="Numeric" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnPostalCodeChanged" />
-            <Label x:Name="PostalCodeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
+                <!-- Nationality -->
+                <Label Text="Nationality" FontSize="14" TextColor="#333" />
+                <Entry x:Name="NationalitySearchEntry" Placeholder="Search Nationality" TextChanged="OnNationalitySearchChanged" />
+                <Button Text="▼ Show/Hide Nationality List" Clicked="OnToggleNationalityListClicked" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="20" HeightRequest="40" />
+                <CollectionView x:Name="NationalityListView" IsVisible="False" SelectionMode="Single" SelectionChanged="OnNationalitySelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Label Text="{Binding}" Padding="10" BackgroundColor="#DEF685" />
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <Label x:Name="NationalityErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-            <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
-                <Button Text="Change Password" BackgroundColor="Transparent" TextColor="#2196F3" FontSize="14" Clicked="OnChangePasswordClicked" />
-                <Button Text="Change Interest" BackgroundColor="Transparent" TextColor="#2196F3" FontSize="14" Clicked="OnChangeInterestClicked" />
-                <Button Text="Save" BackgroundColor="#4CAF50" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" Clicked="OnSaveClicked" />
-            </HorizontalStackLayout>
+                <Label Text="Phone Number" FontSize="14" TextColor="#333" />
+                <Entry x:Name="PhoneEntry" Keyboard="Telephone" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnPhoneChanged" />
+                <Label x:Name="PhoneErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-        </StackLayout>
+                <!-- Occupation -->
+                <Label Text="Occupation" FontSize="14" TextColor="#333" />
+                <Entry x:Name="OccupationSearchEntry" Placeholder="Search Occupation" TextChanged="OnOccupationSearchChanged" />
+                <Button Text="▼ Show/Hide Occupation List" Clicked="OnToggleOccupationListClicked" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="20" HeightRequest="40" />
+                <CollectionView x:Name="OccupationListView" IsVisible="False" SelectionMode="Single" SelectionChanged="OnOccupationSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Label Text="{Binding}" Padding="10" BackgroundColor="#DEF685" />
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <Label x:Name="OccupationErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
+
+                <Label Text="Postal Code" FontSize="14" TextColor="#333" />
+                <Entry x:Name="PostalCodeEntry" Keyboard="Numeric" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnPostalCodeChanged" />
+                <Label x:Name="PostalCodeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
+
+                <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+                    <Button Text="Change Password" BackgroundColor="Transparent" TextColor="#2196F3" FontSize="14" Clicked="OnChangePasswordClicked" />
+                    <Button Text="Change Interest" BackgroundColor="Transparent" TextColor="#2196F3" FontSize="14" Clicked="OnChangeInterestClicked" />
+                    <Button Text="Save" BackgroundColor="#4CAF50" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" Clicked="OnSaveClicked" />
+                </HorizontalStackLayout>
+
+            </StackLayout>
+        </Grid>
     </ScrollView>
 </ContentPage>
 

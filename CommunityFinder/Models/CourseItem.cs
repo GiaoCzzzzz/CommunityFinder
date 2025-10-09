@@ -4,13 +4,18 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Models;
 
 //这个是用来存储课程信息的类
 
 namespace CommunityFinder.Models
 {
-    public class CourseItem
+    [Table("CourseItem")]
+    public class CourseItem : BaseModel
     {
+        [PrimaryKey("ClassId")]
+        [Column("ClassId")]
         public string ClassId { get; set; }
         public string Title { get; set; }
         public string Outlet { get; set; }
@@ -42,6 +47,9 @@ namespace CommunityFinder.Models
         public string AoiL2 { get; set; }
         public string AoiL3 { get; set; }
 
+        public int ViewCount { get; set; }
+        public int LikeCount { get; set; }
+        public int FavoriteCount { get; set; }
         public static DateTime? ParseStartDate(string raw)
         {
             if (string.IsNullOrWhiteSpace(raw)) return null;
