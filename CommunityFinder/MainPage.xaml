@@ -5,7 +5,6 @@
              x:Class="CommunityFinder.MainPage"
              BackgroundColor="#F9FFE3">
 
-
     <ContentPage.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#E9FFD6" Offset="0.0"/>
@@ -15,7 +14,7 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <!-- 输入控件统一外观（注意：Entry/Picker 无 CornerRadius，所以不设置） -->
+            <!-- 输入控件统一外观 -->
             <Style TargetType="Entry">
                 <Setter Property="HeightRequest" Value="40"/>
                 <Setter Property="BackgroundColor" Value="White"/>
@@ -27,7 +26,7 @@
                 <Setter Property="HorizontalOptions" Value="FillAndExpand"/>
             </Style>
 
-            <!-- Register 按钮（用 DataTrigger 切换状态） -->
+            <!-- Register 按钮样式 -->
             <Style x:Key="RegisterButtonStyle" TargetType="Button">
                 <Setter Property="Text" Value="Register"/>
                 <Setter Property="BackgroundColor" Value="#5DBB63"/>
@@ -35,12 +34,6 @@
                 <Setter Property="CornerRadius" Value="22"/>
                 <Setter Property="Padding" Value="20,8"/>
                 <Setter Property="HorizontalOptions" Value="End"/>
-                <!--<Style.Triggers>
-                    <DataTrigger TargetType="Button" Binding="{Binding HasVacancy}" Value="False">
-                        <Setter Property="Text" Value="Registration Closed"/>
-                        <Setter Property="BackgroundColor" Value="#9E9E9E"/>
-                    </DataTrigger>
-                </Style.Triggers> -->
             </Style>
 
             <!-- 顶部菜单样式 -->
@@ -59,83 +52,209 @@
 
     <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="12">
 
-        <!-- 顶部导航 -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Padding="8" BackgroundColor="#FFFFFFAA" Margin="0,0,0,8"
-          HeightRequest="56">
-            <!-- 左：Logo 占位 -->
-            <Frame CornerRadius="24" HeightRequest="40" WidthRequest="40" Padding="0" HasShadow="False" VerticalOptions="Center">
-                <BoxView Color="#FFE7C4"/>
+        <!-- 顶部导航栏 -->
+        <Grid Grid.Row="0"
+      ColumnDefinitions="Auto,*,Auto"
+      Padding="8,0"
+      BackgroundColor="#FFFFFF"
+      Margin="0,0,0,8"
+      HeightRequest="56"
+      VerticalOptions="Center"
+      HorizontalOptions="FillAndExpand">
+
+            <!-- 左：Logo 图片 -->
+            <Frame Grid.Column="0"
+           CornerRadius="20"
+           HasShadow="False"
+           BackgroundColor="Transparent"
+           HeightRequest="40"
+           WidthRequest="40"
+           Padding="0"
+           VerticalOptions="Center"
+           HorizontalOptions="Start"
+           Margin="4,0,0,0">
+                <Image Source="icon1.png"
+               Aspect="AspectFit"
+               HeightRequest="40"
+               WidthRequest="40"
+               VerticalOptions="Center"
+               HorizontalOptions="Center" />
             </Frame>
 
             <!-- 中：Tabs -->
-            <Grid Grid.Column="1" ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="18" HorizontalOptions="Center" VerticalOptions="Center">
-                <Label Text="About Us" Style="{StaticResource TopTab}"/>
-                <Label Grid.Column="1" Text="Events" Style="{StaticResource TopTab}"/>
-                <Label Grid.Column="2" Text="Courses" Style="{StaticResource TopTabActive}"/>
-                <Label Grid.Column="3" Text="Forum" Style="{StaticResource TopTab}"/>
+            <Grid Grid.Column="1"
+          ColumnDefinitions="Auto,Auto,Auto,Auto"
+          HorizontalOptions="Center"
+          VerticalOptions="Center"
+          ColumnSpacing="10">
+                <!-- 控制标签间距，让它们靠近一点 -->
+
+                <!-- About Us -->
+                <Label Grid.Column="0"
+               Text="About Us"
+               FontSize="13"
+               Style="{StaticResource TopTab}"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               Margin="6,0,0,0"/>
+                <!-- 略往右移 -->
+
+                <!-- Events -->
+                <Label Grid.Column="1"
+               Text="Events"
+               FontSize="13"
+               Style="{StaticResource TopTab}"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"/>
+
+                <!-- Courses (active tab) -->
+                <Label Grid.Column="2"
+               Text="Courses"
+               FontSize="13"
+               Style="{StaticResource TopTabActive}"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"/>
+
+                <!-- Forum -->
+                <Label Grid.Column="3"
+               Text="Forum"
+               FontSize="13"
+               Style="{StaticResource TopTab}"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               Margin="0,0,6,0"/>
+                <!-- 略往左移 -->
             </Grid>
 
-            <!-- 右：设置图标占位 -->
-            <Frame Grid.Column="2" CornerRadius="18" HeightRequest="36" WidthRequest="36" Padding="0" HasShadow="False" VerticalOptions="Center">
-                <Button Grid.Column="10" Text="" WidthRequest="44" HeightRequest="40" CornerRadius="20"
-                Clicked="OnSettingClicked"/>
+            <!-- 右：设置按钮 -->
+            <Frame Grid.Column="2"
+           CornerRadius="18"
+           HasShadow="False"
+           BackgroundColor="Transparent"
+           HeightRequest="36"
+           WidthRequest="36"
+           Padding="0"
+           VerticalOptions="Center"
+           HorizontalOptions="End"
+           Margin="0,0,4,0">
+                <ImageButton Source="settings.png"
+                     BackgroundColor="Transparent"
+                     HeightRequest="32"
+                     WidthRequest="32"
+                     Aspect="AspectFit"
+                     Padding="0"
+                     Clicked="OnSettingClicked"/>
             </Frame>
+
         </Grid>
 
-        <Grid Grid.Row="1" RowDefinitions="Auto,Auto" ColumnDefinitions="*" Margin="0,0,0,10">
 
-            <!-- 第1行：L1/L2/L3 + 搜索 -->
-            <HorizontalStackLayout Grid.Row="0" Spacing="12" Margin="0,0,0,0">
+
+
+
+        <!-- 搜索与筛选 -->
+        <Grid Grid.Row="1"
+      RowDefinitions="Auto,Auto,Auto,Auto"
+      ColumnDefinitions="*"
+      Margin="0,0,0,10"
+      HorizontalOptions="FillAndExpand"
+      RowSpacing="8">
+
+            <!-- 第1行：L1 + L2 -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,*" ColumnSpacing="6">
                 <!-- L1 -->
-                <VerticalStackLayout WidthRequest="180" Spacing="4">
-                    <Label Text="What" />
-                    <Picker ItemsSource="{Binding L1Options}"
-            SelectedItem="{Binding SelectedL1}"
-            Title="Select a category"/>
+                <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="FillAndExpand">
+                    <Label Text="What" FontAttributes="Bold" FontSize="14"/>
+                    <Picker ItemsSource="{Binding L1Options}" 
+                    SelectedItem="{Binding SelectedL1}" 
+                    Title="Select a category"/>
                 </VerticalStackLayout>
 
                 <!-- L2 -->
-                <VerticalStackLayout WidthRequest="200" Spacing="4"
-                       IsVisible="{Binding HasL1Selected}" Opacity="0" x:Name="L2Panel">
-                    <Label Text="Category" />
-                    <Picker ItemsSource="{Binding L2Options}"
-            SelectedItem="{Binding SelectedL2}"
-            Title="Select a subcategory"/>
+                <VerticalStackLayout Grid.Column="1" Spacing="2" 
+                             IsVisible="{Binding HasL1Selected}" 
+                             x:Name="L2Panel"
+                             HorizontalOptions="FillAndExpand">
+                    <Label Text="Category" FontAttributes="Bold" FontSize="14"/>
+                    <Picker ItemsSource="{Binding L2Options}" 
+                    SelectedItem="{Binding SelectedL2}" 
+                    Title="Select a subcategory"/>
                 </VerticalStackLayout>
-
-                <!-- L3 -->
-                <VerticalStackLayout WidthRequest="220" Spacing="4"
-                       IsVisible="{Binding HasL2Selected}" Opacity="0" x:Name="L3Panel">
-                    <Label Text="Topic" />
-                    <Picker ItemsSource="{Binding L3Options}"
-            SelectedItem="{Binding SelectedL3}"
-            Title="Select a topic"/>
-                </VerticalStackLayout>
-
-                <!-- 搜索框 + 放大镜 -->
-                <Entry Grid.Column="9" Placeholder="Search title..." Text="{Binding SearchText}" />
-                <Button Grid.Column="10" Text="🔍" WidthRequest="44" HeightRequest="40" CornerRadius="20"
-            Clicked="OnSearchClicked"/>
-            </HorizontalStackLayout>
-
-            <!-- 第2行：Where / Day / Time -->
-            <Grid Grid.Row="1" ColumnDefinitions="Auto,160,12,Auto,140,12,Auto,140" ColumnSpacing="0" Margin="0,8,0,0">
-                <Label Text="Where" VerticalOptions="Center" Margin="0,0,6,0"/>
-                <Picker Grid.Column="1" ItemsSource="{Binding WhereOptions}" SelectedItem="{Binding SelectedWhere}" />
-
-                <Label Grid.Column="3" Text="Day" VerticalOptions="Center" Margin="0,0,6,0"/>
-                <Picker Grid.Column="4" ItemsSource="{Binding DayOptions}" SelectedItem="{Binding SelectedDay}" />
-
-                <Label Grid.Column="6" Text="Time" VerticalOptions="Center" Margin="0,0,6,0"/>
-                <Picker Grid.Column="7" ItemsSource="{Binding TimeOptions}" SelectedItem="{Binding SelectedTime}" />
             </Grid>
+
+            <!-- 第2行：L3 + 搜索框 -->
+            <Grid Grid.Row="1" ColumnDefinitions="2*,*"
+          ColumnSpacing="6" VerticalOptions="Center">
+                <!-- L3 -->
+                <VerticalStackLayout Grid.Column="0" Spacing="2"
+                             IsVisible="{Binding HasL2Selected}" 
+                             x:Name="L3Panel"
+                             HorizontalOptions="FillAndExpand">
+                    <Label Text="Topic" FontAttributes="Bold" FontSize="14"/>
+                    <Picker ItemsSource="{Binding L3Options}" 
+                    SelectedItem="{Binding SelectedL3}" 
+                    Title="Select a topic"/>
+                </VerticalStackLayout>
+
+                <!-- 搜索框 + 搜索按钮 -->
+                <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="6" VerticalOptions="Center">
+                    <Frame Padding="8,0"
+                   BackgroundColor="#F5F5F5"
+                   CornerRadius="8"
+                   HasShadow="False"
+                   VerticalOptions="Center"
+                   HorizontalOptions="FillAndExpand">
+                        <Entry Placeholder="Search title..."
+                       Text="{Binding SearchText}"
+                       HeightRequest="40"
+                       BackgroundColor="Transparent"
+                       PlaceholderColor="#888"
+                       TextColor="#333"
+                       HorizontalOptions="FillAndExpand"/>
+                    </Frame>
+
+                    <Button Grid.Column="1"
+                    Text="🔍"
+                    FontSize="18"
+                    WidthRequest="44"
+                    HeightRequest="40"
+                    CornerRadius="20"
+                    BackgroundColor="#0078D7"
+                    TextColor="White"
+                    VerticalOptions="Center"
+                    Clicked="OnSearchClicked"/>
+                </Grid>
+            </Grid>
+
+            <!-- 第3行：Where + Day -->
+            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="6">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="Where" FontAttributes="Bold" FontSize="14"/>
+                    <Picker ItemsSource="{Binding WhereOptions}" SelectedItem="{Binding SelectedWhere}"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                    <Label Text="Day" FontAttributes="Bold" FontSize="14"/>
+                    <Picker ItemsSource="{Binding DayOptions}" SelectedItem="{Binding SelectedDay}"/>
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- 第4行：Time -->
+            <VerticalStackLayout Grid.Row="3" Spacing="2" HorizontalOptions="FillAndExpand">
+                <Label Text="Time" FontAttributes="Bold" FontSize="14"/>
+                <Picker ItemsSource="{Binding TimeOptions}" SelectedItem="{Binding SelectedTime}"/>
+            </VerticalStackLayout>
+
         </Grid>
+
+
+
+
 
         <!-- 列表卡片 -->
         <Grid Grid.Row="2" x:Name="ListRegion">
 
             <CollectionView Grid.Row="2" ItemsSource="{Binding Courses}" SelectionMode="Single" SelectionChanged="OnItemTapped">
-                <!-- 空状态（英文） -->
                 <CollectionView.EmptyView>
                     <Grid Padding="20">
                         <Label Text="No courses" HorizontalOptions="Center" VerticalOptions="Center" FontSize="16" TextColor="#666"/>
@@ -144,18 +263,13 @@
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <!-- 单条卡片（细边 + 内边距） -->
                         <Grid Padding="12" Margin="0,6" RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" BackgroundColor="White">
-                            <!-- 右上角：分享 / 收藏（先做占位） -->
                             <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Start" Margin="0,2,0,0">
                                 <Label Text="↗" Opacity="0.3" FontSize="16"/>
                                 <Label Text="♡" Opacity="0.3" FontSize="16"/>
                             </HorizontalStackLayout>
 
-                            <!-- 左侧主体 -->
                             <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="6">
-
-                                <!-- 徽章 COURSE -->
                                 <Border StrokeThickness="0" Padding="8,4" StrokeShape="RoundRectangle 8">
                                     <Border.Background>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -169,27 +283,20 @@
                                     </HorizontalStackLayout>
                                 </Border>
 
-                                <!-- 标题（紫色可点） -->
-                                <Label Text="{Binding Title}"
-               TextColor="#6A1B9A" FontAttributes="Bold" FontSize="18"
-               LineBreakMode="TailTruncation"/>
+                                <Label Text="{Binding Title}" TextColor="#6A1B9A" FontAttributes="Bold" FontSize="18"
+                                       LineBreakMode="TailTruncation"/>
 
-                                <!-- Ref Code + By 组织者 -->
                                 <Label>
                                     <Label.Text>
                                         <MultiBinding StringFormat="{}Ref Code: {0}    By {1}">
                                             <Binding Path="ClassId"/>
-                                            <!-- 课程代码 -->
                                             <Binding Path="OrganizerDisplay"/>
-                                            <!-- 见下方模型便捷属性 -->
                                         </MultiBinding>
                                     </Label.Text>
                                 </Label>
 
-                                <!-- 组织者链接（橙色） -->
                                 <Label Text="{Binding Outlet}" TextColor="#F57C00"/>
 
-                                <!-- 日期与时间行 -->
                                 <HorizontalStackLayout Spacing="18" Margin="0,4,0,0">
                                     <HorizontalStackLayout Spacing="6">
                                         <Label Text="📅"/>
@@ -197,7 +304,6 @@
                                             <Label.Text>
                                                 <MultiBinding StringFormat="{}Starts {0:ddd, dd MMM yyyy}">
                                                     <Binding Path="StartDate"/>
-                                                    <!-- DateTime? -->
                                                 </MultiBinding>
                                             </Label.Text>
                                         </Label>
@@ -210,23 +316,18 @@
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
 
-                            <!-- 右侧价格（垂直居中、加粗） -->
                             <VerticalStackLayout Grid.RowSpan="2" Grid.Column="1" VerticalOptions="Center" Margin="12,0,0,0">
-                                <!-- 只显示最低价格 -->
-                                <Label FontAttributes="Bold" FontSize="16"
-                                    Text="{Binding PriceRangeDisplay}" />
+                                <Label FontAttributes="Bold" FontSize="16" Text="{Binding PriceRangeDisplay}" />
                             </VerticalStackLayout>
 
-                            <!-- 底部分隔线 -->
                             <BoxView Grid.Row="1" Grid.ColumnSpan="2" HeightRequest="1" BackgroundColor="#EEEEEE" Margin="0,12,0,0"/>
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        
+
             <!--加载动画-->
-            <Grid BackgroundColor="#80000000"
-        IsVisible="{Binding IsBusy}" InputTransparent="False">
+            <Grid BackgroundColor="#80000000" IsVisible="{Binding IsBusy}" InputTransparent="False">
                 <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
                     <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="True" WidthRequest="48" HeightRequest="48"/>
                     <Label Text="Loading..." TextColor="White" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
