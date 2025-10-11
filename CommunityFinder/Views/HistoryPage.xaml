@@ -3,15 +3,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CommunityFinder.Views.HistoryPage"
              Title="HistoryPage">
+
     <StackLayout>
         <Label Text="Browsing History" FontSize="24" HorizontalOptions="Center" Margin="0,10"/>
+        <Button Text="Clear All History" Command="{Binding ClearAllHistoryCommand}" 
+                BackgroundColor="Red" TextColor="White" Margin="10"/>
+
         <CollectionView ItemsSource="{Binding BrowsingHistory}" SelectionMode="Single">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame Margin="10" Padding="10" HasShadow="True">
-                        <StackLayout>
-                            <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold"/>
-                            <Label Text="{Binding Outlet}" FontSize="14"/>
+                        <StackLayout Orientation="Horizontal" VerticalOptions="Center">
+                            <StackLayout HorizontalOptions="StartAndExpand">
+                                <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold"/>
+                                <Label Text="{Binding Outlet}" FontSize="14"/>
+                            </StackLayout>
+                            <Button Text="Delete" BackgroundColor="Red" TextColor="White" 
+                                    Command="{Binding BindingContext.DeleteHistoryCommand, Source={x:Reference Name=ThisPage}}" 
+                                    CommandParameter="{Binding .}"/>
                         </StackLayout>
                     </Frame>
                 </DataTemplate>
