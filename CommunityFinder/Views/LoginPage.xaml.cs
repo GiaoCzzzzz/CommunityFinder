@@ -65,7 +65,7 @@ public partial class LoginPage : ContentPage
             var first = _authService.FirstProfiles();
             if (await first)
             {
-                await Navigation.PushAsync(new MainPage(_authService));
+                await Navigation.PushAsync(new MainPage(_authService,null));
             }
             else
                 await Navigation.PushAsync(new InitialProfilePage(_authService));

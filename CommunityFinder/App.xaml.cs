@@ -9,6 +9,10 @@ namespace CommunityFinder
     public partial class App : Application
     {
         IServiceProvider _services;
+
+        public static AuthService AuthServiceInstance { get; private set; }
+        public static OnePaService OnePaServiceInstance { get; private set; }
+
         public App(IServiceProvider _services)
         {
             InitializeComponent();
@@ -22,6 +26,10 @@ namespace CommunityFinder
             // 2. new 一个 AuthService 和你要展示的页面  
             var authService = new AuthService(client);
             //var profileService = new ProfileService(client);
+
+            AuthServiceInstance = new AuthService(client);
+            OnePaServiceInstance = new OnePaService();
+
             MainPage = new NavigationPage(new LoginandSignup(authService));
 
         }

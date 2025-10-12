@@ -94,28 +94,39 @@
 
                         <Button Text="Book now" BackgroundColor="#E53935" TextColor="White" CornerRadius="8" Margin="0,8,0,0"
                                 Clicked="OnBookNowClicked"/>
+
+                        <HorizontalStackLayout Spacing="18" Margin="0,10,0,0" HorizontalOptions="End">
+
+                            <!-- Like -->
+                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                <Button Command="{Binding LikeCommand}"
+                Text="{Binding IsLiked, Converter={StaticResource ThumbTextConverter}}"
+                BackgroundColor="Transparent" BorderWidth="0"
+                Padding="0" WidthRequest="28" HeightRequest="28"
+                FontSize="24"/>
+                                <Label Text="{Binding LikeCount}" VerticalTextAlignment="Center"/>
+                            </HorizontalStackLayout>
+
+                            <!-- Favorite -->
+                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                <Button Command="{Binding FavoriteCommand}"
+                Text="{Binding IsFavorited, Converter={StaticResource StarTextConverter}}"
+                BackgroundColor="Transparent" BorderWidth="0"
+                Padding="0" WidthRequest="28" HeightRequest="28"
+                FontSize="24"/>
+                                <Label Text="{Binding FavoriteCount}" VerticalTextAlignment="Center"/>
+                            </HorizontalStackLayout>
+
+                            <!-- Views -->
+                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                <Label Text="👁" FontSize="20" VerticalTextAlignment="Center"/>
+                                <Label Text="{Binding ViewCount}" VerticalTextAlignment="Center"/>
+                            </HorizontalStackLayout>
+
+                        </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Frame>
 
-                <Grid Padding="0" HorizontalOptions="End" VerticalOptions="End"
-      Margin="0,0,16,16" RowDefinitions="Auto" ColumnDefinitions="Auto,20,Auto,20,Auto">
-
-                    <!-- 点赞按钮 -->
-                    <Button Command="{Binding LikeCommand}"
-            Text="{Binding IsLiked, Converter={StaticResource ThumbTextConverter}}"
-            BackgroundColor="Transparent" FontSize="24" Grid.Column="0" WidthRequest="28" HeightRequest="28"/>
-                    <Label Text="{Binding LikeCount}" VerticalOptions="Center"/>
-
-                    <!-- 收藏按钮 -->
-                    <Button Command="{Binding FavoriteCommand}"
-            Text="{Binding IsFavorited, Converter={StaticResource StarTextConverter}}"
-            BackgroundColor="Transparent" FontSize="24" Grid.Column="2" WidthRequest="28" HeightRequest="28"/>
-                    <Label Text="{Binding FavoriteCount}" VerticalOptions="Center"/>
-
-                    <!-- 浏览次数图标 -->
-                    <Label Text="👁" FontSize="24" VerticalOptions="Center"/>
-                    <Label Text="{Binding ViewCount}" VerticalOptions="Center"/>
-                </Grid  >
 
                 <!-- 局部加载遮罩（只盖住右侧卡片区域） -->
                 <Grid IsVisible="{Binding IsBusy}" BackgroundColor="#66000000" InputTransparent="False">

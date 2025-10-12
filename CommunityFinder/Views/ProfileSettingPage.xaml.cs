@@ -419,7 +419,8 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
 
     async void OnChangeInterestClicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new InterestPage(_authService));
+        var matchingService = new InterestMatchingService(); // Ensure InterestMatchingService is properly instantiated  
+        await Navigation.PushAsync(new InterestPage(_authService, matchingService));
     }
 
     async void OnLanguageClicked(object sender, EventArgs e)
@@ -459,7 +460,7 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
         if (result)
         {
             await DisplayAlert("Success", "Your profile has been updated.", "OK");
-            await Navigation.PushAsync(new MainPage(_authService));
+            await Navigation.PushAsync(new MainPage(_authService,null));
         }
         else
         {

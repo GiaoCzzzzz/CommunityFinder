@@ -519,13 +519,13 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
             nationality = nationality,
             interest = new[] { hobby }
         };
-
-
+ 
+        var matchingService = new InterestMatchingService();
         var (ok, err) = await _authService.CreateProfile(profiles);
         if (ok)
         {
             await DisplayAlert("Success", "Personal information has been saved", "Confirm");
-            await Navigation.PushAsync(new InterestPage(_authService));
+            await Navigation.PushAsync(new InterestPage(_authService, matchingService));
         }
         else
         {

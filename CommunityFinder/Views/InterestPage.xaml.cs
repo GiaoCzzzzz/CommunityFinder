@@ -7,6 +7,7 @@ namespace CommunityFinder.Views;
 public partial class InterestPage : ContentPage
 {
     readonly AuthService _authService;
+    readonly InterestMatchingService _matchingService;
     private readonly List<string> _selected = new();
 
     private readonly string[] _presets = new[]
@@ -18,10 +19,11 @@ public partial class InterestPage : ContentPage
         "Sports & Fitness"
     };
 
-    public InterestPage(AuthService authService)
+    public InterestPage(AuthService authService, InterestMatchingService matchingService)
     {
         InitializeComponent();
         _authService = authService;
+        _matchingService = matchingService;
 
         foreach (var tag in _presets)
         {
@@ -33,6 +35,8 @@ public partial class InterestPage : ContentPage
             btn.Clicked += OnTagClicked;
             TagContainer.Children.Add(btn);
         }
+
+        
     }
 
     protected override void OnAppearing()
@@ -126,26 +130,40 @@ public partial class InterestPage : ContentPage
 
     private async void OnSkipClicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new MainPage(_authService));
+        await Navigation.PushAsync(new MainPage(_authService,null));
     }
 
     private async void OnContinueClicked(object sender, EventArgs e)
     {
-        var profiles = new Profiles()
+        try
         {
-            interest = _selected.ToArray()
-        };
+            var combinedInterest = string.Join(", ", _selected);
 
-        var result = await _authService.UpdateProfile(profiles);
+            // 使用 AI 匹配获取三级分类
+            var matchedLevel3 = await _matchingService.MatchInterestAsync(combinedInterest);
 
-        if (result)
-        {
-            await DisplayAlert("Success", "Your profile has been updated.", "OK");
-            await Navigation.PushAsync(new MainPage(_authService));
+            // 检查 matchedLevel3 是否为 null，并确保它是一个对象而不是字符串
+            var profiles = new Profiles
+            {
+                interest = _selected.ToArray(),
+                pushed_course = matchedLevel3?.ToString() // 将 matchedLevel3 转换为字符串
+            };
+
+            var result = await _authService.UpdateProfile(profiles);
+            if (result)
+            {
+                await DisplayAlert("Success", "Your profile has been updated.", "OK");
+                await Navigation.PushAsync(new MainPage());
+            }
+            else
+            {
+                await DisplayAlert("Error", "Failed to save. Please try again.", "OK");
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await DisplayAlert("Error", "Failed to save. Please try again.", "OK");
+            await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
+            return;
         }
     }
 }

@@ -9,17 +9,23 @@ namespace CommunityFinder
     
     public partial class MainPage : ContentPage
     {
-        private readonly CoursesViewModel _vm = new();
+        private readonly CoursesViewModel _vm;
 
         readonly AuthService _authService;
+
+        readonly InterestMatchingService _matchingService;
+
 
         // 你的示例 URL（去掉 aoilname 尾部空格）
         private const string BaseUrl =
             "https://www.onepa.gov.sg/pacesapi/coursessearch/searchjson?course=&outlet=&days=&time=&vacancy=false&sort=&page=1&aoilname=Abacus%20%26%20Mental&aoil2=enrichment&aoil3=abacus-mental";
 
-        public MainPage(AuthService authService)
+        public MainPage() : this(App.AuthServiceInstance, App.OnePaServiceInstance) { }
+
+        public MainPage(AuthService authService, OnePaService onePaService)
         {
             InitializeComponent();
+            _vm = new CoursesViewModel(authService, onePaService);
             BindingContext = _vm;
             _authService = authService;
 
@@ -66,7 +72,7 @@ namespace CommunityFinder
         {
             base.OnAppearing();
             if (_vm.Courses.Count == 0)
-                await _vm.SearchByAoiAsync(maxPages: 8);
+                await _vm.LoadDefaultCoursesAsync();
             await _vm.InitAsync();
         }
 

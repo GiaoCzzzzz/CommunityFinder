@@ -19,6 +19,8 @@ namespace CommunityFinder.ViewModels
     {
         private readonly OnePaService _service;
 
+        private readonly AuthService _authService;    
+
         public ObservableCollection<CourseItem> Courses { get; } = new();
 
         // 分类选项（三级联动）
@@ -98,10 +100,11 @@ namespace CommunityFinder.ViewModels
 
         public ICommand ResetCommand { get; } //重置按钮
 
-        public CoursesViewModel(OnePaService service = null)
+        public CoursesViewModel(AuthService authService, OnePaService service = null)
         {
             _service = service ?? new OnePaService();
             ResetCommand = new Command(ResetAoi);
+            _authService = authService;
         }
 
         //重置三级联动选择
@@ -387,5 +390,79 @@ namespace CommunityFinder.ViewModels
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
+        private (string aoil1, string aoil2, string aoil3)? FindAoiByL3(string aoil3)
+        {
+            foreach (var l1 in _aoiTree.Keys)
+            {
+                var l2Dict = _aoiTree[l1];
+                foreach (var l2 in l2Dict.Keys)
+                {
+                    foreach (var l3 in l2Dict[l2])
+                    {
+                        // 这里用 slug 规则对比，确保和 pushed_course 格式一致
+                        if (Slug(l3) == aoil3)
+                            return (l1, l2, l3);
+                    }
+                }
+            }
+            return null;
+        }
+
+        public async Task LoadDefaultCoursesAsync()
+        {
+            IsBusy = true;
+            try
+            {
+                // 确保分类树已加载
+                if (!_aoiLoaded)
+                    await InitAsync();
+
+                var pushedCourse = await _authService.GetPushedCourse();
+                string url = null;
+
+                if (!string.IsNullOrWhiteSpace(pushedCourse))
+                {
+                    var aoi = FindAoiByL3(pushedCourse);
+                    if (aoi != null)
+                    {
+                        var aoilname = aoi.Value.aoil1.Trim();
+                        var aoil2 = Slug(aoi.Value.aoil2, dropCoursesWord: true);
+                        var aoil3 = Slug(aoi.Value.aoil3);
+
+                        url = OnePaService.BuildSearchUrl(
+                            l1: aoilname,
+                            l2: aoil2,
+                            l3: aoil3,
+                            course: "",
+                            outlet: "",
+                            includeFull: true,
+                            page: 1
+                        );
+                    }
+                }
+
+                // 如果没有 pushed_course 或查不到，使用默认 BaseUrl
+                if (string.IsNullOrWhiteSpace(url))
+                    url = "https://www.onepa.gov.sg/pacesapi/coursessearch/searchjson?course=&outlet=&days=&time=&vacancy=false&sort=&page=1&aoilname=Abacus%20%26%20Mental&aoil2=enrichment&aoil3=abacus-mental";
+
+                // 拉取课程
+                Courses.Clear();
+                var all = await _service.FetchAllPagesAsync(url, maxPages: 8);
+                foreach (var c in all.OrderBy(c => c.StartDate ?? DateTime.MaxValue))
+                    Courses.Add(c);
+
+                // 刷新 Where 下拉
+                var outlets = all.Select(c => c.Outlet)
+                                 .Where(s => !string.IsNullOrWhiteSpace(s))
+                                 .Distinct()
+                                 .OrderBy(s => s)
+                                 .ToList();
+                UpdateWhereOptions(outlets);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
     }
 }

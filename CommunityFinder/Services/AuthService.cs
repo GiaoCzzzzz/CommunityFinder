@@ -456,6 +456,56 @@ namespace CommunityFinder.Services
             return true;
         }
 
+        public async Task<bool> UpdatePushedCourse(string pushedCourse)
+        {
+            try
+            {
+                var userId = Client.Auth.CurrentUser?.Id;
+                if (string.IsNullOrEmpty(userId))
+                    return false;
+
+                var update = new Profiles
+                {
+                    id = Guid.Parse(userId),
+                    pushed_course = pushedCourse
+                };
+
+                await Client
+                    .From<Profiles>()
+                    .Where(p => p.id == Guid.Parse(userId))
+                    .Update(update);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating pushed_course: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<string?> GetPushedCourse()
+        {
+            try
+            {
+                var userId = Client.Auth.CurrentUser?.Id;
+                if (string.IsNullOrEmpty(userId))
+                    return null;
+
+                var response = await Client
+                    .From<Profiles>()
+                    .Where(p => p.id == Guid.Parse(userId))
+                    .Single();
+
+                return response?.pushed_course;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting pushed_course: {ex.Message}");
+                return null;
+            }
+        }
+
 
     }
 }
