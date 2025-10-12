@@ -383,6 +383,34 @@ namespace CommunityFinder.ViewModels
             }
         }
 
+        /// <summary>
+        /// Sets the category selections (L1, L2, L3) programmatically
+        /// Used for AI-based interest matching
+        /// </summary>
+        public void SetCategorySelection(string l1, string l2, string l3)
+        {
+            if (string.IsNullOrWhiteSpace(l1) || string.IsNullOrWhiteSpace(l2) || string.IsNullOrWhiteSpace(l3))
+                return;
+
+            // Set L1
+            if (_aoiTree.ContainsKey(l1))
+            {
+                SelectedL1 = l1;
+
+                // Set L2
+                if (_aoiTree[l1].ContainsKey(l2))
+                {
+                    SelectedL2 = l2;
+
+                    // Set L3
+                    if (_aoiTree[l1][l2].Contains(l3, StringComparer.OrdinalIgnoreCase))
+                    {
+                        SelectedL3 = l3;
+                    }
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

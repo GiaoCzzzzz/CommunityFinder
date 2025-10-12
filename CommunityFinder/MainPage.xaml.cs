@@ -65,9 +65,69 @@ namespace CommunityFinder
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            
+            // Initialize categories first
+            await _vm.InitAsync();
+            
+            // Try to auto-fill categories based on user interests
+            await AutoFillCategoriesFromInterests();
+            
+            // Load courses if not already loaded
             if (_vm.Courses.Count == 0)
                 await _vm.SearchByAoiAsync(maxPages: 8);
-            await _vm.InitAsync();
+        }
+
+        private async System.Threading.Tasks.Task AutoFillCategoriesFromInterests()
+        {
+            try
+            {
+                // Get user interests from Supabase
+                var interests = await _authService.GetInterest();
+                
+                if (interests == null || interests.Length == 0)
+                    return;
+
+                // Load categories text
+                string categoryText = await LoadCategoriesText();
+                if (string.IsNullOrWhiteSpace(categoryText))
+                    return;
+
+                // Analyze interests and find best matching category
+                var analyzer = new InterestAnalyzer();
+                analyzer.LoadCategories(categoryText);
+                
+                var result = analyzer.AnalyzeInterests(interests);
+                
+                if (result.HasValue)
+                {
+                    // Auto-fill the category selections
+                    _vm.SetCategorySelection(result.Value.L1, result.Value.L2, result.Value.L3);
+                }
+            }
+            catch (Exception)
+            {
+                // Silently fail - user can still manually select categories
+            }
+        }
+
+        private async System.Threading.Tasks.Task<string> LoadCategoriesText()
+        {
+            string[] candidates = { "categories.txt", "分类.txt" };
+            
+            foreach (var name in candidates)
+            {
+                try
+                {
+                    using var s = await FileSystem.OpenAppPackageFileAsync(name);
+                    using var sr = new System.IO.StreamReader(s, System.Text.Encoding.UTF8, true);
+                    var text = await sr.ReadToEndAsync();
+                    if (!string.IsNullOrWhiteSpace(text))
+                        return text;
+                }
+                catch { /* try next */ }
+            }
+            
+            return null;
         }
 
         private async void OnItemTapped(object sender, SelectionChangedEventArgs e)
