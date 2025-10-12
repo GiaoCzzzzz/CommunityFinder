@@ -126,25 +126,47 @@
                 <!-- 略往左移 -->
             </Grid>
 
-            <!-- 右：设置按钮 -->
-            <Frame Grid.Column="2"
-           CornerRadius="18"
-           HasShadow="False"
-           BackgroundColor="Transparent"
-           HeightRequest="36"
-           WidthRequest="36"
-           Padding="0"
-           VerticalOptions="Center"
-           HorizontalOptions="End"
-           Margin="0,0,4,0">
-                <ImageButton Source="settings.png"
-                     BackgroundColor="Transparent"
-                     HeightRequest="32"
-                     WidthRequest="32"
-                     Aspect="AspectFit"
-                     Padding="0"
-                     Clicked="OnSettingClicked"/>
-            </Frame>
+            <!-- 右：AI助手和设置按钮 -->
+            <HorizontalStackLayout Grid.Column="2" 
+                                   Spacing="8" 
+                                   HorizontalOptions="End"
+                                   VerticalOptions="Center">
+                
+                <!-- AI助手按钮 -->
+                <Frame CornerRadius="18"
+                       HasShadow="False"
+                       BackgroundColor="Transparent"
+                       HeightRequest="36"
+                       WidthRequest="36"
+                       Padding="0"
+                       VerticalOptions="Center">
+                    <Button Text="🤖"
+                            BackgroundColor="Transparent"
+                            HeightRequest="32"
+                            WidthRequest="32"
+                            FontSize="18"
+                            Padding="0"
+                            Clicked="OnAIChatClicked"/>
+                </Frame>
+
+                <!-- 设置按钮 -->
+                <Frame CornerRadius="18"
+                       HasShadow="False"
+                       BackgroundColor="Transparent"
+                       HeightRequest="36"
+                       WidthRequest="36"
+                       Padding="0"
+                       VerticalOptions="Center"
+                       Margin="0,0,4,0">
+                    <ImageButton Source="settings.png"
+                                 BackgroundColor="Transparent"
+                                 HeightRequest="32"
+                                 WidthRequest="32"
+                                 Aspect="AspectFit"
+                                 Padding="0"
+                                 Clicked="OnSettingClicked"/>
+                </Frame>
+            </HorizontalStackLayout>
 
         </Grid>
 

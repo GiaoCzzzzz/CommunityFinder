@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CommunityFinder.Views.AIChatPage"
+             Title="AI 课程助手">
+
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#E9FFD6" Offset="0.0"/>
+            <GradientStop Color="#DFF8B9" Offset="1.0"/>
+        </LinearGradientBrush>
+    </ContentPage.Background>
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="16">
+
+        <!-- 标题和说明 -->
+        <VerticalStackLayout Grid.Row="0" Spacing="8" Margin="0,0,0,16">
+            <Label Text="🤖 AI 课程助手" 
+                   FontSize="24" 
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+            <Label Text="告诉我你想找什么样的课程，我会帮你自动筛选！"
+                   FontSize="14"
+                   TextColor="#666"
+                   HorizontalTextAlignment="Center"/>
+        </VerticalStackLayout>
+
+        <!-- 对话区域 -->
+        <ScrollView Grid.Row="1" x:Name="ChatScrollView">
+            <VerticalStackLayout Spacing="12" Padding="0,0,0,12">
+
+                <!-- 欢迎消息 -->
+                <Frame BackgroundColor="White" 
+                       CornerRadius="12" 
+                       Padding="16"
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="👋 你好！我是AI课程助手" 
+                               FontAttributes="Bold"
+                               FontSize="16"/>
+                        <Label Text="你可以用自然语言描述你的需求，例如：" 
+                               FontSize="14"
+                               TextColor="#666"/>
+                        <VerticalStackLayout Spacing="4" Margin="8,4,0,0">
+                            <Label Text="• '我想找周末的运动课程'" FontSize="13" TextColor="#888"/>
+                            <Label Text="• '找一些早上的音乐课'" FontSize="13" TextColor="#888"/>
+                            <Label Text="• '搜索编程相关的课程'" FontSize="13" TextColor="#888"/>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- 对话历史容器 -->
+                <VerticalStackLayout x:Name="ChatHistoryContainer" Spacing="12"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- 输入区域 -->
+        <Grid Grid.Row="2" 
+              ColumnDefinitions="*,Auto" 
+              ColumnSpacing="8"
+              Margin="0,12,0,0">
+            
+            <Frame Grid.Column="0"
+                   BackgroundColor="White"
+                   CornerRadius="24"
+                   Padding="16,8"
+                   HasShadow="False">
+                <Entry x:Name="InputEntry"
+                       Placeholder="输入你的需求..."
+                       PlaceholderColor="#999"
+                       BackgroundColor="Transparent"
+                       HeightRequest="40"
+                       Completed="OnSendClicked"/>
+            </Frame>
+
+            <Button Grid.Column="1"
+                    Text="发送"
+                    BackgroundColor="#5DBB63"
+                    TextColor="White"
+                    CornerRadius="24"
+                    WidthRequest="80"
+                    HeightRequest="48"
+                    Clicked="OnSendClicked"/>
+        </Grid>
+
+    </Grid>
+</ContentPage>

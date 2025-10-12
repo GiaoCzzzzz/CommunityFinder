@@ -44,6 +44,10 @@ namespace CommunityFinder
             await Navigation.PushAsync(new ProfileSettingPage(_authService));
         }
 
+        private async void OnAIChatClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new AIChatPage(_vm));
+        }
 
         private async void OnRegisterClicked(object sender, EventArgs e)
         {
