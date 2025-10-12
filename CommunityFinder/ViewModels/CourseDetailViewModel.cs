@@ -20,6 +20,20 @@ namespace CommunityFinder.ViewModels
         public int FavoriteCount { get; set; }
         public int ViewCount { get; set; }
 
+        private bool _isLikeBusy;
+        public bool IsLikeBusy
+        {
+            get => _isLikeBusy;
+            set { _isLikeBusy = value; OnPropertyChanged(); }
+        }
+
+        private bool _isFavoriteBusy;
+        public bool IsFavoriteBusy
+        {
+            get => _isFavoriteBusy;
+            set { _isFavoriteBusy = value; OnPropertyChanged(); }
+        }
+
         public ICommand LikeCommand { get; }
         public ICommand FavoriteCommand { get; }
 
@@ -86,40 +100,62 @@ namespace CommunityFinder.ViewModels
 
         private async Task ToggleLike()
         {
-            if (Detail?.CourseCode == null) return;
-            if (IsLiked)
+            if (IsLikeBusy || Detail?.CourseCode == null) return;
+            IsLikeBusy = true;
+            ((Command)LikeCommand).ChangeCanExecute();
+
+            try
             {
-                await _authService.UnlikeCourseAsync(Detail.CourseCode);
-                IsLiked = false;
-                LikeCount--;
+                if (IsLiked)
+                {
+                    await _authService.UnlikeCourseAsync(Detail.CourseCode);
+                }
+                else
+                {
+                    await _authService.LikeCourseAsync(Detail.CourseCode);
+                }
+                // 重新从数据库获取最新计数，保证同步
+                var course = await _authService.Client.From<CourseItem>().Where(x => x.ClassId == Detail.CourseCode).Single();
+                LikeCount = course?.LikeCount ?? 0;
+                IsLiked = !IsLiked;
+                OnPropertyChanged(nameof(IsLiked));
+                OnPropertyChanged(nameof(LikeCount));
             }
-            else
+            finally
             {
-                await _authService.LikeCourseAsync(Detail.CourseCode);
-                IsLiked = true;
-                LikeCount++;
+                IsLikeBusy = false;
+                ((Command)LikeCommand).ChangeCanExecute();
             }
-            OnPropertyChanged(nameof(IsLiked));
-            OnPropertyChanged(nameof(LikeCount));
         }
 
         private async Task ToggleFavorite()
         {
-            if (Detail?.CourseCode == null) return;
-            if (IsFavorited)
+            if (IsFavoriteBusy || Detail?.CourseCode == null) return;
+            IsFavoriteBusy = true;
+            ((Command)FavoriteCommand).ChangeCanExecute();
+
+            try
             {
-                await _authService.UnfavoriteCourseAsync(Detail.CourseCode);
-                IsFavorited = false;
-                FavoriteCount--;
+                if (IsFavorited)
+                {
+                    await _authService.UnfavoriteCourseAsync(Detail.CourseCode);
+                }
+                else
+                {
+                    await _authService.FavoriteCourseAsync(Detail.CourseCode);
+                }
+                // 重新从数据库获取最新计数，保证同步
+                var course = await _authService.Client.From<CourseItem>().Where(x => x.ClassId == Detail.CourseCode).Single();
+                FavoriteCount = course?.FavoriteCount ?? 0;
+                IsFavorited = !IsFavorited;
+                OnPropertyChanged(nameof(IsFavorited));
+                OnPropertyChanged(nameof(FavoriteCount));
             }
-            else
+            finally
             {
-                await _authService.FavoriteCourseAsync(Detail.CourseCode);
-                IsFavorited = true;
-                FavoriteCount++;
+                IsFavoriteBusy = false;
+                ((Command)FavoriteCommand).ChangeCanExecute();
             }
-            OnPropertyChanged(nameof(IsFavorited));
-            OnPropertyChanged(nameof(FavoriteCount));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
