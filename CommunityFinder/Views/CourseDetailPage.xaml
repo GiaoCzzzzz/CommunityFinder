@@ -2,17 +2,24 @@
 <ContentPage x:Class="CommunityFinder.Views.CourseDetailPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:CommunityFinder.Converters"
              Title="Course Detail">
+
+    <!-- 页面资源（图标转换器） -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- 拇指图标：根据 IsLiked 返回 👍 或 👍🏻 -->
+            <converters:LikeIconConverter x:Key="LikeIconConverter" />
+            <!-- 收藏图标：根据 IsFavorited 返回 ❤️ 或 🤍 -->
+            <converters:FavoriteIconConverter x:Key="FavoriteIconConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*">
 
         <!-- 顶部横幅 -->
         <Grid HeightRequest="250" BackgroundColor="#333">
-            <Image Source="{Binding Detail.ImageUrl}" Aspect="AspectFill" Opacity="0.35">
-                <Image.HeightRequest>
-                    <OnPlatform x:TypeArguments="x:Double" Default="250" />
-                </Image.HeightRequest>
-            </Image>
+            <Image Source="{Binding Detail.ImageUrl}" Aspect="AspectFill" Opacity="0.35" />
             <VerticalStackLayout Padding="16,28,16,16" VerticalOptions="End" Spacing="6">
                 <Label Text="{Binding Detail.Title}" FontAttributes="Bold" FontSize="22" TextColor="White"/>
                 <HorizontalStackLayout Spacing="12">
@@ -26,30 +33,35 @@
         <!-- 主体 -->
         <Grid Grid.Row="1" ColumnDefinitions="*,180" Padding="16" ColumnSpacing="16">
 
-            <!-- 左列：正文 -->
+            <!-- 左列 -->
             <ScrollView Grid.Column="0">
                 <VerticalStackLayout Spacing="18">
+
+                    <!-- 组织者与语言 -->
                     <HorizontalStackLayout Spacing="12" IsVisible="{Binding Detail.OrganizerName}">
                         <Label Text="{Binding Detail.OrganizerName}" TextColor="#EF6C00" FontAttributes="Bold"/>
                         <Label Text="{Binding Detail.Language}" TextColor="#666"/>
                     </HorizontalStackLayout>
 
+                    <!-- 课程描述 -->
                     <VerticalStackLayout IsVisible="{Binding Detail.HasDescription}">
                         <Label Text="Course Description" FontSize="18" FontAttributes="Bold"/>
                         <Label Text="{Binding Detail.Description}" LineBreakMode="WordWrap"/>
                     </VerticalStackLayout>
 
+                    <!-- 要求与备注 -->
                     <VerticalStackLayout IsVisible="{Binding Detail.HasReqAndRemarks}">
                         <Label Text="Requirements and Remarks" FontSize="18" FontAttributes="Bold"/>
                         <Label Text="{Binding Detail.RequirementsAndRemarks}" LineBreakMode="WordWrap"/>
                     </VerticalStackLayout>
 
+                    <!-- 场地 -->
                     <VerticalStackLayout IsVisible="{Binding Detail.HasVenue}">
                         <Label Text="Venue" FontSize="18" FontAttributes="Bold"/>
                         <Label Text="{Binding Detail.Venue}" LineBreakMode="WordWrap"/>
                     </VerticalStackLayout>
 
-                    <!-- Trainers -->
+                    <!-- 培训讲师 -->
                     <VerticalStackLayout IsVisible="{Binding Detail.HasTrainers}">
                         <Label Text="Training Provider(s)" FontSize="18" FontAttributes="Bold"/>
                         <CollectionView ItemsSource="{Binding Detail.Trainers}">
@@ -102,27 +114,39 @@
                         </VerticalStackLayout>
                     </Frame>
 
-                    <!-- 点赞/收藏/浏览统计区域 -->
-                    <Grid Padding="0" HorizontalOptions="Center" ColumnDefinitions="Auto,20,Auto,20,Auto" Margin="0,0,0,10">
+                    <!-- 点赞/收藏/浏览统计 -->
+                    <Frame Padding="12" CornerRadius="12" HasShadow="True" BackgroundColor="White">
+                        <Grid ColumnDefinitions="Auto,Auto,Auto" HorizontalOptions="Center">
 
-                        <!-- 点赞 -->
-                        <Button Command="{Binding LikeCommand}"
-                                Text="{Binding IsLiked, Converter={StaticResource ThumbTextConverter}}"
-                                BackgroundColor="#5DB634" FontSize="24"
-                                Grid.Column="0" WidthRequest="28" HeightRequest="28"/>
-                        <Label Text="{Binding LikeCount}" VerticalOptions="Center" Grid.Column="1"/>
+                            <!-- 点赞按钮 -->
+                            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="4">
+                                <Button Command="{Binding LikeCommand}"
+                                        Text="{Binding IsLiked, Converter={StaticResource LikeIconConverter}}"
+                                        BackgroundColor="#5DB634"
+                                        FontSize="28"
+                                        CornerRadius="25"
+                                        WidthRequest="55" HeightRequest="55"/>
+                                <Label Text="{Binding LikeCount}" FontSize="14" HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
 
-                        <!-- 收藏 -->
-                        <Button Command="{Binding FavoriteCommand}"
-                                Text="{Binding IsFavorited, Converter={StaticResource StarTextConverter}}"
-                                BackgroundColor="#5DB634" FontSize="24"
-                                Grid.Column="2" WidthRequest="28" HeightRequest="28"/>
-                        <Label Text="{Binding FavoriteCount}" VerticalOptions="Center" Grid.Column="3"/>
+                            <!-- 收藏按钮 -->
+                            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4" Margin="20,0">
+                                <Button Command="{Binding FavoriteCommand}"
+                                        Text="{Binding IsFavorited, Converter={StaticResource FavoriteIconConverter}}"
+                                        BackgroundColor="#FF9800"
+                                        FontSize="28"
+                                        CornerRadius="25"
+                                        WidthRequest="55" HeightRequest="55"/>
+                                <Label Text="{Binding FavoriteCount}" FontSize="14" HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
 
-                        <!-- 浏览次数 -->
-                        <Label Text="👁" FontSize="24" VerticalOptions="Center" Grid.Column="4"/>
-                        <Label Text="{Binding ViewCount}" VerticalOptions="Center" Grid.Column="5"/>
-                    </Grid>
+                            <!-- 浏览量 -->
+                            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4">
+                                <Label Text="👁" FontSize="28" HorizontalOptions="Center"/>
+                                <Label Text="{Binding ViewCount}" FontSize="14" HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Frame>
 
                 </VerticalStackLayout>
 
