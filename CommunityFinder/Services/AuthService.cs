@@ -267,9 +267,10 @@ namespace CommunityFinder.Services
 
         public async Task<string[]> GetInterest()
         {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
             var resp = await _client
                 .From<Profiles>()
-                .Select(x => x.interest)
+                .Where(x => x.id == userGuid)
                 .Get();
 
             return resp.Model?.interest ?? Array.Empty<string>();
