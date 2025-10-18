@@ -14,6 +14,8 @@ namespace CommunityFinder.Views
 
         public ICommand DeleteHistoryCommand { get; }
         public ICommand ClearAllHistoryCommand { get; }
+        public ICommand DeleteFavoriteCourseCommand { get; }
+        public ICommand ClearAllFavoritesCommand { get; }
 
         public HistoryPage(AuthService authService)
         {
@@ -21,75 +23,122 @@ namespace CommunityFinder.Views
             _authService = authService;
             BindingContext = this;
 
-            // 删除单条浏览记录
-            DeleteHistoryCommand = new Command<CourseItem>(async (item) =>
+            DeleteHistoryCommand = new Command<CourseItem>(DeleteHistoryAsync);
+            ClearAllHistoryCommand = new Command(ClearAllHistoryAsync);
+            DeleteFavoriteCourseCommand = new Command<CourseItem>(DeleteFavoriteAsync);
+            ClearAllFavoritesCommand = new Command(ClearAllFavoritesAsync);
+        }
+
+        private async void DeleteHistoryAsync(CourseItem item)
+        {
+            if (item == null) return;
+
+            try
             {
-                if (item == null)
-                    return;
+                var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
+                var status = await _authService.Client
+                    .From<CourseStatus>()
+                    .Where(x => x.id == userGuid)
+                    .Single();
 
-                try
-                {
-                    var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
-                    var status = await _authService.Client
-                        .From<CourseStatus>()
-                        .Where(x => x.id == userGuid)
-                        .Single();
+                if (status?.history == null) return;
 
-                    if (status == null || status.history == null)
-                        return;
+                var newHistory = status.history.Where(h => h != item.ClassId).ToArray();
 
-                    var newHistory = status.history
-                        .Where(h => h != item.ClassId)
-                        .ToArray();
+                await _authService.Client
+                    .From<CourseStatus>()
+                    .Where(x => x.id == userGuid)
+                    .Set(x => x.history, newHistory)
+                    .Update();
 
-                    // ✅ 正确的更新写法
-                    await _authService.Client
-    .From<CourseStatus>()
-    .Where(x => x.id == userGuid)
-    .Set(x => x.history, newHistory) // 直接用属性
-    .Update();
-
-
-
-
-                    BrowsingHistory.Remove(item);
-                }
-                catch (Exception ex)
-                {
-                    await DisplayAlert("Error", $"Failed to delete: {ex.Message}", "OK");
-                }
-            });
-
-            // 清空所有历史记录
-            ClearAllHistoryCommand = new Command(async () =>
+                BrowsingHistory.Remove(item);
+            }
+            catch (Exception ex)
             {
-                try
-                {
-                    var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
-                    var status = await _authService.Client
-                        .From<CourseStatus>()
-                        .Where(x => x.id == userGuid)
-                        .Single();
+                await DisplayAlert("Error", $"Failed to delete: {ex.Message}", "OK");
+            }
+        }
 
-                    if (status == null)
-                        return;
+        private async void ClearAllHistoryAsync()
+        {
+            try
+            {
+                var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
 
-                    // ✅ 正确的清空写法
-                    await _authService.Client
-    .From<CourseStatus>()
-    .Where(x => x.id == userGuid)
-    .Set(x => x.history, Array.Empty<string>())
-    .Update();
+                await _authService.Client
+                    .From<CourseStatus>()
+                    .Where(x => x.id == userGuid)
+                    .Set(x => x.history, Array.Empty<string>())
+                    .Update();
 
+                BrowsingHistory.Clear();
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to clear history: {ex.Message}", "OK");
+            }
+        }
 
+        private async void DeleteFavoriteAsync(CourseItem item)
+        {
+            if (item == null) return;
 
-                    BrowsingHistory.Clear();
-                }
-                catch (Exception ex)
-                {
-                    await DisplayAlert("Error", $"Failed to clear history: {ex.Message}", "OK");
-                }
-            });
+            try
+            {
+                var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
+                var status = await _authService.Client
+                    .From<CourseStatus>()
+                    .Where(x => x.id == userGuid)
+                    .Single();
+
+                if (status?.favorites == null) return;
+
+                var newFavorites = status.favorites.Where(f => f != item.ClassId).ToArray();
+
+                await _authService.Client
+                    .From<CourseStatus>()
+                    .Where(x => x.id == userGuid)
+                    .Set(x => x.favorites, newFavorites)
+                    .Update();
+
+                FavoriteCourses.Remove(item);
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to delete favorite: {ex.Message}", "OK");
+            }
+        }
+
+        private async void ClearAllFavoritesAsync()
+        {
+            try
+            {
+                var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
+
+                await _authService.Client
+                    .From<CourseStatus>()
+                    .Where(x => x.id == userGuid)
+                    .Set(x => x.favorites, Array.Empty<string>())
+                    .Update();
+
+                FavoriteCourses.Clear();
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to clear favorites: {ex.Message}", "OK");
+            }
+        }
+
+        private void OnClearAllHistoryClicked(object sender, EventArgs e)
+        {
+            if (ClearAllHistoryCommand?.CanExecute(null) == true)
+                ClearAllHistoryCommand.Execute(null);
+        }
+
+        private void OnClearAllFavoritesClicked(object sender, EventArgs e)
+        {
+            if (ClearAllFavoritesCommand?.CanExecute(null) == true)
+                ClearAllFavoritesCommand.Execute(null);
         }
 
         protected override async void OnAppearing()
@@ -107,10 +156,8 @@ namespace CommunityFinder.Views
                     .Where(x => x.id == userGuid)
                     .Single();
 
-                if (status == null)
-                    return;
+                if (status == null) return;
 
-                // 加载浏览记录
                 var historyIds = status.history ?? Array.Empty<string>();
                 foreach (var classId in historyIds)
                 {
@@ -123,7 +170,6 @@ namespace CommunityFinder.Views
                         BrowsingHistory.Add(course);
                 }
 
-                // 加载收藏
                 var favoriteIds = status.favorites ?? Array.Empty<string>();
                 foreach (var classId in favoriteIds)
                 {

@@ -9,20 +9,21 @@
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="220"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
 
             <!-- 左侧纵向导航 -->
             <VerticalStackLayout Grid.Column="0" Padding="12" Spacing="8"
-                             BackgroundColor="#F2F4F7">
+                                 BackgroundColor="#F2F4F7">
                 <Button Text="Account" FontAttributes="Bold" Padding="10,8"
-                   BackgroundColor="#E5E7EB" TextColor="Black"/>
+                        BackgroundColor="#E5E7EB" TextColor="Black"/>
                 <Button Text="Language"  Clicked="OnLanguageClicked"  />
                 <Button Text="Theme"     Clicked="OnThemeClicked"     />
                 <Button Text="History"   Clicked="OnHistoryClicked"   />
             </VerticalStackLayout>
 
+            <!-- 右侧内容 -->
             <StackLayout Padding="30" Spacing="20" VerticalOptions="Center" Grid.Column="1">
 
                 <Label Text="About You" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#333" />
@@ -79,14 +80,52 @@
                 <Entry x:Name="PostalCodeEntry" Keyboard="Numeric" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnPostalCodeChanged" />
                 <Label x:Name="PostalCodeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-                <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
-                    <Button Text="Change Password" BackgroundColor="Transparent" TextColor="#2196F3" FontSize="14" Clicked="OnChangePasswordClicked" />
-                    <Button Text="Change Interest" BackgroundColor="Transparent" TextColor="#2196F3" FontSize="14" Clicked="OnChangeInterestClicked" />
-                    <Button Text="Save" BackgroundColor="#4CAF50" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="50" Clicked="OnSaveClicked" />
-                </HorizontalStackLayout>
+                <Grid ColumnSpacing="10" RowSpacing="15" Margin="0,20,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 第一行：两个按钮并排 -->
+                    <Button Grid.Row="0" Grid.Column="0"
+            Text="Change Password"
+            BackgroundColor="Transparent"
+            TextColor="#2196F3"
+            FontSize="14"
+            Clicked="OnChangePasswordClicked"
+            Padding="10,5"/>
+
+                    <Button Grid.Row="0" Grid.Column="1"
+            Text="Change Interest"
+            BackgroundColor="Transparent"
+            TextColor="#2196F3"
+            FontSize="14"
+            Clicked="OnChangeInterestClicked"
+            Padding="10,5"/>
+
+                    <!-- 第二行：Save 按钮占满整行 -->
+                    <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+            Text="Save"
+            BackgroundColor="#4CAF50"
+            TextColor="White"
+            FontAttributes="Bold"
+            CornerRadius="8"
+            HeightRequest="50"
+            Clicked="OnSaveClicked"
+            HorizontalOptions="Fill"
+            Padding="10,5"/>
+                </Grid>
+
+
+
+
+
 
             </StackLayout>
         </Grid>
     </ScrollView>
 </ContentPage>
-
