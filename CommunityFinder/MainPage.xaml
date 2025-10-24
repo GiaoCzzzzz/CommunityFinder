@@ -160,71 +160,61 @@
       HorizontalOptions="FillAndExpand"
       RowSpacing="8">
 
-            <!-- 第1行：L1 + L2 -->
-            <Grid Grid.Row="0" ColumnDefinitions="*,*" ColumnSpacing="6">
-                <!-- L1 -->
+            <!-- 第1行：关键词搜索 -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
                 <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="FillAndExpand">
-                    <Label Text="What" FontAttributes="Bold" FontSize="14"/>
-                    <Picker ItemsSource="{Binding L1Options}" 
-                    SelectedItem="{Binding SelectedL1}" 
-                    Title="Select a category"/>
+                    <Label Text="Search by Keywords" FontAttributes="Bold" FontSize="14"/>
+                    <Entry Text="{Binding CurrentKeyword}" 
+                           Placeholder="Enter keyword (e.g., game, basketball)"
+                           ReturnCommand="{Binding AddKeywordCommand}"/>
                 </VerticalStackLayout>
 
-                <!-- L2 -->
-                <VerticalStackLayout Grid.Column="1" Spacing="2" 
-                             IsVisible="{Binding HasL1Selected}" 
-                             x:Name="L2Panel"
-                             HorizontalOptions="FillAndExpand">
-                    <Label Text="Category" FontAttributes="Bold" FontSize="14"/>
-                    <Picker ItemsSource="{Binding L2Options}" 
-                    SelectedItem="{Binding SelectedL2}" 
-                    Title="Select a subcategory"/>
-                </VerticalStackLayout>
+                <!-- 添加关键词按钮 -->
+                <Button Grid.Column="1"
+                        Text="+"
+                        FontSize="20"
+                        WidthRequest="44"
+                        HeightRequest="40"
+                        CornerRadius="20"
+                        BackgroundColor="#5DBB63"
+                        TextColor="White"
+                        VerticalOptions="End"
+                        Command="{Binding AddKeywordCommand}"/>
+
+                <!-- 搜索按钮 -->
+                <Button Grid.Column="2"
+                        Text="🔍"
+                        FontSize="18"
+                        WidthRequest="44"
+                        HeightRequest="40"
+                        CornerRadius="20"
+                        BackgroundColor="#0078D7"
+                        TextColor="White"
+                        VerticalOptions="End"
+                        Clicked="OnSearchClicked"/>
             </Grid>
 
-            <!-- 第2行：L3 + 搜索框 -->
-            <Grid Grid.Row="1" ColumnDefinitions="2*,*"
-          ColumnSpacing="6" VerticalOptions="Center">
-                <!-- L3 -->
-                <VerticalStackLayout Grid.Column="0" Spacing="2"
-                             IsVisible="{Binding HasL2Selected}" 
-                             x:Name="L3Panel"
-                             HorizontalOptions="FillAndExpand">
-                    <Label Text="Topic" FontAttributes="Bold" FontSize="14"/>
-                    <Picker ItemsSource="{Binding L3Options}" 
-                    SelectedItem="{Binding SelectedL3}" 
-                    Title="Select a topic"/>
-                </VerticalStackLayout>
-
-                <!-- 搜索框 + 搜索按钮 -->
-                <Grid Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="6" VerticalOptions="Center">
-                    <Frame Padding="8,0"
-                   BackgroundColor="#F5F5F5"
-                   CornerRadius="8"
-                   HasShadow="False"
-                   VerticalOptions="Center"
-                   HorizontalOptions="FillAndExpand">
-                        <Entry Placeholder="Search title..."
-                       Text="{Binding SearchText}"
-                       HeightRequest="40"
-                       BackgroundColor="Transparent"
-                       PlaceholderColor="#888"
-                       TextColor="#333"
-                       HorizontalOptions="FillAndExpand"/>
-                    </Frame>
-
-                    <Button Grid.Column="1"
-                    Text="🔍"
-                    FontSize="18"
-                    WidthRequest="44"
-                    HeightRequest="40"
-                    CornerRadius="20"
-                    BackgroundColor="#0078D7"
-                    TextColor="White"
-                    VerticalOptions="Center"
-                    Clicked="OnSearchClicked"/>
-                </Grid>
-            </Grid>
+            <!-- 第2行：显示已添加的关键词 -->
+            <CollectionView Grid.Row="1" ItemsSource="{Binding Keywords}" IsVisible="{Binding Keywords.Count}">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="8,4" CornerRadius="12" BackgroundColor="#E3F2FD" HasShadow="False">
+                            <HorizontalStackLayout Spacing="6">
+                                <Label Text="{Binding .}" TextColor="#1976D2" FontSize="14"/>
+                                <Label Text="✕" TextColor="#666" FontSize="14">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer CommandParameter="{Binding .}" 
+                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveKeywordCommand}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </HorizontalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
             <!-- 第3行：Where + Day -->
             <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="6">

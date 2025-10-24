@@ -358,6 +358,17 @@ namespace CommunityFinder.Services
             return true;
         }
 
+        public async Task<bool> AddRegisteredCountAsync(string classId)
+        {
+            var course = await _client.From<CourseItem>().Where(x => x.ClassId == classId).Single();
+            if (course != null)
+            {
+                course.RegisteredCount = course.RegisteredCount + 1;
+                await course.Update<CourseItem>();
+            }
+            return true;
+        }
+
         //传入删除点赞和收藏
         public async Task<bool> LikeCourseAsync(string classId)
         {

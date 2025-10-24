@@ -21,6 +21,12 @@ namespace CommunityFinder.ViewModels
 
         public ObservableCollection<CourseItem> Courses { get; } = new();
 
+        // Keyword search
+        public ObservableCollection<string> Keywords { get; } = new();
+        
+        private string _currentKeyword;
+        public string CurrentKeyword { get => _currentKeyword; set { _currentKeyword = value; OnPropertyChanged(); } }
+
         // 分类选项（三级联动）
         public ObservableCollection<string> L1Options { get; } = new();//一二三级联动
         public ObservableCollection<string> L2Options { get; } = new(); 
@@ -97,11 +103,17 @@ namespace CommunityFinder.ViewModels
         public bool IsBusy { get => _isBusy; set { _isBusy = value; OnPropertyChanged(); } }
 
         public ICommand ResetCommand { get; } //重置按钮
+        public ICommand AddKeywordCommand { get; }
+        public ICommand RemoveKeywordCommand { get; }
+
+        private bool _isFirstLoad = true;
 
         public CoursesViewModel(OnePaService service = null)
         {
             _service = service ?? new OnePaService();
             ResetCommand = new Command(ResetAoi);
+            AddKeywordCommand = new Command(AddKeyword);
+            RemoveKeywordCommand = new Command<string>(RemoveKeyword);
         }
 
         //重置三级联动选择
@@ -121,6 +133,34 @@ namespace CommunityFinder.ViewModels
                 L1Options.Clear();
                 foreach (var l1 in _aoiTree.Keys) L1Options.Add(l1);
             }
+        }
+
+        private void AddKeyword()
+        {
+            if (!string.IsNullOrWhiteSpace(CurrentKeyword) && !Keywords.Contains(CurrentKeyword))
+            {
+                Keywords.Add(CurrentKeyword.Trim());
+                CurrentKeyword = string.Empty;
+            }
+        }
+
+        private void RemoveKeyword(string keyword)
+        {
+            if (Keywords.Contains(keyword))
+            {
+                Keywords.Remove(keyword);
+            }
+        }
+
+        public bool IsFirstLoad
+        {
+            get => _isFirstLoad;
+            set { _isFirstLoad = value; OnPropertyChanged(); }
+        }
+
+        public void MarkAsReturningFromDetail()
+        {
+            _isFirstLoad = false;
         }
 
         private bool _aoiLoaded = false;
@@ -355,6 +395,221 @@ namespace CommunityFinder.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// Search courses by keywords using InterestAnalyzer
+        /// </summary>
+        public async System.Threading.Tasks.Task SearchByKeywordsAsync(int maxPages = 8)
+        {
+            if (IsBusy) return;
+            IsBusy = true;
+            try
+            {
+                Courses.Clear();
+
+                // If no keywords, return
+                if (Keywords.Count == 0)
+                {
+                    return;
+                }
+
+                // Load categories for analysis
+                string categoryText = await LoadCategoriesTextAsync();
+                if (string.IsNullOrWhiteSpace(categoryText))
+                    return;
+
+                // Use InterestAnalyzer to find best matching categories
+                var analyzer = new InterestAnalyzer();
+                analyzer.LoadCategories(categoryText);
+                
+                var result = analyzer.AnalyzeInterests(Keywords.ToArray());
+                
+                if (!result.HasValue)
+                {
+                    // If no category match found, search by title keywords
+                    await SearchByTitleKeywordsAsync(maxPages);
+                    return;
+                }
+
+                // Use the matched category to search
+                var aoilname = result.Value.L3.Trim();
+                var aoil2 = Slug(result.Value.L2, dropCoursesWord: true);
+                var aoil3 = Slug(result.Value.L3);
+
+                var outletParam =
+                    (string.IsNullOrWhiteSpace(SelectedWhere) || SelectedWhere.Equals("Any", StringComparison.OrdinalIgnoreCase))
+                    ? ""
+                    : SelectedWhere;
+
+                var url = OnePaService.BuildSearchUrl(
+                    l1: aoilname,
+                    l2: aoil2,
+                    l3: aoil3,
+                    course: "",
+                    outlet: outletParam,
+                    includeFull: true,
+                    page: 1
+                );
+
+                // Fetch courses
+                var all = await _service.FetchAllPagesAsync(url, maxPages);
+
+                // Filter by keywords in title
+                IEnumerable<CourseItem> query = all;
+
+                // Apply keyword filtering - course must match ALL keywords
+                foreach (var keyword in Keywords)
+                {
+                    var kw = keyword.ToLowerInvariant();
+                    query = query.Where(c => (c.Title ?? "").ToLowerInvariant().Contains(kw));
+                }
+
+                // Apply other filters
+                if (!string.IsNullOrWhiteSpace(SelectedDay) &&
+                    !SelectedDay.Equals("Any", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(c =>
+                        !c.StartDate.HasValue ||
+                        c.StartDate.Value.ToString("dddd", CultureInfo.InvariantCulture)
+                          .Equals(SelectedDay, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (!string.IsNullOrWhiteSpace(SelectedTime) &&
+                    !SelectedTime.Equals("Any", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(c =>
+                    {
+                        if (string.IsNullOrWhiteSpace(c.SessionTime)) return true;
+                        var parts = c.SessionTime.Split('-', StringSplitOptions.TrimEntries);
+                        if (parts.Length == 0) return true;
+                        if (!DateTime.TryParse(parts[0], CultureInfo.InvariantCulture, DateTimeStyles.None, out var t0))
+                            return true;
+                        var h = t0.Hour;
+                        return SelectedTime switch
+                        {
+                            "Morning" => h < 12,
+                            "Afternoon" => h >= 12 && h < 18,
+                            "Evening" => h >= 18,
+                            _ => true
+                        };
+                    });
+                }
+
+                foreach (var c in query.OrderBy(c => c.StartDate ?? DateTime.MaxValue))
+                    Courses.Add(c);
+
+                // Update outlet options
+                var outlets = all.Select(c => c.Outlet)
+                                 .Where(s => !string.IsNullOrWhiteSpace(s))
+                                 .Distinct()
+                                 .OrderBy(s => s)
+                                 .ToList();
+                UpdateWhereOptions(outlets);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        /// <summary>
+        /// Search by title keywords only (fallback when no category match)
+        /// </summary>
+        private async System.Threading.Tasks.Task SearchByTitleKeywordsAsync(int maxPages = 8)
+        {
+            // This is a simplified search - searches across multiple categories
+            // You might need to iterate through major categories or use a different API endpoint
+            // For now, we'll use a broad search approach
+            
+            var outletParam =
+                (string.IsNullOrWhiteSpace(SelectedWhere) || SelectedWhere.Equals("Any", StringComparison.OrdinalIgnoreCase))
+                ? ""
+                : SelectedWhere;
+
+            // Use the first keyword as the main search term
+            var searchTerm = Keywords.FirstOrDefault() ?? "";
+            
+            var url = OnePaService.BuildSearchUrl(
+                l1: "",
+                l2: "",
+                l3: "",
+                course: searchTerm,
+                outlet: outletParam,
+                includeFull: true,
+                page: 1
+            );
+
+            var all = await _service.FetchAllPagesAsync(url, maxPages);
+
+            // Filter by ALL keywords
+            IEnumerable<CourseItem> query = all;
+            foreach (var keyword in Keywords)
+            {
+                var kw = keyword.ToLowerInvariant();
+                query = query.Where(c => (c.Title ?? "").ToLowerInvariant().Contains(kw));
+            }
+
+            // Apply other filters
+            if (!string.IsNullOrWhiteSpace(SelectedDay) &&
+                !SelectedDay.Equals("Any", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(c =>
+                    !c.StartDate.HasValue ||
+                    c.StartDate.Value.ToString("dddd", CultureInfo.InvariantCulture)
+                      .Equals(SelectedDay, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(SelectedTime) &&
+                !SelectedTime.Equals("Any", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.Where(c =>
+                {
+                    if (string.IsNullOrWhiteSpace(c.SessionTime)) return true;
+                    var parts = c.SessionTime.Split('-', StringSplitOptions.TrimEntries);
+                    if (parts.Length == 0) return true;
+                    if (!DateTime.TryParse(parts[0], CultureInfo.InvariantCulture, DateTimeStyles.None, out var t0))
+                        return true;
+                    var h = t0.Hour;
+                    return SelectedTime switch
+                    {
+                        "Morning" => h < 12,
+                        "Afternoon" => h >= 12 && h < 18,
+                        "Evening" => h >= 18,
+                        _ => true
+                    };
+                });
+            }
+
+            foreach (var c in query.OrderBy(c => c.StartDate ?? DateTime.MaxValue))
+                Courses.Add(c);
+
+            var outlets = all.Select(c => c.Outlet)
+                             .Where(s => !string.IsNullOrWhiteSpace(s))
+                             .Distinct()
+                             .OrderBy(s => s)
+                             .ToList();
+            UpdateWhereOptions(outlets);
+        }
+
+        private async System.Threading.Tasks.Task<string> LoadCategoriesTextAsync()
+        {
+            string[] candidates = { "categories.txt", "分类.txt" };
+            
+            foreach (var name in candidates)
+            {
+                try
+                {
+                    using var s = await FileSystem.OpenAppPackageFileAsync(name);
+                    using var sr = new StreamReader(s, Encoding.UTF8, true);
+                    var text = await sr.ReadToEndAsync();
+                    if (!string.IsNullOrWhiteSpace(text))
+                        return text;
+                }
+                catch { /* try next */ }
+            }
+            
+            return null;
         }
 
         private void UpdateWhereOptions(List<string> outlets)

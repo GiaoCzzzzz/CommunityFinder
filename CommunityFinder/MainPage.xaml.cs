@@ -22,21 +22,14 @@ namespace CommunityFinder
             InitializeComponent();
             BindingContext = _vm;
             _authService = authService;
-
-            _vm.PropertyChanged += async (s, e) =>
-            {
-                if (e.PropertyName == nameof(CoursesViewModel.HasL1Selected) && _vm.HasL1Selected && L2Panel.Opacity < 1)
-                    await L2Panel.FadeTo(1, 180);
-                if (e.PropertyName == nameof(CoursesViewModel.HasL2Selected) && _vm.HasL2Selected && L3Panel.Opacity < 1)
-                    await L3Panel.FadeTo(1, 180);
-            };
         }
 
 
         private async void OnSearchClicked(object sender, EventArgs e)
         {
-            //await _vm.LoadWithFiltersAsync(BaseUrl, maxPages: 8);
-            await _vm.SearchByAoiAsync(maxPages: 8);
+            // Search by keywords
+            _vm.MarkAsReturningFromDetail(); // Mark that we've done a manual search
+            await _vm.SearchByKeywordsAsync(maxPages: 8);
         }
 
         private async void OnSettingClicked(object sender, EventArgs e)
@@ -69,12 +62,21 @@ namespace CommunityFinder
             // Initialize categories first
             await _vm.InitAsync();
             
-            // Try to auto-fill categories based on user interests
-            await AutoFillCategoriesFromInterests();
-            
-            // Load courses if not already loaded
-            if (_vm.Courses.Count == 0)
-                await _vm.SearchByAoiAsync(maxPages: 8);
+            // Only auto-fill and search on first load, not when returning from detail page
+            if (_vm.IsFirstLoad && _vm.Courses.Count == 0)
+            {
+                // Try to auto-fill categories based on user interests
+                await AutoFillCategoriesFromInterests();
+                
+                // Load courses based on interests
+                if (!string.IsNullOrWhiteSpace(_vm.SelectedL1) && 
+                    !string.IsNullOrWhiteSpace(_vm.SelectedL2) && 
+                    !string.IsNullOrWhiteSpace(_vm.SelectedL3))
+                {
+                    await _vm.SearchByAoiAsync(maxPages: 8);
+                }
+            }
+            // When returning from detail page, courses are preserved automatically
         }
 
         private async System.Threading.Tasks.Task AutoFillCategoriesFromInterests()
