@@ -18,7 +18,7 @@ namespace CommunityFinder.ViewModels
         public bool IsFavorited { get; set; }
         public int LikeCount { get; set; }
         public int FavoriteCount { get; set; }
-        public int ViewCount { get; set; }
+        public int RegisteredCount { get; set; }
 
         private bool _isLikeBusy;
         public bool IsLikeBusy
@@ -79,10 +79,10 @@ namespace CommunityFinder.ViewModels
             var course = await _authService.Client.From<CourseItem>().Where(x => x.ClassId == classId).Single();
             LikeCount = course?.LikeCount ?? 0;
             FavoriteCount = course?.FavoriteCount ?? 0;
-            ViewCount = course?.ViewCount ?? 0;
+            RegisteredCount = course?.RegisteredCount ?? 0;
             OnPropertyChanged(nameof(LikeCount));
             OnPropertyChanged(nameof(FavoriteCount));
-            OnPropertyChanged(nameof(ViewCount));
+            OnPropertyChanged(nameof(RegisteredCount));
 
             // 获取用户点赞/收藏状态
             var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
@@ -92,10 +92,8 @@ namespace CommunityFinder.ViewModels
             OnPropertyChanged(nameof(IsLiked));
             OnPropertyChanged(nameof(IsFavorited));
 
-            // 增加浏览计数
+            // 增加浏览计数 (不显示但保留功能)
             await _authService.AddViewCountAsync(classId);
-            ViewCount++;
-            OnPropertyChanged(nameof(ViewCount));
         }
 
         private async Task ToggleLike()
@@ -159,7 +157,7 @@ namespace CommunityFinder.ViewModels
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        void OnPropertyChanged([CallerMemberName] string name = null!) =>
+        public void OnPropertyChanged([CallerMemberName] string name = null!) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

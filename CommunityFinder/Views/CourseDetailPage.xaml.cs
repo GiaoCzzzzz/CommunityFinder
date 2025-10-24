@@ -31,9 +31,17 @@ namespace CommunityFinder.Views
 
         private async void OnBookNowClicked(object sender, EventArgs e)
         {
-            // 直接打开 onePA 原详情页进行报名（也可以对接 share.url）
+            // Increment registered count
+            if (_vm.Detail?.CourseCode != null)
+            {
+                await _authService.AddRegisteredCountAsync(_vm.Detail.CourseCode);
+                _vm.RegisteredCount++;
+                _vm.OnPropertyChanged(nameof(_vm.RegisteredCount));
+            }
+            
+            // 直锟接达拷 onePA 原锟斤拷锟斤拷页锟斤拷锟叫憋拷锟斤拷锟斤拷也锟斤拷锟皆对斤拷 share.url锟斤拷
             try { await Launcher.OpenAsync(new Uri(_detailUrl)); } catch { /* ignore */ }
         }
-        // 也可以给讲师/组织方 Label 增加 TapGestureRecognizer 打开链接
+        // 也锟斤拷锟皆革拷锟斤拷师/锟斤拷织锟斤拷 Label 锟斤拷锟斤拷 TapGestureRecognizer 锟斤拷锟斤拷锟斤拷
     }
 }

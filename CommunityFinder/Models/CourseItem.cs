@@ -50,6 +50,7 @@ namespace CommunityFinder.Models
         public int ViewCount { get; set; }
         public int LikeCount { get; set; }
         public int FavoriteCount { get; set; }
+        public int RegisteredCount { get; set; }
         public static DateTime? ParseStartDate(string raw)
         {
             if (string.IsNullOrWhiteSpace(raw)) return null;

@@ -1,16 +1,16 @@
-﻿using System;
+using System;
 using System.Globalization;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
 
 namespace CommunityFinder.Converters
 {
-    public class FavoriteIconConverter : IValueConverter
+    public class FavoriteBorderColorConverter : IValueConverter
     {
-        // Converts IsFavorited(bool) → ⭐ (yellow star) or ☆ (white star outline)
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool isFav = value is bool b && b;
-            return isFav ? "⭐" : "☆";
+            bool isFavorited = value is bool b && b;
+            return isFavorited ? Colors.Orange : Colors.LightGray;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
