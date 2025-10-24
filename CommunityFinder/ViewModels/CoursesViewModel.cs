@@ -414,58 +414,88 @@ namespace CommunityFinder.ViewModels
                     return;
                 }
 
-                // Load categories for analysis
-                string categoryText = await LoadCategoriesTextAsync();
-                if (string.IsNullOrWhiteSpace(categoryText))
-                    return;
-
-                // Use InterestAnalyzer to find best matching categories
-                var analyzer = new InterestAnalyzer();
-                analyzer.LoadCategories(categoryText);
-                
-                var result = analyzer.AnalyzeInterests(Keywords.ToArray());
-                
-                if (!result.HasValue)
-                {
-                    // If no category match found, search by title keywords
-                    await SearchByTitleKeywordsAsync(maxPages);
-                    return;
-                }
-
-                // Use the matched category to search
-                var aoilname = result.Value.L3.Trim();
-                var aoil2 = Slug(result.Value.L2, dropCoursesWord: true);
-                var aoil3 = Slug(result.Value.L3);
+                // 使用 HashSet 来去重，避免同一课程被添加多次
+                var uniqueCourses = new HashSet<string>(); // 用课程 ID 或 URL 去重
+                var allCourses = new List<CourseItem>();
 
                 var outletParam =
                     (string.IsNullOrWhiteSpace(SelectedWhere) || SelectedWhere.Equals("Any", StringComparison.OrdinalIgnoreCase))
                     ? ""
                     : SelectedWhere;
 
-                var url = OnePaService.BuildSearchUrl(
-                    l1: aoilname,
-                    l2: aoil2,
-                    l3: aoil3,
-                    course: "",
-                    outlet: outletParam,
-                    includeFull: true,
-                    page: 1
-                );
-
-                // Fetch courses
-                var all = await _service.FetchAllPagesAsync(url, maxPages);
-
-                // Filter by keywords in title
-                IEnumerable<CourseItem> query = all;
-
-                // Apply keyword filtering - course must match ALL keywords
+                // 为每个关键词单独搜索
                 foreach (var keyword in Keywords)
                 {
-                    var kw = keyword.ToLowerInvariant();
-                    query = query.Where(c => (c.Title ?? "").ToLowerInvariant().Contains(kw));
+                    try
+                    {
+                        // 尝试用 InterestAnalyzer 匹配分类
+                        string categoryText = await LoadCategoriesTextAsync();
+                        var analyzer = new InterestAnalyzer();
+                        analyzer.LoadCategories(categoryText);
+
+                        var result = analyzer.AnalyzeInterests(new[] { keyword });
+
+                        string url;
+                        if (result.HasValue)
+                        {
+                            // 使用匹配的分类搜索
+                            var aoilname = result.Value.L3.Trim();
+                            var aoil2 = Slug(result.Value.L2, dropCoursesWord: true);
+                            var aoil3 = Slug(result.Value.L3);
+
+                            url = OnePaService.BuildSearchUrl(
+                                l1: aoilname,
+                                l2: aoil2,
+                                l3: aoil3,
+                                course: "",
+                                outlet: outletParam,
+                                includeFull: true,
+                                page: 1
+                            );
+                        }
+                        else
+                        {
+                            // 没有匹配分类，使用关键词搜索
+                            url = OnePaService.BuildSearchUrl(
+                                l1: "",
+                                l2: "",
+                                l3: "",
+                                course: keyword,
+                                outlet: outletParam,
+                                includeFull: true,
+                                page: 1
+                            );
+                        }
+
+                        // 获取该关键词的所有课程
+                        var courses = await _service.FetchAllPagesAsync(url, maxPages);
+
+                        // 过滤：只保留标题包含当前关键词的课程
+                        var kw = keyword.ToLowerInvariant();
+                        var filtered = courses.Where(c =>
+                            (c.Title ?? "").ToLowerInvariant().Contains(kw));
+
+                        // 添加到总列表，使用课程 URL 去重
+                        foreach (var course in filtered)
+                        {
+                            var courseId = course.DetailUrl ?? course.Title ?? Guid.NewGuid().ToString();
+                            if (!uniqueCourses.Contains(courseId))
+                            {
+                                uniqueCourses.Add(courseId);
+                                allCourses.Add(course);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // 单个关键词搜索失败，继续下一个
+                        continue;
+                    }
                 }
 
-                // Apply other filters
+                // 应用其他过滤条件
+                IEnumerable<CourseItem> query = allCourses;
+
                 if (!string.IsNullOrWhiteSpace(SelectedDay) &&
                     !SelectedDay.Equals("Any", StringComparison.OrdinalIgnoreCase))
                 {
@@ -496,15 +526,16 @@ namespace CommunityFinder.ViewModels
                     });
                 }
 
+                // 按开始日期排序并添加到显示列表
                 foreach (var c in query.OrderBy(c => c.StartDate ?? DateTime.MaxValue))
                     Courses.Add(c);
 
-                // Update outlet options
-                var outlets = all.Select(c => c.Outlet)
-                                 .Where(s => !string.IsNullOrWhiteSpace(s))
-                                 .Distinct()
-                                 .OrderBy(s => s)
-                                 .ToList();
+                // 更新 outlet 选项
+                var outlets = allCourses.Select(c => c.Outlet)
+                                     .Where(s => !string.IsNullOrWhiteSpace(s))
+                                     .Distinct()
+                                     .OrderBy(s => s)
+                                     .ToList();
                 UpdateWhereOptions(outlets);
             }
             finally

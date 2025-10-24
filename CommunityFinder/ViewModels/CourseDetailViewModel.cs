@@ -14,11 +14,40 @@ namespace CommunityFinder.ViewModels
         private readonly AuthService _authService;
         private readonly CourseDetailService _service = new();
 
-        public bool IsLiked { get; set; }
-        public bool IsFavorited { get; set; }
-        public int LikeCount { get; set; }
-        public int FavoriteCount { get; set; }
-        public int RegisteredCount { get; set; }
+        private bool _isLiked;
+        public bool IsLiked
+        {
+            get => _isLiked;
+            set { _isLiked = value; OnPropertyChanged(); }
+        }
+
+        private bool _isFavorited;
+        public bool IsFavorited
+        {
+            get => _isFavorited;
+            set { _isFavorited = value; OnPropertyChanged(); }
+        }
+
+        private int _likeCount;
+        public int LikeCount
+        {
+            get => _likeCount;
+            set { _likeCount = value; OnPropertyChanged(); }
+        }
+
+        private int _favoriteCount;
+        public int FavoriteCount
+        {
+            get => _favoriteCount;
+            set { _favoriteCount = value; OnPropertyChanged(); }
+        }
+
+        private int _registeredCount;
+        public int RegisteredCount
+        {
+            get => _registeredCount;
+            set { _registeredCount = value; OnPropertyChanged(); }
+        }
 
         private bool _isLikeBusy;
         public bool IsLikeBusy
@@ -80,17 +109,12 @@ namespace CommunityFinder.ViewModels
             LikeCount = course?.LikeCount ?? 0;
             FavoriteCount = course?.FavoriteCount ?? 0;
             RegisteredCount = course?.RegisteredCount ?? 0;
-            OnPropertyChanged(nameof(LikeCount));
-            OnPropertyChanged(nameof(FavoriteCount));
-            OnPropertyChanged(nameof(RegisteredCount));
 
             // 获取用户点赞/收藏状态
             var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
             var status = await _authService.Client.From<CourseStatus>().Where(x => x.id == userGuid).Single();
             IsLiked = status?.likes?.Contains(classId) ?? false;
             IsFavorited = status?.favorites?.Contains(classId) ?? false;
-            OnPropertyChanged(nameof(IsLiked));
-            OnPropertyChanged(nameof(IsFavorited));
 
             // 增加浏览计数 (不显示但保留功能)
             await _authService.AddViewCountAsync(classId);

@@ -165,7 +165,7 @@
                 <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="FillAndExpand">
                     <Label Text="Search by Keywords" FontAttributes="Bold" FontSize="14"/>
                     <Entry Text="{Binding CurrentKeyword}" 
-                           Placeholder="Enter keyword (e.g., game, basketball)"
+                           Placeholder="Enter keyword (e.g., dance, basketball)"
                            ReturnCommand="{Binding AddKeywordCommand}"/>
                 </VerticalStackLayout>
 

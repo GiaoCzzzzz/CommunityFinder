@@ -1,6 +1,7 @@
 using CommunityFinder.Services;
 using CommunityFinder.ViewModels;
 using Microsoft.Maui.ApplicationModel;
+using CommunityFinder.Models;
 
 namespace CommunityFinder.Views
 {
@@ -31,17 +32,31 @@ namespace CommunityFinder.Views
 
         private async void OnBookNowClicked(object sender, EventArgs e)
         {
-            // Increment registered count
             if (_vm.Detail?.CourseCode != null)
             {
                 await _authService.AddRegisteredCountAsync(_vm.Detail.CourseCode);
-                _vm.RegisteredCount++;
-                _vm.OnPropertyChanged(nameof(_vm.RegisteredCount));
+
+                // 从数据库重新获取最新的注册数，实现实时同步
+                var course = await _authService.Client.From<CourseItem>()
+                    .Where(x => x.ClassId == _vm.Detail.CourseCode)
+                    .Single();
+
+                if (course != null)
+                {
+                    _vm.RegisteredCount = course.RegisteredCount;
+                    _vm.OnPropertyChanged(nameof(_vm.RegisteredCount));
+                }
             }
-            
-            // ֱ�Ӵ� onePA ԭ����ҳ���б�����Ҳ���ԶԽ� share.url��
-            try { await Launcher.OpenAsync(new Uri(_detailUrl)); } catch { /* ignore */ }
+
+            // 打开 onePA 原始网页进行报名
+            try
+            {
+                await Launcher.OpenAsync(new Uri(_detailUrl));
+            }
+            catch
+            {
+                /* ignore */
+            }
         }
-        // Ҳ���Ը���ʦ/��֯�� Label ���� TapGestureRecognizer ������
     }
 }
