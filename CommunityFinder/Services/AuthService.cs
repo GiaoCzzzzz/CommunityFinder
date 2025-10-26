@@ -287,13 +287,28 @@ namespace CommunityFinder.Services
         //以下的方式是用来把课程传到数据库，其次把状态传到数据库
         public async Task<bool> InsertCourses(CourseItem item)
         {
-            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
-            var resp = await _client
-                .From<CourseItem>()
-                .Upsert(
-                    new[] { item },
-                    new Supabase.Postgrest.QueryOptions { OnConflict = "ClassId" }
-                );
+            // 先查已有记录
+            var existing = await _client.From<CourseItem>()
+                .Where(x => x.ClassId == item.ClassId)
+                .Single();
+
+            if (existing != null)
+            {
+                // 保留已有计数，避免覆盖
+                item.LikeCount = existing.LikeCount;
+                item.FavoriteCount = existing.FavoriteCount;
+                item.RegisteredCount = existing.RegisteredCount;
+
+                // 可直接 Upsert（因为计数已被恢复）或直接 Update
+                await _client
+                    .From<CourseItem>()
+                    .Upsert(new[] { item }, new Supabase.Postgrest.QueryOptions { OnConflict = "ClassId" });
+            }
+            else
+            {
+                await _client.From<CourseItem>().Insert(new[] { item });
+            }
+
             return true;
         }
 
@@ -467,8 +482,15 @@ namespace CommunityFinder.Services
             }
             return true;
         }
+        public async Task<CourseItem> getCourseItem(string classId)
+        {
+            var resp  = await _client
+                .From<CourseItem>()
+                .Where(x => x.ClassId == classId)
+                .Get();
 
-
+            return resp.Model;
+        }
     }
 }
 

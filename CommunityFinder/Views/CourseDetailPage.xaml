@@ -150,7 +150,7 @@
                                             CornerRadius="18"
                                             WidthRequest="36" HeightRequest="36"
                                             Padding="0"/>
-                                    <Label Text="{Binding FavoriteCount}" FontSize="10" HorizontalOptions="Center"/>
+                                    <Label Text="{Binding favoriteCount}" FontSize="10" HorizontalOptions="Center"/>
                                 </VerticalStackLayout>
 
                                 <!-- 注册数量 -->
@@ -158,7 +158,7 @@
                                     <Label Text="📝" FontSize="18" HorizontalOptions="Center" 
                                            WidthRequest="36" HeightRequest="36" 
                                            VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
-                                    <Label Text="{Binding RegisteredCount}" FontSize="10" HorizontalOptions="Center"/>
+                                    <Label Text="{Binding registeredCount}" FontSize="10" HorizontalOptions="Center"/>
                                 </VerticalStackLayout>
                             </Grid>
                         </Frame>

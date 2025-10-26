@@ -105,7 +105,7 @@ namespace CommunityFinder.ViewModels
         public async Task LoadStatusAsync(string classId)
         {
             // 获取课程统计
-            var course = await _authService.Client.From<CourseItem>().Where(x => x.ClassId == classId).Single();
+            var course = await _authService.getCourseItem(classId);
             LikeCount = course?.LikeCount ?? 0;
             FavoriteCount = course?.FavoriteCount ?? 0;
             RegisteredCount = course?.RegisteredCount ?? 0;
