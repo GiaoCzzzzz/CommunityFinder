@@ -1,4 +1,4 @@
-﻿using CommunityFinder.Models;
+using CommunityFinder.Models;
 using CommunityFinder.Services;
 using Microsoft.Maui.Layouts;
 
@@ -23,6 +23,7 @@ public partial class InterestPage : ContentPage
         InitializeComponent();
         _authService = authService;
 
+        // 初始化系统预设兴趣按钮
         foreach (var tag in _presets)
         {
             var btn = new Button
@@ -30,7 +31,7 @@ public partial class InterestPage : ContentPage
                 Text = tag,
                 Style = (Style)Resources["TagStyle"]
             };
-            btn.Clicked += OnTagClicked;
+            btn.Clicked += OnPresetTagClicked; // 使用新的方法
             TagContainer.Children.Add(btn);
         }
     }
@@ -46,20 +47,43 @@ public partial class InterestPage : ContentPage
         }
     }
 
-    private void OnTagClicked(object sender, EventArgs e)
+    /// <summary>
+    /// 系统默认兴趣点击事件（绿色风格）
+    /// </summary>
+    private void OnPresetTagClicked(object sender, EventArgs e)
     {
         if (sender is not Button btn) return;
-
         var tag = btn.Text;
+
         if (_selected.Contains(tag))
         {
             _selected.Remove(tag);
-            btn.BackgroundColor = Color.FromArgb("#5DB634");
+            btn.BackgroundColor = Color.FromArgb("#DEF685"); // 取消选中 → 浅绿
         }
         else
         {
             _selected.Add(tag);
-            btn.BackgroundColor = Color.FromArgb("#DEF685");
+            btn.BackgroundColor = Color.FromArgb("#5DB634"); // 选中 → 深绿
+        }
+    }
+
+    /// <summary>
+    /// 用户自定义兴趣点击事件（蓝色风格）
+    /// </summary>
+    private void OnUserTagClicked(object sender, EventArgs e)
+    {
+        if (sender is not Button btn) return;
+        var tag = btn.Text;
+
+        if (_selected.Contains(tag))
+        {
+            _selected.Remove(tag);
+            btn.BackgroundColor = Color.FromArgb("#5DB634FC"); // 取消选中 → 蓝绿
+        }
+        else
+        {
+            _selected.Add(tag);
+            btn.BackgroundColor = Color.FromArgb("#5DB634"); // 选中 → 浅蓝
         }
     }
 
@@ -79,7 +103,7 @@ public partial class InterestPage : ContentPage
             WidthRequest = 120,
             HeightRequest = 40
         };
-        interestButton.Clicked += OnTagClicked;
+        interestButton.Clicked += OnUserTagClicked; // 改为新的方法
 
         // 创建删除按钮（浮动在右上角）
         var deleteButton = new Button
@@ -121,8 +145,6 @@ public partial class InterestPage : ContentPage
         UserTagContainer.Children.Add(wrapper);
         CustomInterestEntry.Text = "";
     }
-
-
 
     private async void OnSkipClicked(object sender, EventArgs e)
     {
