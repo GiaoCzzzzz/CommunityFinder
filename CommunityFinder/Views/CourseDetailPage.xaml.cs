@@ -2,6 +2,7 @@ using CommunityFinder.Services;
 using CommunityFinder.ViewModels;
 using Microsoft.Maui.ApplicationModel;
 using CommunityFinder.Models;
+using Microsoft.Maui.Platform;
 
 namespace CommunityFinder.Views
 {
@@ -20,14 +21,42 @@ namespace CommunityFinder.Views
             _detailUrl = detailUrl;
             _authService = authService;
 
+            this.SizeChanged += OnPageSizeChanged;
+
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            UpdateLayout();
             await _vm.LoadAsync(_detailUrl);
             if (_vm.Detail?.CourseCode != null)
                 await _vm.LoadStatusAsync(_vm.Detail.CourseCode);
+        }
+
+        private void OnPageSizeChanged(object sender, EventArgs e)
+        {
+            UpdateLayout();
+        }
+
+        private void UpdateLayout()
+        {
+            // 获取屏幕宽度
+            double screenWidth = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density;
+
+            // 平板/桌面：宽度 > 768 dp
+            if (screenWidth > 768)
+            {
+                // 显示大屏幕版本
+                MainScrollView.IsVisible = false;
+                LargeScreenScrollView.IsVisible = true;
+            }
+            else
+            {
+                // 显示小屏幕版本
+                MainScrollView.IsVisible = true;
+                LargeScreenScrollView.IsVisible = false;
+            }
         }
 
         private async void OnBookNowClicked(object sender, EventArgs e)
