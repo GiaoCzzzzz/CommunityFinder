@@ -6,51 +6,77 @@
              BackgroundColor="#F9FFE3">
 
     <ContentPage.Resources>
+
+        <!-- 系统默认兴趣标签样式 -->
         <Style x:Key="TagStyle" TargetType="Button">
+            <!-- 默认浅绿色 -->
             <Setter Property="BackgroundColor" Value="#DEF685"/>
             <Setter Property="TextColor" Value="#336633"/>
             <Setter Property="CornerRadius" Value="20"/>
             <Setter Property="Padding" Value="12,6"/>
             <Setter Property="Margin" Value="4"/>
             <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="WidthRequest" Value="150"/>
+            <Setter Property="HeightRequest" Value="40"/>
         </Style>
+
+        <!-- 用户自定义兴趣标签样式 -->
         <Style x:Key="UserTagStyle" TargetType="Button">
+            <!-- 默认蓝绿色 -->
             <Setter Property="BackgroundColor" Value="#5DB634FC"/>
-            <Setter Property="TextColor" Value="black"/>
+            <Setter Property="TextColor" Value="Black"/>
             <Setter Property="CornerRadius" Value="20"/>
             <Setter Property="Padding" Value="12,6"/>
             <Setter Property="Margin" Value="4"/>
             <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="WidthRequest" Value="120"/>
+            <Setter Property="HeightRequest" Value="40"/>
         </Style>
+
     </ContentPage.Resources>
+
 
     <ScrollView>
         <VerticalStackLayout Padding="24" Spacing="20">
 
-            <!-- 标题 -->
+            <!-- 欢迎标题 -->
             <Label Text="Welcome Community Finder" FontSize="28" FontAttributes="Bold"/>
             <Label Text="Tell us about your interests" FontSize="18"/>
 
             <!-- 系统默认兴趣 -->
-            <Label Text="System default interest" FontSize="16" FontAttributes="Bold" TextColor="#333"/>
-            <FlexLayout x:Name="TagContainer" Wrap="Wrap" Direction="Row"/>
+            <Label Text="System default interest"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="#333"/>
+            <FlexLayout x:Name="TagContainer"
+                        Wrap="Wrap"
+                        Direction="Row"/>
 
             <!-- 用户添加兴趣 -->
-            <Label Text="User adds interests" FontSize="16" FontAttributes="Bold" TextColor="#333"/>
-            <FlexLayout x:Name="UserTagContainer" Wrap="Wrap" Direction="Row"/>
+            <Label Text="User adds interests"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="#333"/>
+            <FlexLayout x:Name="UserTagContainer"
+                        Wrap="Wrap"
+                        Direction="Row"/>
 
-            <!-- 自定义兴趣输入 -->
+            <!-- 自定义兴趣输入框 -->
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                 <Entry x:Name="CustomInterestEntry"
                        Grid.Column="0"
                        Placeholder="Didn't find yours? Add one"/>
                 <Button Text="Add"
                         Grid.Column="1"
-                        Clicked="OnAddCustomInterestClicked"/>
+                        Clicked="OnAddCustomInterestClicked"
+                        BackgroundColor="#5CB85C"
+                        TextColor="White"/>
             </Grid>
 
-            <!-- 底部操作 -->
-            <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="24" HorizontalOptions="Center">
+            <!-- 底部按钮 -->
+            <Grid ColumnDefinitions="Auto,Auto"
+                  ColumnSpacing="24"
+                  HorizontalOptions="Center">
                 <Button Text="Skip"
                         Grid.Column="0"
                         Clicked="OnSkipClicked"
@@ -66,4 +92,5 @@
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
+
 
