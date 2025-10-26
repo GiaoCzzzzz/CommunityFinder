@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using CommunityFinder.Models;
 
 namespace CommunityFinder.Services
 {
@@ -554,6 +555,158 @@ namespace CommunityFinder.Services
             }
 
             return keywords;
+        }
+
+        /// <summary>
+        /// Analyzes a single keyword and returns detailed match information
+        /// Supports multi-level matching: returns all L3 items if L1/L2 is matched
+        /// </summary>
+        public CategoryMatchResult AnalyzeKeyword(string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword) || _categoryTree.Count == 0)
+                return null;
+
+            var normalized = AggressiveNormalize(keyword);
+            if (string.IsNullOrWhiteSpace(normalized))
+                return null;
+
+            // Try to find exact or best matches at each level
+            double bestScore = 0;
+            MatchLevel bestLevel = MatchLevel.None;
+            string bestL1 = null, bestL2 = null, bestL3 = null;
+
+            var keywords = ExtractKeywords(normalized);
+
+            foreach (var l1Pair in _categoryTree)
+            {
+                var l1Normalized = AggressiveNormalize(l1Pair.Key);
+                var l1Keywords = ExtractKeywords(l1Normalized);
+
+                // Check L1 match
+                double l1Score = CalculateKeywordScore(keywords, l1Keywords, l1Normalized);
+
+                foreach (var l2Pair in l1Pair.Value)
+                {
+                    var l2Normalized = AggressiveNormalize(l2Pair.Key);
+                    var l2Keywords = ExtractKeywords(l2Normalized);
+
+                    // Check L2 match
+                    double l2Score = CalculateKeywordScore(keywords, l2Keywords, l2Normalized);
+
+                    foreach (var l3 in l2Pair.Value)
+                    {
+                        var l3Normalized = AggressiveNormalize(l3);
+                        var l3Keywords = ExtractKeywords(l3Normalized);
+
+                        // Check L3 match
+                        double l3Score = CalculateKeywordScore(keywords, l3Keywords, l3Normalized);
+
+                        // Determine best match level
+                        if (l3Score > 8.0 && l3Score > bestScore) // Strong L3 match
+                        {
+                            bestScore = l3Score;
+                            bestLevel = MatchLevel.L3;
+                            bestL1 = l1Pair.Key;
+                            bestL2 = l2Pair.Key;
+                            bestL3 = l3;
+                        }
+                        else if (l2Score > 5.0 && l2Score > bestScore && bestLevel != MatchLevel.L3) // Strong L2 match
+                        {
+                            bestScore = l2Score;
+                            bestLevel = MatchLevel.L2;
+                            bestL1 = l1Pair.Key;
+                            bestL2 = l2Pair.Key;
+                            bestL3 = null;
+                        }
+                        else if (l1Score > 3.0 && l1Score > bestScore && bestLevel == MatchLevel.None) // L1 match
+                        {
+                            bestScore = l1Score;
+                            bestLevel = MatchLevel.L1;
+                            bestL1 = l1Pair.Key;
+                            bestL2 = null;
+                            bestL3 = null;
+                        }
+                    }
+                }
+            }
+
+            // No match found
+            if (bestLevel == MatchLevel.None || bestL1 == null)
+                return null;
+
+            // Build result based on match level
+            var result = new CategoryMatchResult
+            {
+                MatchLevel = bestLevel,
+                L1 = bestL1,
+                Score = bestScore
+            };
+
+            switch (bestLevel)
+            {
+                case MatchLevel.L3:
+                    // Single L3 match
+                    result.L2 = bestL2;
+                    result.L3Items = new List<string> { bestL3 };
+                    result.MatchDescription = $"Found specific topic: {bestL3}";
+                    break;
+
+                case MatchLevel.L2:
+                    // All L3s under this L2
+                    result.L2 = bestL2;
+                    result.L3Items = new List<string>(_categoryTree[bestL1][bestL2]);
+                    result.MatchDescription = $"Found category: {bestL2} ({result.L3Items.Count} topics)";
+                    break;
+
+                case MatchLevel.L1:
+                    // All L3s under all L2s in this L1
+                    result.MatchDescription = $"Found main category: {bestL1}";
+                    foreach (var l2Pair in _categoryTree[bestL1])
+                    {
+                        result.L3Items.AddRange(l2Pair.Value);
+                    }
+                    result.MatchDescription += $" ({result.L3Items.Count} topics)";
+                    break;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Calculates match score for a set of keywords
+        /// </summary>
+        private double CalculateKeywordScore(HashSet<string> inputKeywords, HashSet<string> targetKeywords, string targetText)
+        {
+            double score = 0;
+
+            foreach (var keyword in inputKeywords)
+            {
+                // Exact keyword match
+                if (targetKeywords.Contains(keyword))
+                {
+                    score += 10.0;
+                }
+                // Fuzzy match
+                else if (FuzzyMatch(keyword, targetKeywords))
+                {
+                    score += 8.0;
+                }
+                // N-gram match
+                else if (NgramMatch(keyword, targetText))
+                {
+                    score += 6.0;
+                }
+                // Substring match
+                else if (targetText.Contains(keyword) || keyword.Contains(targetText))
+                {
+                    score += 4.0;
+                }
+            }
+
+            // Check semantic matches
+            score += CheckSemanticMatch(string.Join(" ", inputKeywords), targetText, targetText, targetText) * 0.5;
+
+            return score;
         }
     }
 }
