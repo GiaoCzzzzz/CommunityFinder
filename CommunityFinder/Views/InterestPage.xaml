@@ -9,7 +9,6 @@
 
         <!-- 系统默认兴趣标签样式 -->
         <Style x:Key="TagStyle" TargetType="Button">
-            <!-- 默认浅绿色 -->
             <Setter Property="BackgroundColor" Value="#DEF685"/>
             <Setter Property="TextColor" Value="#336633"/>
             <Setter Property="CornerRadius" Value="20"/>
@@ -22,8 +21,7 @@
 
         <!-- 用户自定义兴趣标签样式 -->
         <Style x:Key="UserTagStyle" TargetType="Button">
-            <!-- 默认蓝绿色 -->
-            <Setter Property="BackgroundColor" Value="#5DB634FC"/>
+            <Setter Property="BackgroundColor" Value="pink"/>
             <Setter Property="TextColor" Value="Black"/>
             <Setter Property="CornerRadius" Value="20"/>
             <Setter Property="Padding" Value="12,6"/>
@@ -34,7 +32,6 @@
         </Style>
 
     </ContentPage.Resources>
-
 
     <ScrollView>
         <VerticalStackLayout Padding="24" Spacing="20">
@@ -92,5 +89,3 @@
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
-
-

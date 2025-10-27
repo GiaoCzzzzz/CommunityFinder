@@ -23,7 +23,7 @@ public partial class InterestPage : ContentPage
         InitializeComponent();
         _authService = authService;
 
-        // 初始化系统预设兴趣按钮
+        // 初始化系统预设兴趣按钮（可点击切换选中状态）
         foreach (var tag in _presets)
         {
             var btn = new Button
@@ -31,7 +31,7 @@ public partial class InterestPage : ContentPage
                 Text = tag,
                 Style = (Style)Resources["TagStyle"]
             };
-            btn.Clicked += OnPresetTagClicked; // 使用新的方法
+            btn.Clicked += OnPresetTagClicked;
             TagContainer.Children.Add(btn);
         }
     }
@@ -48,7 +48,8 @@ public partial class InterestPage : ContentPage
     }
 
     /// <summary>
-    /// 系统默认兴趣点击事件（绿色风格）
+    /// 系统默认兴趣点击事件（绿色按钮）
+    /// 可切换选中状态
     /// </summary>
     private void OnPresetTagClicked(object sender, EventArgs e)
     {
@@ -58,7 +59,7 @@ public partial class InterestPage : ContentPage
         if (_selected.Contains(tag))
         {
             _selected.Remove(tag);
-            btn.BackgroundColor = Color.FromArgb("#DEF685"); // 取消选中 → 浅绿
+            btn.BackgroundColor = Color.FromArgb("#DEF685"); // 未选中 → 浅绿
         }
         else
         {
@@ -68,44 +69,30 @@ public partial class InterestPage : ContentPage
     }
 
     /// <summary>
-    /// 用户自定义兴趣点击事件（蓝色风格）
+    /// 添加自定义兴趣标签
+    /// 直接选中且颜色固定，不可点击改变颜色
     /// </summary>
-    private void OnUserTagClicked(object sender, EventArgs e)
-    {
-        if (sender is not Button btn) return;
-        var tag = btn.Text;
-
-        if (_selected.Contains(tag))
-        {
-            _selected.Remove(tag);
-            btn.BackgroundColor = Color.FromArgb("#5DB634FC"); // 取消选中 → 蓝绿
-        }
-        else
-        {
-            _selected.Add(tag);
-            btn.BackgroundColor = Color.FromArgb("#5DB634"); // 选中 → 浅蓝
-        }
-    }
-
     private void OnAddCustomInterestClicked(object sender, EventArgs e)
     {
         var text = CustomInterestEntry.Text?.Trim();
         if (string.IsNullOrWhiteSpace(text) || _selected.Contains(text))
             return;
 
+        // 默认选中该兴趣
         _selected.Add(text);
 
-        // 创建兴趣按钮（可选中）
+        // 创建兴趣按钮（固定蓝绿色，不可点击）
         var interestButton = new Button
         {
             Text = text,
             Style = (Style)Resources["UserTagStyle"],
             WidthRequest = 120,
-            HeightRequest = 40
+            HeightRequest = 40,
+            BackgroundColor = Color.FromArgb("#EF8687"),
+            IsEnabled = false // 禁用点击事件（不可更改状态）
         };
-        interestButton.Clicked += OnUserTagClicked; // 改为新的方法
 
-        // 创建删除按钮（浮动在右上角）
+        // 创建删除按钮（右上角 ✕）
         var deleteButton = new Button
         {
             Text = "✕",
@@ -117,7 +104,7 @@ public partial class InterestPage : ContentPage
             HeightRequest = 15
         };
 
-        // 包装容器
+        // 包装布局（按钮 + 删除）
         var wrapper = new AbsoluteLayout
         {
             WidthRequest = 120,
@@ -125,32 +112,41 @@ public partial class InterestPage : ContentPage
             Margin = 4
         };
 
-        // 添加兴趣按钮（居中）
+        // 设置兴趣按钮布局
         AbsoluteLayout.SetLayoutBounds(interestButton, new Rect(0, 0, 1, 1));
         AbsoluteLayout.SetLayoutFlags(interestButton, AbsoluteLayoutFlags.All);
 
-        // 添加删除按钮（右上角）
+        // 设置删除按钮布局
         AbsoluteLayout.SetLayoutBounds(deleteButton, new Rect(1, 0, 20, 20));
         AbsoluteLayout.SetLayoutFlags(deleteButton, AbsoluteLayoutFlags.PositionProportional);
 
+        // 删除点击逻辑
         deleteButton.Clicked += (s, args) =>
         {
             _selected.Remove(text);
             UserTagContainer.Children.Remove(wrapper);
         };
 
+        // 添加到容器
         wrapper.Children.Add(interestButton);
         wrapper.Children.Add(deleteButton);
-
         UserTagContainer.Children.Add(wrapper);
+
+        // 清空输入框
         CustomInterestEntry.Text = "";
     }
 
+    /// <summary>
+    /// 跳过兴趣选择
+    /// </summary>
     private async void OnSkipClicked(object sender, EventArgs e)
     {
         await Navigation.PushAsync(new MainPage(_authService));
     }
 
+    /// <summary>
+    /// 提交兴趣信息
+    /// </summary>
     private async void OnContinueClicked(object sender, EventArgs e)
     {
         var profiles = new Profiles()
