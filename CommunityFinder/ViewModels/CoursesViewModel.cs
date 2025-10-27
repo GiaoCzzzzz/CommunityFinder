@@ -99,7 +99,7 @@ namespace CommunityFinder.ViewModels
 
         public ObservableCollection<string> WhereOptions { get; } = new(new[] { "Any" });
         public ObservableCollection<string> DayOptions { get; } = new(new[] { "Any", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" });
-        public ObservableCollection<string> TimeOptions { get; } = new(new[] { "Any", "Morning(8am-12am)", "Afternoon(12am-18pm)", "Evening(after 18pm)" });
+        public ObservableCollection<string> TimeOptions { get; } = new(new[] { "Any", "Morning(7:00am-12:30am)", "Afternoon(12:30am-5:30pm)", "Evening(5:30 pm - 9:30 pm)" });
 
         private string _selectedWhere = "Any";
         public string SelectedWhere { get => _selectedWhere; set { _selectedWhere = value; OnPropertyChanged(); } }
@@ -381,9 +381,9 @@ namespace CommunityFinder.ViewModels
                         var h = t0.Hour;
                         return SelectedTime switch
                         {
-                            "Morning" => h < 12,
-                            "Afternoon" => h >= 12 && h < 18,
-                            "Evening" => h >= 18,
+                            "Morning" => h >= 7 && h < 12.5,
+                            "Afternoon" => h >= 12.5 && h < 17.5,
+                            "Evening" => h >=17.5 && h <= 21.5,
                             _ => true
                         };
                     });
