@@ -31,8 +31,25 @@ namespace CommunityFinder.Services
         }
 
         public async Task<(bool IsSuccess, string ErrorMessage)> SignUpAsync(
-        string email, string password, string displayname, string phone)
+    string email, string password, string displayname, string phone)
         {
+            // 👉 新增：先检查邮箱是否已经可以登录
+            try
+            {
+                email = email.Trim();
+                var testLogin = await _client.Auth.SignInWithPassword(email, password);
+                if (testLogin != null)
+                {
+                    // 如果能登录成功，说明账号已存在
+                    await _client.Auth.SignOut(); // 登出
+                    return (false, "This email address has been registered. Please log in directly.");
+                }
+            }
+            catch
+            {
+                // 登录失败是正常的，说明账号可能不存在，继续注册
+            }
+
             var opts = new SignUpOptions
             {
                 Data = new Dictionary<string, object>
@@ -41,28 +58,35 @@ namespace CommunityFinder.Services
                     ["phone"] = phone?.Trim() ?? string.Empty
                 }
             };
+
             try
             {
-                var ok = await _client.Auth.SignUp(email,password, opts);
-                if (ok.User != null)
+                var result = await _client.Auth.SignUp(email, password, opts);
+                if (result?.User != null)
                     return (true, null);
                 else
                     return (false, "Registration failed. Please try again.");
             }
             catch (GotrueException ex)
             {
-                
+                Debug.WriteLine($"[SignUp] Exception: {ex.StatusCode} - {ex.Message}");
+
                 try
                 {
                     var errObj = JObject.Parse(ex.Message);
                     var errCode = errObj["error_code"]?.ToString();
                     var errMsg = errObj["msg"]?.ToString() ?? ex.Message;
 
-                    // Supabase 对重复注册返回 Postgres 23505
-                    if (errCode == "23505" || errMsg.Contains("already been registered"))
+                    if (errCode == "23505" ||
+                        errMsg.Contains("already", StringComparison.OrdinalIgnoreCase) ||
+                        errMsg.Contains("duplicate", StringComparison.OrdinalIgnoreCase))
+                    {
                         return (false, "This email address has been registered. Please log in directly.");
+                    }
                     else if (errMsg.Contains("contain at least one character"))
+                    {
                         return (false, "Must contain only one uppercase or lowercase letter, one number and one special character.");
+                    }
 
                     return (false, errMsg);
                 }
@@ -73,6 +97,7 @@ namespace CommunityFinder.Services
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"[SignUp] Unexpected Exception: {ex.Message}");
                 return (false, ex.Message);
             }
         }

@@ -8,6 +8,7 @@ public partial class InterestPage : ContentPage
 {
     readonly AuthService _authService;
     private readonly List<string> _selected = new();
+    private readonly List<string> _historyInterests = new();
 
     private readonly string[] _presets = new[]
     {
@@ -36,7 +37,7 @@ public partial class InterestPage : ContentPage
         }
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
 
@@ -45,6 +46,8 @@ public partial class InterestPage : ContentPage
             navPage.BarBackgroundColor = Colors.White;
             navPage.BarTextColor = Colors.Black;
         }
+
+        await LoadHistoryInterestsAsync();
     }
 
     /// <summary>
@@ -164,6 +167,109 @@ public partial class InterestPage : ContentPage
         else
         {
             await DisplayAlert("Error", "Failed to save. Please try again.", "OK");
+        }
+    }
+
+    private async Task LoadHistoryInterestsAsync()
+    {
+        try
+        {
+            // 从 Supabase 获取用户的历史兴趣
+            var interests = await _authService.GetInterest();
+
+            if (interests == null || interests.Length == 0)
+            {
+                // 没有历史兴趣，隐藏该区域
+                HistorySection.IsVisible = false;
+                return;
+            }
+
+            // 显示历史兴趣区域
+            HistorySection.IsVisible = true;
+            HistoryTagContainer.Children.Clear();
+            _historyInterests.Clear();
+
+            // 为每个历史兴趣创建按钮
+            foreach (var interest in interests)
+            {
+                if (string.IsNullOrWhiteSpace(interest))
+                    continue;
+
+                // 添加到历史兴趣列表
+                _historyInterests.Add(interest);
+
+                // 默认选中（添加到 _selected）
+                if (!_selected.Contains(interest))
+                {
+                    _selected.Add(interest);
+                }
+
+                // 创建历史兴趣按钮（金色，默认选中）
+                var btn = new Button
+                {
+                    Text = interest,
+                    Style = (Style)Resources["HistoryTagStyle"],
+                    BackgroundColor = Color.FromArgb("#FFA500") // 橙色表示已选中
+                };
+
+                btn.Clicked += OnHistoryTagClicked;
+                HistoryTagContainer.Children.Add(btn);
+
+                // 👉 如果历史兴趣在系统预设中，也要高亮对应的预设按钮
+                var presetBtn = TagContainer.Children
+                    .OfType<Button>()
+                    .FirstOrDefault(b => b.Text == interest);
+
+                if (presetBtn != null)
+                {
+                    presetBtn.BackgroundColor = Color.FromArgb("#5DB634"); // 深绿色表示选中
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // 加载失败，隐藏区域
+            HistorySection.IsVisible = false;
+            await DisplayAlert("Info", "Failed to load previous interests.", "OK");
+        }
+    }
+
+    private void OnHistoryTagClicked(object sender, EventArgs e)
+    {
+        if (sender is not Button btn) return;
+        var tag = btn.Text;
+
+        if (_selected.Contains(tag))
+        {
+            // 取消选中
+            _selected.Remove(tag);
+            btn.BackgroundColor = Color.FromArgb("#FFD700"); // 浅金色表示未选中
+
+            // 如果是系统预设，也要更新预设按钮的状态
+            var presetBtn = TagContainer.Children
+                .OfType<Button>()
+                .FirstOrDefault(b => b.Text == tag);
+
+            if (presetBtn != null)
+            {
+                presetBtn.BackgroundColor = Color.FromArgb("#DEF685");
+            }
+        }
+        else
+        {
+            // 选中
+            _selected.Add(tag);
+            btn.BackgroundColor = Color.FromArgb("#FFA500"); // 深橙色表示选中
+
+            // 如果是系统预设，也要更新预设按钮的状态
+            var presetBtn = TagContainer.Children
+                .OfType<Button>()
+                .FirstOrDefault(b => b.Text == tag);
+
+            if (presetBtn != null)
+            {
+                presetBtn.BackgroundColor = Color.FromArgb("#5DB634");
+            }
         }
     }
 }

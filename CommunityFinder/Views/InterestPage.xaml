@@ -31,6 +31,18 @@
             <Setter Property="HeightRequest" Value="40"/>
         </Style>
 
+        <!-- 👉 新增：历史兴趣标签样式 -->
+        <Style x:Key="HistoryTagStyle" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="#FFD700"/>
+            <Setter Property="TextColor" Value="#8B4513"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="WidthRequest" Value="150"/>
+            <Setter Property="HeightRequest" Value="40"/>
+        </Style>
+
     </ContentPage.Resources>
 
     <ScrollView>
@@ -39,6 +51,21 @@
             <!-- 欢迎标题 -->
             <Label Text="Welcome Community Finder" FontSize="28" FontAttributes="Bold"/>
             <Label Text="Tell us about your interests" FontSize="18"/>
+
+            <!-- 👉 新增：历史兴趣区域 -->
+            <VerticalStackLayout x:Name="HistorySection" IsVisible="False" Spacing="8">
+                <Label Text="Previously Selected Interests"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="#8B4513"/>
+                <Label Text="These are your previous interests. You can click to deselect them."
+                       FontSize="12"
+                       TextColor="#666"
+                       Margin="0,0,0,8"/>
+                <FlexLayout x:Name="HistoryTagContainer"
+                            Wrap="Wrap"
+                            Direction="Row"/>
+            </VerticalStackLayout>
 
             <!-- 系统默认兴趣 -->
             <Label Text="System default interest"
