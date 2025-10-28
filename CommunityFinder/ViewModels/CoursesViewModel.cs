@@ -23,14 +23,14 @@ namespace CommunityFinder.ViewModels
 
         // Keyword search
         public ObservableCollection<string> Keywords { get; } = new();
-        
+
         private string _currentKeyword;
         public string CurrentKeyword { get => _currentKeyword; set { _currentKeyword = value; OnPropertyChanged(); } }
 
         // 分类选项（三级联动）
         public ObservableCollection<string> L1Options { get; } = new();//一二三级联动
-        public ObservableCollection<string> L2Options { get; } = new(); 
-        public ObservableCollection<string> L3Options { get; } = new(); 
+        public ObservableCollection<string> L2Options { get; } = new();
+        public ObservableCollection<string> L3Options { get; } = new();
 
         public bool HasL1Selected => !string.IsNullOrWhiteSpace(SelectedL1);
         public bool HasL2Selected => !string.IsNullOrWhiteSpace(SelectedL2);
@@ -45,8 +45,8 @@ namespace CommunityFinder.ViewModels
                 if (_selectedL1 == value) return;
                 _selectedL1 = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(HasL1Selected)); 
-                RefillL2();                               
+                OnPropertyChanged(nameof(HasL1Selected));
+                RefillL2();
             }
         }
 
@@ -59,8 +59,8 @@ namespace CommunityFinder.ViewModels
                 if (_selectedL2 == value) return;
                 _selectedL2 = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(HasL2Selected)); 
-                RefillL3();                               
+                OnPropertyChanged(nameof(HasL2Selected));
+                RefillL3();
             }
         }
 
@@ -73,7 +73,7 @@ namespace CommunityFinder.ViewModels
                 if (_selectedL3 == value) return;
                 _selectedL3 = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(HasL3Selected)); 
+                OnPropertyChanged(nameof(HasL3Selected));
             }
         }
 
@@ -99,16 +99,61 @@ namespace CommunityFinder.ViewModels
 
         public ObservableCollection<string> WhereOptions { get; } = new(new[] { "Any" });
         public ObservableCollection<string> DayOptions { get; } = new(new[] { "Any", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" });
-        public ObservableCollection<string> TimeOptions { get; } = new(new[] { "Any", "Morning(7:00am-12:30am)", "Afternoon(12:30am-5:30pm)", "Evening(5:30 pm - 9:30 pm)" });
+        // 修复：将 12:30am 改为 12:30pm
+        public ObservableCollection<string> TimeOptions { get; } = new(new[] { "Any", "Morning(7:00am-12:30pm)", "Afternoon(12:30pm-5:30pm)", "Evening(5:30pm-9:30pm)" });
+
+        private bool _isInitializing = true; // 新增：防止初始化时触发自动搜索
 
         private string _selectedWhere = "Any";
-        public string SelectedWhere { get => _selectedWhere; set { _selectedWhere = value; OnPropertyChanged(); } }
+        public string SelectedWhere
+        {
+            get => _selectedWhere;
+            set
+            {
+                if (_selectedWhere == value) return;
+                _selectedWhere = value;
+                OnPropertyChanged();
+                // 新增：自动触发搜索
+                if (!_isInitializing)
+                {
+                    _ = TriggerAutoSearchAsync();
+                }
+            }
+        }
 
         private string _selectedDay = "Any";
-        public string SelectedDay { get => _selectedDay; set { _selectedDay = value; OnPropertyChanged(); } }
+        public string SelectedDay
+        {
+            get => _selectedDay;
+            set
+            {
+                if (_selectedDay == value) return;
+                _selectedDay = value;
+                OnPropertyChanged();
+                // 新增：自动触发搜索
+                if (!_isInitializing)
+                {
+                    _ = TriggerAutoSearchAsync();
+                }
+            }
+        }
 
         private string _selectedTime = "Any";
-        public string SelectedTime { get => _selectedTime; set { _selectedTime = value; OnPropertyChanged(); } }
+        public string SelectedTime
+        {
+            get => _selectedTime;
+            set
+            {
+                if (_selectedTime == value) return;
+                _selectedTime = value;
+                OnPropertyChanged();
+                // 新增：自动触发搜索
+                if (!_isInitializing)
+                {
+                    _ = TriggerAutoSearchAsync();
+                }
+            }
+        }
 
         private string _searchText;
         public string SearchText { get => _searchText; set { _searchText = value; OnPropertyChanged(); } }
@@ -129,6 +174,23 @@ namespace CommunityFinder.ViewModels
             ResetCommand = new Command(ResetAoi);
             AddKeywordCommand = new Command(AddKeyword);
             RemoveKeywordCommand = new Command<string>(RemoveKeyword);
+        }
+
+        // 新增：自动触发搜索的方法
+        private async System.Threading.Tasks.Task TriggerAutoSearchAsync()
+        {
+            // 如果有关键词，使用关键词搜索
+            if (Keywords.Count > 0)
+            {
+                await SearchByKeywordsAsync(maxPages: 8);
+            }
+            // 如果选择了完整的 L1/L2/L3，使用分类搜索
+            else if (!string.IsNullOrWhiteSpace(SelectedL1) &&
+                     !string.IsNullOrWhiteSpace(SelectedL2) &&
+                     !string.IsNullOrWhiteSpace(SelectedL3))
+            {
+                await SearchByAoiAsync(maxPages: 8);
+            }
         }
 
         //重置三级联动选择
@@ -185,6 +247,8 @@ namespace CommunityFinder.ViewModels
         {
             if (_aoiLoaded) return;
 
+            _isInitializing = true; // 开始初始化
+
             string[] candidates = { "categories.txt", "分类.txt" };
             string text = null;
 
@@ -215,6 +279,7 @@ namespace CommunityFinder.ViewModels
             if (L1Options.Count > 0) SelectedL1 = L1Options[0];
 
             _aoiLoaded = true;
+            _isInitializing = false; // 初始化完成
         }
 
         // ========== 解析分类文本 ==========
@@ -261,7 +326,7 @@ namespace CommunityFinder.ViewModels
                     continue;
                 }
 
-                // 普通行：若处于“三级列表”收集阶段，把它当作一个 L3 条目
+                // 普通行：若处于"三级列表"收集阶段，把它当作一个 L3 条目
                 if (inLevel3List && !string.IsNullOrWhiteSpace(currentL1) && !string.IsNullOrWhiteSpace(currentL2))
                 {
                     _aoiTree[currentL1][currentL2].Add(t);
@@ -300,7 +365,7 @@ namespace CommunityFinder.ViewModels
             }
         }
 
-        // onePA 的 L2 slug 规则：去掉尾部“Courses”再 slug；L3：&/空格 -> '-'，去标点
+        // onePA 的 L2 slug 规则：去掉尾部"Courses"再 slug；L3：&/空格 -> '-'，去标点
         private static string Slug(string s, bool dropCoursesWord = false)
         {
             if (string.IsNullOrWhiteSpace(s)) return string.Empty;
@@ -311,6 +376,36 @@ namespace CommunityFinder.ViewModels
             s = Regex.Replace(s, @"\s+", "-");
             s = Regex.Replace(s, "-{2,}", "-").Trim('-');
             return s;
+        }
+
+        // 新增：统一的时间筛选匹配方法
+        private bool MatchesTimeFilter(CourseItem course)
+        {
+            if (string.IsNullOrWhiteSpace(SelectedTime) || SelectedTime.Equals("Any", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            if (string.IsNullOrWhiteSpace(course.SessionTime))
+                return true; // 无法解析则保留
+
+            var parts = course.SessionTime.Split('-', StringSplitOptions.TrimEntries);
+            if (parts.Length == 0) return true;
+
+            if (!DateTime.TryParse(parts[0], CultureInfo.InvariantCulture, DateTimeStyles.None, out var startTime))
+                return true; // 无法解析则保留
+
+            // 使用 TimeSpan 来精确匹配时间范围（包含分钟）
+            var timeOfDay = startTime.TimeOfDay;
+
+            // 提取时间选项中的范围标识（Morning/Afternoon/Evening）
+            var timeOption = SelectedTime.Split('(')[0].Trim();
+
+            return timeOption switch
+            {
+                "Morning" => timeOfDay >= new TimeSpan(7, 0, 0) && timeOfDay < new TimeSpan(12, 30, 0),   // 7:00-12:30
+                "Afternoon" => timeOfDay >= new TimeSpan(12, 30, 0) && timeOfDay < new TimeSpan(17, 30, 0), // 12:30-17:30
+                "Evening" => timeOfDay >= new TimeSpan(17, 30, 0) && timeOfDay <= new TimeSpan(21, 30, 0),  // 17:30-21:30
+                _ => true
+            };
         }
 
         /// <summary>
@@ -356,7 +451,7 @@ namespace CommunityFinder.ViewModels
                 // 抓取（自动翻页到无数据或 maxPages）
                 var all = await _service.FetchAllPagesAsync(url, maxPages);
 
-                // 本地再次过滤（容错：无法解析则“保留”，避免误筛光）
+                // 本地再次过滤（容错：无法解析则"保留"，避免误筛光）
                 IEnumerable<CourseItem> query = all;
 
                 if (!string.IsNullOrWhiteSpace(SelectedDay) &&
@@ -368,26 +463,8 @@ namespace CommunityFinder.ViewModels
                           .Equals(SelectedDay, StringComparison.OrdinalIgnoreCase));
                 }
 
-                if (!string.IsNullOrWhiteSpace(SelectedTime) &&
-                    !SelectedTime.Equals("Any", StringComparison.OrdinalIgnoreCase))
-                {
-                    query = query.Where(c =>
-                    {
-                        if (string.IsNullOrWhiteSpace(c.SessionTime)) return true;
-                        var parts = c.SessionTime.Split('-', StringSplitOptions.TrimEntries);
-                        if (parts.Length == 0) return true;
-                        if (!DateTime.TryParse(parts[0], CultureInfo.InvariantCulture, DateTimeStyles.None, out var t0))
-                            return true;
-                        var h = t0.Hour;
-                        return SelectedTime switch
-                        {
-                            "Morning" => h >= 7 && h < 12.5,
-                            "Afternoon" => h >= 12.5 && h < 17.5,
-                            "Evening" => h >=17.5 && h <= 21.5,
-                            _ => true
-                        };
-                    });
-                }
+                // 使用统一的时间筛选方法
+                query = query.Where(c => MatchesTimeFilter(c));
 
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
@@ -398,7 +475,7 @@ namespace CommunityFinder.ViewModels
                 foreach (var c in query.OrderBy(c => c.StartDate ?? DateTime.MaxValue))
                     Courses.Add(c);
 
-                // Where 下拉去重刷新（基于拉到的“全部”结果）
+                // Where 下拉去重刷新（基于拉到的"全部"结果）
                 var outlets = all.Select(c => c.Outlet)
                                  .Where(s => !string.IsNullOrWhiteSpace(s))
                                  .Distinct()
@@ -558,26 +635,8 @@ namespace CommunityFinder.ViewModels
                           .Equals(SelectedDay, StringComparison.OrdinalIgnoreCase));
                 }
 
-                if (!string.IsNullOrWhiteSpace(SelectedTime) &&
-                    !SelectedTime.Equals("Any", StringComparison.OrdinalIgnoreCase))
-                {
-                    query = query.Where(c =>
-                    {
-                        if (string.IsNullOrWhiteSpace(c.SessionTime)) return true;
-                        var parts = c.SessionTime.Split('-', StringSplitOptions.TrimEntries);
-                        if (parts.Length == 0) return true;
-                        if (!DateTime.TryParse(parts[0], CultureInfo.InvariantCulture, DateTimeStyles.None, out var t0))
-                            return true;
-                        var h = t0.Hour;
-                        return SelectedTime switch
-                        {
-                            "Morning" => h < 12,
-                            "Afternoon" => h >= 12 && h < 18,
-                            "Evening" => h >= 18,
-                            _ => true
-                        };
-                    });
-                }
+                // 使用统一的时间筛选方法
+                query = query.Where(c => MatchesTimeFilter(c));
 
                 // 按开始日期排序并添加到显示列表
                 foreach (var c in query.OrderBy(c => c.StartDate ?? DateTime.MaxValue))
@@ -606,7 +665,7 @@ namespace CommunityFinder.ViewModels
             // This is a simplified search - searches across multiple categories
             // You might need to iterate through major categories or use a different API endpoint
             // For now, we'll use a broad search approach
-            
+
             var outletParam =
                 (string.IsNullOrWhiteSpace(SelectedWhere) || SelectedWhere.Equals("Any", StringComparison.OrdinalIgnoreCase))
                 ? ""
@@ -614,7 +673,7 @@ namespace CommunityFinder.ViewModels
 
             // Use the first keyword as the main search term
             var searchTerm = Keywords.FirstOrDefault() ?? "";
-            
+
             var url = OnePaService.BuildSearchUrl(
                 l1: "",
                 l2: "",
@@ -645,26 +704,8 @@ namespace CommunityFinder.ViewModels
                       .Equals(SelectedDay, StringComparison.OrdinalIgnoreCase));
             }
 
-            if (!string.IsNullOrWhiteSpace(SelectedTime) &&
-                !SelectedTime.Equals("Any", StringComparison.OrdinalIgnoreCase))
-            {
-                query = query.Where(c =>
-                {
-                    if (string.IsNullOrWhiteSpace(c.SessionTime)) return true;
-                    var parts = c.SessionTime.Split('-', StringSplitOptions.TrimEntries);
-                    if (parts.Length == 0) return true;
-                    if (!DateTime.TryParse(parts[0], CultureInfo.InvariantCulture, DateTimeStyles.None, out var t0))
-                        return true;
-                    var h = t0.Hour;
-                    return SelectedTime switch
-                    {
-                        "Morning" => h < 12,
-                        "Afternoon" => h >= 12 && h < 18,
-                        "Evening" => h >= 18,
-                        _ => true
-                    };
-                });
-            }
+            // 使用统一的时间筛选方法
+            query = query.Where(c => MatchesTimeFilter(c));
 
             foreach (var c in query.OrderBy(c => c.StartDate ?? DateTime.MaxValue))
                 Courses.Add(c);
@@ -680,7 +721,7 @@ namespace CommunityFinder.ViewModels
         private async System.Threading.Tasks.Task<string> LoadCategoriesTextAsync()
         {
             string[] candidates = { "categories.txt", "分类.txt" };
-            
+
             foreach (var name in candidates)
             {
                 try
@@ -693,7 +734,7 @@ namespace CommunityFinder.ViewModels
                 }
                 catch { /* try next */ }
             }
-            
+
             return null;
         }
 

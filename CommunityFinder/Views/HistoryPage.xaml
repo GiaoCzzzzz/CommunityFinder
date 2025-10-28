@@ -24,7 +24,8 @@
 
             <!-- 历史记录 -->
             <CollectionView ItemsSource="{Binding BrowsingHistory}"
-                            SelectionMode="Single">
+                            SelectionMode="Single"
+                            SelectionChanged="OnHistoryItemTapped">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame Margin="10" Padding="10" HasShadow="True">
@@ -64,7 +65,8 @@
 
 
             <CollectionView ItemsSource="{Binding FavoriteCourses}"
-                            SelectionMode="Single">
+                            SelectionMode="Single"
+                            SelectionChanged="OnFavoriteItemTapped">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame Margin="10" Padding="10" HasShadow="True">

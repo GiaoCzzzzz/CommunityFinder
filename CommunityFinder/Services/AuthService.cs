@@ -375,12 +375,45 @@ namespace CommunityFinder.Services
 
         public async Task<bool> AddRegisteredCountAsync(string classId)
         {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+
+            // 1. 检查用户是否已经注册过这个课程
+            var status = await _client.From<CourseStatus>().Where(x => x.id == userGuid).Single();
+
+            if (status == null)
+            {
+                // 首次注册任何课程，初始化记录
+                status = new CourseStatus
+                {
+                    id = userGuid,
+                    registered = new[] { classId }
+                };
+                await _client.From<CourseStatus>().Insert(new[] { status });
+            }
+            else
+            {
+                var registered = status.registered?.ToList() ?? new List<string>();
+
+                // 如果已经注册过，直接返回
+                if (registered.Contains(classId))
+                {
+                    return true; // 不增加计数
+                }
+
+                // 否则添加到已注册列表
+                registered.Add(classId);
+                status.registered = registered.ToArray();
+                await status.Update<CourseStatus>();
+            }
+
+            // 2. 只有首次注册时才增加计数
             var course = await _client.From<CourseItem>().Where(x => x.ClassId == classId).Single();
             if (course != null)
             {
                 course.RegisteredCount = course.RegisteredCount + 1;
                 await course.Update<CourseItem>();
             }
+
             return true;
         }
 

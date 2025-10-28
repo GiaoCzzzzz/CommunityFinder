@@ -23,5 +23,8 @@ namespace CommunityFinder.Models
 
         [Column("favorites")]
         public string[] favorites { get; set; }
+
+        [Column("registered")]
+        public string[] registered { get; set; }
     }
 }

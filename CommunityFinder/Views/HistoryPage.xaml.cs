@@ -187,5 +187,66 @@ namespace CommunityFinder.Views
                 await DisplayAlert("Error", $"Failed to load data: {ex.Message}", "OK");
             }
         }
+
+        // 添加在类的其他方法之后
+        private async void OnHistoryItemTapped(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection?.FirstOrDefault() is CourseItem item)
+            {
+                // 清除选择状态
+                if (sender is CollectionView collectionView)
+                {
+                    collectionView.SelectedItem = null;
+                }
+
+                // 检查 DetailUrl 是否有效
+                if (string.IsNullOrWhiteSpace(item.DetailUrl))
+                {
+                    await DisplayAlert("Error", "This course link is not available.", "OK");
+                    return;
+                }
+
+                try
+                {
+                    // 尝试打开课程详情页
+                    await Navigation.PushAsync(new CourseDetailPage(item.DetailUrl, _authService));
+                }
+                catch (Exception ex)
+                {
+                    // 如果链接失效或其他错误
+                    await DisplayAlert("Course Closed", "This course has been closed or is no longer available.", "OK");
+                }
+            }
+        }
+
+        private async void OnFavoriteItemTapped(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection?.FirstOrDefault() is CourseItem item)
+            {
+                // 清除选择状态
+                if (sender is CollectionView collectionView)
+                {
+                    collectionView.SelectedItem = null;
+                }
+
+                // 检查 DetailUrl 是否有效
+                if (string.IsNullOrWhiteSpace(item.DetailUrl))
+                {
+                    await DisplayAlert("Error", "This course link is not available.", "OK");
+                    return;
+                }
+
+                try
+                {
+                    // 尝试打开课程详情页
+                    await Navigation.PushAsync(new CourseDetailPage(item.DetailUrl, _authService));
+                }
+                catch (Exception ex)
+                {
+                    // 如果链接失效或其他错误
+                    await DisplayAlert("Course Closed", "This course has been closed or is no longer available.", "OK");
+                }
+            }
+        }
     }
 }
