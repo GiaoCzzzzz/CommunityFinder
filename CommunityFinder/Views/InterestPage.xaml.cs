@@ -12,11 +12,11 @@ public partial class InterestPage : ContentPage
 
     private readonly string[] _presets = new[]
     {
-        "Education & Enrichment",
-        "Health & Wellness",
+        "Education",
+        "Health",
         "Lifelong Learning",
-        "Lifestyle & Leisure",
-        "Sports & Fitness"
+        "Lifestyle",
+        "Sports"
     };
 
     public InterestPage(AuthService authService)
