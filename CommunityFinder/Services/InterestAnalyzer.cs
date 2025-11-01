@@ -54,6 +54,9 @@ namespace CommunityFinder.Services
                 { "bike", new HashSet<string> { "biking", "cycling", "bicycle" } },
                 { "game", new HashSet<string> { "games", "gaming", "board", "chess" } },
                 { "education", new HashSet<string> { "educational", "enrichment", "learning", "course", "study" } },
+                // 👉 新增：明确区分 zumba 和 rumba
+                { "zumba", new HashSet<string> { "zumba" } },
+                { "rumba", new HashSet<string> { "rumba" } },
             };
         }
 
@@ -95,7 +98,7 @@ namespace CommunityFinder.Services
                 if (string.IsNullOrWhiteSpace(t)) continue;
                 if (t.Equals("Courses", StringComparison.OrdinalIgnoreCase)) continue;
 
-                if (t.StartsWith("\u4e00\u7ea7", StringComparison.OrdinalIgnoreCase))
+                if (t.StartsWith("一级", StringComparison.OrdinalIgnoreCase))
                 {
                     currentL1 = t.Substring(2).Trim();
                     if (!_categoryTree.ContainsKey(currentL1))
@@ -105,7 +108,7 @@ namespace CommunityFinder.Services
                     continue;
                 }
 
-                if (t.StartsWith("\u4e8c\u7ea7", StringComparison.OrdinalIgnoreCase))
+                if (t.StartsWith("二级", StringComparison.OrdinalIgnoreCase))
                 {
                     currentL2 = t.Substring(2).Trim();
                     if (string.IsNullOrWhiteSpace(currentL1)) continue;
@@ -116,7 +119,7 @@ namespace CommunityFinder.Services
                     continue;
                 }
 
-                if (t.StartsWith("\u4e09\u7ea7", StringComparison.OrdinalIgnoreCase))
+                if (t.StartsWith("三级", StringComparison.OrdinalIgnoreCase))
                 {
                     inLevel3List = true;
                     continue;
@@ -182,7 +185,6 @@ namespace CommunityFinder.Services
                 }
             }
 
-            // 关键修正：只要有任何匹配 (>0) 就返回（保守）
             var result = (bestScore > 0 && bestL1 != null && bestL2 != null && bestL3 != null)
                 ? new ValueTuple<string, string, string>(bestL1, bestL2, bestL3)
                 : null as (string, string, string)?;
@@ -207,7 +209,7 @@ namespace CommunityFinder.Services
             if (string.IsNullOrWhiteSpace(normalizedKeyword))
                 return null;
 
-            // 1) Try almost-exact L3 match first (highest priority)
+            // 👉 优化1：优先进行完全精确匹配（不区分大小写）
             foreach (var l1Pair in _categoryTree)
             {
                 foreach (var l2Pair in l1Pair.Value)
@@ -215,6 +217,8 @@ namespace CommunityFinder.Services
                     foreach (var l3 in l2Pair.Value)
                     {
                         var normL3 = AggressiveNormalize(l3);
+
+                        // 完全匹配
                         if (string.Equals(normL3, normalizedKeyword, StringComparison.OrdinalIgnoreCase))
                         {
                             return new CategoryMatchResult
@@ -224,13 +228,56 @@ namespace CommunityFinder.Services
                                 L2 = l2Pair.Key,
                                 L3Items = new List<string> { l3 },
                                 Score = 100,
-                                MatchDescription = $"Exact topic match: {l3}"
+                                MatchDescription = $"Exact match: {l3}"
                             };
                         }
+                    }
+                }
+            }
 
-                        // allow tiny typo (Levenshtein <=1) for near exactness when length > 2
-                        if (Math.Max(normL3.Length, normalizedKeyword.Length) > 2 &&
-                            LevenshteinDistance(normL3, normalizedKeyword) <= 1)
+            // 👉 优化2：更严格的近似匹配 - 只允许在长度>=5时使用模糊匹配
+            // 这样 "zumba"(5字符) 和 "rumba"(5字符) 虽然编辑距离为1，但会被区别对待
+            foreach (var l1Pair in _categoryTree)
+            {
+                foreach (var l2Pair in l1Pair.Value)
+                {
+                    foreach (var l3 in l2Pair.Value)
+                    {
+                        var normL3 = AggressiveNormalize(l3);
+
+                        // 👉 关键修复：只有在满足以下条件时才允许模糊匹配：
+                        // 1. 关键词长度 >= 6（避免短词误匹配）
+                        // 2. 或者关键词是 L3 的前缀/后缀（处理复数等情况）
+                        if (normalizedKeyword.Length >= 6 || normL3.Length >= 6)
+                        {
+                            int distance = LevenshteinDistance(normL3, normalizedKeyword);
+                            // 👉 使用更智能的阈值：长度的20%，最少1个，最多2个
+                            int threshold = Math.Max(1, Math.Min(2, (int)Math.Ceiling(Math.Max(normL3.Length, normalizedKeyword.Length) * 0.2)));
+
+                            if (distance <= threshold && distance > 0)
+                            {
+                                // 👉 额外检查：如果首字母不同，降低置信度
+                                bool sameStartLetter = normL3.Length > 0 && normalizedKeyword.Length > 0 &&
+                                                       normL3[0] == normalizedKeyword[0];
+
+                                if (sameStartLetter)
+                                {
+                                    return new CategoryMatchResult
+                                    {
+                                        MatchLevel = MatchLevel.L3,
+                                        L1 = l1Pair.Key,
+                                        L2 = l2Pair.Key,
+                                        L3Items = new List<string> { l3 },
+                                        Score = 95,
+                                        MatchDescription = $"Near match: {l3} (typo tolerance)"
+                                    };
+                                }
+                            }
+                        }
+
+                        // 👉 优化3：检查前缀/后缀匹配（处理复数等）
+                        if ((normL3.StartsWith(normalizedKeyword) || normalizedKeyword.StartsWith(normL3)) &&
+                            Math.Abs(normL3.Length - normalizedKeyword.Length) <= 2)
                         {
                             return new CategoryMatchResult
                             {
@@ -238,8 +285,8 @@ namespace CommunityFinder.Services
                                 L1 = l1Pair.Key,
                                 L2 = l2Pair.Key,
                                 L3Items = new List<string> { l3 },
-                                Score = 95,
-                                MatchDescription = $"Near-exact topic match: {l3}"
+                                Score = 90,
+                                MatchDescription = $"Partial match: {l3}"
                             };
                         }
                     }
@@ -247,7 +294,6 @@ namespace CommunityFinder.Services
             }
 
             // 2) Special-case: "sport" and its synonyms should prefer L1 'Sports & Fitness'
-            // Detect if keyword indicates sport-type (use synonyms)
             bool isSportish = normalizedKeyword.Contains("sport") ||
                               normalizedKeyword.Contains("sports") ||
                               normalizedKeyword.Contains("athletic") ||
@@ -257,13 +303,11 @@ namespace CommunityFinder.Services
 
             if (isSportish)
             {
-                // Find L1 key containing 'sport' or 'sports' (case-insensitive)
                 var candidateL1 = _categoryTree.Keys
                     .FirstOrDefault(k => AggressiveNormalize(k).Contains("sport") || AggressiveNormalize(k).Contains("sports") || AggressiveNormalize(k).Contains("fitness"));
 
                 if (!string.IsNullOrWhiteSpace(candidateL1))
                 {
-                    // aggregate all L3s under this L1
                     var l3s = new List<string>();
                     foreach (var kv in _categoryTree[candidateL1])
                     {
@@ -276,7 +320,7 @@ namespace CommunityFinder.Services
                         L1 = candidateL1,
                         L3Items = l3s,
                         Score = 90,
-                        MatchDescription = $"Mapped to main category: {candidateL1}"
+                        MatchDescription = $"Category: {candidateL1}"
                     };
                 }
             }
@@ -285,16 +329,12 @@ namespace CommunityFinder.Services
             double bestScore = 0;
             string bestL1 = null, bestL2 = null, bestL3 = null;
 
-            // build keyword set
-            var kwSet = ExtractKeywords(normalizedKeyword);
-
             foreach (var l1Pair in _categoryTree)
             {
                 foreach (var l2Pair in l1Pair.Value)
                 {
                     foreach (var l3 in l2Pair.Value)
                     {
-                        // Use existing CalculateMatchScore but pass a list containing the original raw keyword normalized
                         var interestsList = new List<string> { normalizedKeyword };
                         double score = CalculateMatchScore(interestsList, l1Pair.Key, l2Pair.Key, l3);
 
@@ -312,9 +352,6 @@ namespace CommunityFinder.Services
             if (bestScore <= 0 || bestL1 == null)
                 return null;
 
-            // If best match is an L3-like (higher weight), return single L3
-            // Else if it's more of an L2/L1 match, aggregate accordingly.
-            // Heuristics: a strong L3 match will have score > 15 (based on CalculateMatchScore weights)
             if (bestScore >= 15)
             {
                 return new CategoryMatchResult
@@ -324,11 +361,10 @@ namespace CommunityFinder.Services
                     L2 = bestL2,
                     L3Items = new List<string> { bestL3 },
                     Score = bestScore,
-                    MatchDescription = $"Best topic match: {bestL3} (score {bestScore:F1})"
+                    MatchDescription = $"Best match: {bestL3} (score {bestScore:F1})"
                 };
             }
 
-            // check if best corresponds to an L2-dominant match: aggregate all L3s under bestL2
             if (!string.IsNullOrWhiteSpace(bestL2) && _categoryTree.TryGetValue(bestL1, out var l2dict) && l2dict.TryGetValue(bestL2, out var l3list))
             {
                 return new CategoryMatchResult
@@ -338,11 +374,10 @@ namespace CommunityFinder.Services
                     L2 = bestL2,
                     L3Items = new List<string>(l3list),
                     Score = bestScore,
-                    MatchDescription = $"Category match: {bestL2} ({l3list.Count} topics) (score {bestScore:F1})"
+                    MatchDescription = $"Category: {bestL2} ({l3list.Count} topics)"
                 };
             }
 
-            // fallback to L1 aggregation
             var aggregated = new List<string>();
             foreach (var kv in _categoryTree[bestL1])
                 aggregated.AddRange(kv.Value);
@@ -353,7 +388,7 @@ namespace CommunityFinder.Services
                 L1 = bestL1,
                 L3Items = aggregated,
                 Score = bestScore,
-                MatchDescription = $"Main category match: {bestL1} ({aggregated.Count} topics) (score {bestScore:F1})"
+                MatchDescription = $"Broad category: {bestL1} ({aggregated.Count} topics)"
             };
         }
 
@@ -364,35 +399,46 @@ namespace CommunityFinder.Services
         {
             double score = 0;
 
-            // Normalize category names
             var normalizedL1 = AggressiveNormalize(l1);
             var normalizedL2 = AggressiveNormalize(l2);
             var normalizedL3 = AggressiveNormalize(l3);
 
-            // Extract keywords from categories
             var l1Keywords = ExtractKeywords(normalizedL1);
             var l2Keywords = ExtractKeywords(normalizedL2);
             var l3Keywords = ExtractKeywords(normalizedL3);
 
-            // Check each interest against category keywords
             foreach (var interest in interests)
             {
                 var interestKeywords = ExtractKeywords(interest);
 
                 foreach (var keyword in interestKeywords)
                 {
+                    // ===== EXACT FULL-TEXT MATCH BONUSES (HIGHEST PRIORITY) =====
+                    if (normalizedL3.Equals(keyword, StringComparison.OrdinalIgnoreCase))
+                    {
+                        score += 30.0; // 👉 提高精确匹配权重
+                    }
+                    else if (normalizedL2.Equals(keyword, StringComparison.OrdinalIgnoreCase))
+                    {
+                        score += 20.0;
+                    }
+                    else if (normalizedL1.Equals(keyword, StringComparison.OrdinalIgnoreCase))
+                    {
+                        score += 15.0;
+                    }
+
                     // ===== LEVEL 3 MATCHING (MOST SPECIFIC) =====
                     if (l3Keywords.Contains(keyword))
                     {
                         score += 10.0;
                     }
-                    else if (FuzzyMatch(keyword, l3Keywords))
+                    else if (SmartFuzzyMatch(keyword, l3Keywords, normalizedL3))
                     {
-                        score += 8.5;
+                        score += 7.0; // 👉 降低模糊匹配权重
                     }
                     else if (NgramMatch(keyword, normalizedL3))
                     {
-                        score += 7.0;
+                        score += 5.0; // 👉 降低 n-gram 匹配权重
                     }
 
                     // ===== LEVEL 2 MATCHING (MEDIUM) =====
@@ -400,13 +446,13 @@ namespace CommunityFinder.Services
                     {
                         score += 5.0;
                     }
-                    else if (FuzzyMatch(keyword, l2Keywords))
+                    else if (SmartFuzzyMatch(keyword, l2Keywords, normalizedL2))
                     {
-                        score += 4.5;
+                        score += 3.5;
                     }
                     else if (NgramMatch(keyword, normalizedL2))
                     {
-                        score += 3.5;
+                        score += 2.5;
                     }
 
                     // ===== LEVEL 1 MATCHING (LEAST SPECIFIC) =====
@@ -414,45 +460,30 @@ namespace CommunityFinder.Services
                     {
                         score += 2.0;
                     }
-                    else if (FuzzyMatch(keyword, l1Keywords))
-                    {
-                        score += 1.8;
-                    }
-                    else if (NgramMatch(keyword, normalizedL1))
+                    else if (SmartFuzzyMatch(keyword, l1Keywords, normalizedL1))
                     {
                         score += 1.5;
                     }
-
-                    // ===== EXACT FULL-TEXT MATCH BONUSES =====
-                    if (normalizedL3.Equals(keyword, StringComparison.OrdinalIgnoreCase))
+                    else if (NgramMatch(keyword, normalizedL1))
                     {
-                        score += 20.0;
-                    }
-                    else if (normalizedL2.Equals(keyword, StringComparison.OrdinalIgnoreCase))
-                    {
-                        score += 15.0;
-                    }
-                    else if (normalizedL1.Equals(keyword, StringComparison.OrdinalIgnoreCase))
-                    {
-                        score += 10.0;
+                        score += 1.0;
                     }
 
                     // ===== SUBSTRING MATCHES =====
                     if (normalizedL3.Contains(keyword) || keyword.Contains(normalizedL3))
                     {
-                        score += 5.0;
+                        score += 4.0;
                     }
                     else if (normalizedL2.Contains(keyword) || keyword.Contains(normalizedL2))
                     {
-                        score += 3.0;
+                        score += 2.5;
                     }
                     else if (normalizedL1.Contains(keyword) || keyword.Contains(normalizedL1))
                     {
-                        score += 2.0;
+                        score += 1.5;
                     }
                 }
 
-                // Semantic matching bonus
                 score += CheckSemanticMatch(interest, normalizedL1, normalizedL2, normalizedL3);
             }
 
@@ -460,27 +491,71 @@ namespace CommunityFinder.Services
         }
 
         /// <summary>
-        /// Fuzzy match using Levenshtein distance - handles typos and singular/plural
+        /// 👉 新增：更智能的模糊匹配 - 考虑首字母和长度
         /// </summary>
-        private bool FuzzyMatch(string input, HashSet<string> targets, int maxDistance = 2)
+        private bool SmartFuzzyMatch(string input, HashSet<string> targets, string fullTarget = null)
         {
             foreach (var target in targets)
             {
+                // 👉 关键优化：如果首字母不同，直接跳过（避免 zumba vs rumba）
+                if (input.Length > 0 && target.Length > 0 && input[0] != target[0])
+                    continue;
+
                 int distance = LevenshteinDistance(input, target);
-                // 关键修复：允许更宽松的阈值
-                int threshold = Math.Max(2, (int)Math.Ceiling(Math.Max(input.Length, target.Length) * 0.3));
-                if (distance <= threshold)
+                int maxLen = Math.Max(input.Length, target.Length);
+
+                // 👉 更严格的阈值：
+                // - 长度 < 4: 不允许模糊匹配
+                // - 长度 4-6: 最多允许1个错误
+                // - 长度 > 6: 最多允许2个错误
+                int threshold;
+                if (maxLen < 4)
+                    threshold = 0; // 不允许任何错误
+                else if (maxLen <= 6)
+                    threshold = 1; // 最多1个错误
+                else
+                    threshold = 2; // 最多2个错误
+
+                if (distance <= threshold && distance > 0)
                     return true;
             }
+
+            // 👉 额外检查：如果提供了完整目标，也进行首字母检查
+            if (!string.IsNullOrEmpty(fullTarget))
+            {
+                if (input.Length > 0 && fullTarget.Length > 0 && input[0] != fullTarget[0])
+                    return false;
+
+                int distance = LevenshteinDistance(input, fullTarget);
+                int maxLen = Math.Max(input.Length, fullTarget.Length);
+                int threshold = maxLen < 4 ? 0 : (maxLen <= 6 ? 1 : 2);
+
+                if (distance <= threshold && distance > 0)
+                    return true;
+            }
+
             return false;
         }
 
         /// <summary>
-        /// N-gram matching for partial word matching - handles "sport" vs "sports"
+        /// Fuzzy match using Levenshtein distance - handles typos and singular/plural
+        /// 👉 保留原方法但标记为过时，使用新的 SmartFuzzyMatch
+        /// </summary>
+        private bool FuzzyMatch(string input, HashSet<string> targets, int maxDistance = 2)
+        {
+            return SmartFuzzyMatch(input, targets);
+        }
+
+        /// <summary>
+        /// N-gram matching for partial word matching
         /// </summary>
         private bool NgramMatch(string input, string target, int ngramSize = 2)
         {
             if (string.IsNullOrEmpty(input) || string.IsNullOrEmpty(target))
+                return false;
+
+            // 👉 优化：短词不使用 n-gram 匹配
+            if (input.Length < 4 || target.Length < 4)
                 return false;
 
             var inputGrams = GetNgrams(input, ngramSize);
@@ -489,11 +564,11 @@ namespace CommunityFinder.Services
             if (inputGrams.Count == 0 || targetGrams.Count == 0)
                 return false;
 
-            // Check overlap percentage - 关键修复：降低阈值从50%到30%
             var overlap = inputGrams.Intersect(targetGrams).Count();
             double similarity = (double)overlap / Math.Max(inputGrams.Count, targetGrams.Count);
 
-            return similarity >= 0.3;
+            // 👉 提高阈值到40%（从30%）
+            return similarity >= 0.4;
         }
 
         /// <summary>
@@ -512,7 +587,7 @@ namespace CommunityFinder.Services
         }
 
         /// <summary>
-        /// Calculates Levenshtein distance between two strings (for typo detection)
+        /// Calculates Levenshtein distance between two strings
         /// </summary>
         private int LevenshteinDistance(string s1, string s2)
         {
@@ -535,9 +610,9 @@ namespace CommunityFinder.Services
 
                     distances[i, j] = Math.Min(
                         Math.Min(
-                            distances[i - 1, j] + 1,      // deletion
-                            distances[i, j - 1] + 1),     // insertion
-                        distances[i - 1, j - 1] + cost    // substitution
+                            distances[i - 1, j] + 1,
+                            distances[i, j - 1] + 1),
+                        distances[i - 1, j - 1] + cost
                     );
                 }
             }
@@ -546,13 +621,12 @@ namespace CommunityFinder.Services
         }
 
         /// <summary>
-        /// Checks for semantic matches between interest and categories with expanded rules
+        /// Checks for semantic matches between interest and categories
         /// </summary>
         private double CheckSemanticMatch(string interest, string l1, string l2, string l3)
         {
             double score = 0;
 
-            // Check if input has synonym matches
             foreach (var synonymPair in _synonymMaps)
             {
                 if (interest.Contains(synonymPair.Key))
@@ -565,14 +639,21 @@ namespace CommunityFinder.Services
                 }
             }
 
-            // Education & learning related
+            // 👉 新增：Zumba 特殊处理
+            if (interest.Contains("zumba"))
+            {
+                if (l3.Contains("zumba") || l2.Contains("zumba") || l2.Contains("dance") || l2.Contains("fitness"))
+                    score += 10.0; // 高权重确保准确匹配
+            }
+
+            // Education & learning
             if (interest.Contains("learn") || interest.Contains("study") || interest.Contains("education") || interest.Contains("enrichment") || interest.Contains("course"))
             {
                 if (l1.Contains("education") || l1.Contains("learning") || l1.Contains("enrichment"))
-                    score += 5.0; // 提高权重
+                    score += 5.0;
             }
 
-            // Health & wellness related
+            // Health & wellness
             if (interest.Contains("health") || interest.Contains("fitness") || interest.Contains("wellness") ||
                 interest.Contains("yoga") || interest.Contains("exercise") || interest.Contains("strength"))
             {
@@ -580,7 +661,7 @@ namespace CommunityFinder.Services
                     score += 5.0;
             }
 
-            // Arts & crafts related
+            // Arts & crafts
             if (interest.Contains("art") || interest.Contains("craft") || interest.Contains("creative") ||
                 interest.Contains("paint") || interest.Contains("draw") || interest.Contains("design"))
             {
@@ -588,7 +669,7 @@ namespace CommunityFinder.Services
                     score += 5.0;
             }
 
-            // Music related
+            // Music
             if (interest.Contains("music") || interest.Contains("sing") || interest.Contains("instrument") ||
                 interest.Contains("guitar") || interest.Contains("piano") || interest.Contains("vocal"))
             {
@@ -596,14 +677,14 @@ namespace CommunityFinder.Services
                     score += 5.0;
             }
 
-            // Dance related
+            // Dance
             if (interest.Contains("dance") || interest.Contains("ballet") || interest.Contains("hip") || interest.Contains("jazz"))
             {
                 if (l2.Contains("dance") || l3.Contains("dance") || l2.Contains("fitness"))
                     score += 5.0;
             }
 
-            // Sports & fitness - THIS NOW HANDLES "sport" -> "Sports"
+            // Sports & fitness
             if (interest.Contains("sport") || interest.Contains("athletic") || interest.Contains("fitness") ||
                 interest.Contains("badminton") || interest.Contains("tennis") || interest.Contains("swim") ||
                 interest.Contains("soccer") || interest.Contains("basketball") || interest.Contains("volleyball") ||
@@ -622,7 +703,7 @@ namespace CommunityFinder.Services
                     score += 5.0;
             }
 
-            // Technology & digital
+            // Technology
             if (interest.Contains("tech") || interest.Contains("computer") || interest.Contains("coding") ||
                 interest.Contains("programming") || interest.Contains("digital") || interest.Contains("app"))
             {
@@ -630,7 +711,7 @@ namespace CommunityFinder.Services
                     score += 5.0;
             }
 
-            // Cooking & culinary
+            // Cooking
             if (interest.Contains("cook") || interest.Contains("baking") || interest.Contains("food") ||
                 interest.Contains("culinary") || interest.Contains("cuisine") || interest.Contains("meal"))
             {
@@ -638,7 +719,7 @@ namespace CommunityFinder.Services
                     score += 5.0;
             }
 
-            // Games & hobbies
+            // Games
             if (interest.Contains("game") || interest.Contains("chess") || interest.Contains("board") ||
                 interest.Contains("hobby") || interest.Contains("photography") || interest.Contains("gardening"))
             {
@@ -650,40 +731,29 @@ namespace CommunityFinder.Services
         }
 
         /// <summary>
-        /// Aggressively normalizes text - removes special characters, extra spaces, and standardizes format
-        /// This solves the "dance-" issue
+        /// Aggressively normalizes text
         /// </summary>
         private string AggressiveNormalize(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return string.Empty;
 
-            // Convert to lowercase
             text = text.ToLowerInvariant();
-
-            // Replace common special characters with space
             text = Regex.Replace(text, @"[^\w\s]", " ");
-
-            // Remove extra spaces
             text = Regex.Replace(text, @"\s+", " ");
-
-            // Trim
             text = text.Trim();
-
-            // Expand common abbreviations
             text = text.Replace("&", "and");
 
             return text;
         }
 
         /// <summary>
-        /// Extracts keywords from text with filtering and synonym expansion
+        /// Extracts keywords from text
         /// </summary>
         private HashSet<string> ExtractKeywords(string text)
         {
             var keywords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            // Common stop words to ignore
             var stopWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
                 "a", "an", "and", "or", "the", "in", "on", "at", "to", "for", "of", "with",
@@ -693,12 +763,10 @@ namespace CommunityFinder.Services
             var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             foreach (var word in words)
             {
-                // 关键修复：将最小长度从 >=2 改为 >=1，允许短词汇如 'ai'/'go'
                 if (word.Length >= 1 && !stopWords.Contains(word))
                 {
                     keywords.Add(word);
 
-                    // Add plural/singular variants
                     if (word.EndsWith("s") && word.Length > 2)
                     {
                         keywords.Add(word.Substring(0, word.Length - 1));
@@ -708,7 +776,6 @@ namespace CommunityFinder.Services
                         keywords.Add(plural);
                     }
 
-                    // Add synonyms
                     if (_synonymMaps.TryGetValue(word, out var synonyms))
                     {
                         foreach (var syn in synonyms)
