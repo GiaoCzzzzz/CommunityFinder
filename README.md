@@ -47,6 +47,13 @@ Mainpage 和 CourseDetail 页面的基本前端样式已经大致做好了 --- �
 3.Mainpage 和 CourseDetail 页面没有响应式布局（当屏幕过小时缺失一些内容）
 
 
+---阶段3Event---
+1. Detail无法显示
+2. 筛选实时更新
+3. 历史记录
+4. 其他URL需要正确
+
+
 
 （10.27修改建议）
 
