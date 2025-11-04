@@ -201,5 +201,10 @@ namespace CommunityFinder
                 await Navigation.PushAsync(new CourseDetailPage(item.DetailUrl, _authService));
             }
         }
+
+        private async void OnEventsClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new EventPage(_authService));
+        }
     }
 }

@@ -9,8 +9,8 @@ namespace CommunityFinder.Views
     {
         private readonly AuthService _authService;
 
-        public ObservableCollection<CourseItem> BrowsingHistory { get; } = new();
-        public ObservableCollection<CourseItem> FavoriteCourses { get; } = new();
+        public ObservableCollection<HistoryItem> BrowsingHistory { get; } = new();
+        public ObservableCollection<HistoryItem> FavoriteCourses { get; } = new();
 
         public ICommand DeleteHistoryCommand { get; }
         public ICommand ClearAllHistoryCommand { get; }
@@ -23,33 +23,38 @@ namespace CommunityFinder.Views
             _authService = authService;
             BindingContext = this;
 
-            DeleteHistoryCommand = new Command<CourseItem>(DeleteHistoryAsync);
+            DeleteHistoryCommand = new Command<HistoryItem>(DeleteHistoryAsync);
             ClearAllHistoryCommand = new Command(ClearAllHistoryAsync);
-            DeleteFavoriteCourseCommand = new Command<CourseItem>(DeleteFavoriteAsync);
+            DeleteFavoriteCourseCommand = new Command<HistoryItem>(DeleteFavoriteAsync);
             ClearAllFavoritesCommand = new Command(ClearAllFavoritesAsync);
         }
 
-        private async void DeleteHistoryAsync(CourseItem item)
+        private async void DeleteHistoryAsync(HistoryItem item)
         {
             if (item == null) return;
 
             try
             {
                 var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
-                var status = await _authService.Client
-                    .From<CourseStatus>()
-                    .Where(x => x.id == userGuid)
-                    .Single();
+                
+                if (!item.IsEvent)
+                {
+                    // Delete course history
+                    var status = await _authService.Client
+                        .From<CourseStatus>()
+                        .Where(x => x.id == userGuid)
+                        .Single();
 
-                if (status?.history == null) return;
+                    if (status?.history == null) return;
 
-                var newHistory = status.history.Where(h => h != item.ClassId).ToArray();
+                    var newHistory = status.history.Where(h => h != item.Id).ToArray();
 
-                await _authService.Client
-                    .From<CourseStatus>()
-                    .Where(x => x.id == userGuid)
-                    .Set(x => x.history, newHistory)
-                    .Update();
+                    await _authService.Client
+                        .From<CourseStatus>()
+                        .Where(x => x.id == userGuid)
+                        .Set(x => x.history, newHistory)
+                        .Update();
+                }
 
                 BrowsingHistory.Remove(item);
             }
@@ -79,27 +84,22 @@ namespace CommunityFinder.Views
             }
         }
 
-        private async void DeleteFavoriteAsync(CourseItem item)
+        private async void DeleteFavoriteAsync(HistoryItem item)
         {
             if (item == null) return;
 
             try
             {
-                var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
-                var status = await _authService.Client
-                    .From<CourseStatus>()
-                    .Where(x => x.id == userGuid)
-                    .Single();
-
-                if (status?.favorites == null) return;
-
-                var newFavorites = status.favorites.Where(f => f != item.ClassId).ToArray();
-
-                await _authService.Client
-                    .From<CourseStatus>()
-                    .Where(x => x.id == userGuid)
-                    .Set(x => x.favorites, newFavorites)
-                    .Update();
+                if (item.IsEvent)
+                {
+                    // Unfavorite event
+                    await _authService.UnfavoriteEventAsync(item.Id);
+                }
+                else
+                {
+                    // Unfavorite course
+                    await _authService.UnfavoriteCourseAsync(item.Id);
+                }
 
                 FavoriteCourses.Remove(item);
             }
@@ -114,12 +114,29 @@ namespace CommunityFinder.Views
             try
             {
                 var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
+                var userId = userGuid.ToString();
 
+                // Clear course favorites
                 await _authService.Client
                     .From<CourseStatus>()
                     .Where(x => x.id == userGuid)
                     .Set(x => x.favorites, Array.Empty<string>())
                     .Update();
+
+                // Clear event favorites
+                var eventStatuses = await _authService.Client.From<EventStatus>()
+                    .Where(x => x.UserId == userId && x.IsFavorited == true)
+                    .Get();
+
+                if (eventStatuses.Models != null)
+                {
+                    foreach (var status in eventStatuses.Models)
+                    {
+                        status.IsFavorited = false;
+                        status.UpdatedAt = DateTime.UtcNow;
+                        await status.Update<EventStatus>();
+                    }
+                }
 
                 FavoriteCourses.Clear();
             }
@@ -151,35 +168,46 @@ namespace CommunityFinder.Views
                 FavoriteCourses.Clear();
 
                 var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
+                var userId = userGuid.ToString();
+                
+                // Load course history
                 var status = await _authService.Client
                     .From<CourseStatus>()
                     .Where(x => x.id == userGuid)
                     .Single();
 
-                if (status == null) return;
-
-                var historyIds = status.history ?? Array.Empty<string>();
-                foreach (var classId in historyIds)
+                if (status != null)
                 {
-                    var course = await _authService.Client
-                        .From<CourseItem>()
-                        .Where(x => x.ClassId == classId)
-                        .Single();
+                    var historyIds = status.history ?? Array.Empty<string>();
+                    foreach (var classId in historyIds)
+                    {
+                        var course = await _authService.Client
+                            .From<CourseItem>()
+                            .Where(x => x.ClassId == classId)
+                            .Single();
 
-                    if (course != null)
-                        BrowsingHistory.Add(course);
+                        if (course != null)
+                            BrowsingHistory.Add(HistoryItem.FromCourse(course));
+                    }
+
+                    var favoriteIds = status.favorites ?? Array.Empty<string>();
+                    foreach (var classId in favoriteIds)
+                    {
+                        var course = await _authService.Client
+                            .From<CourseItem>()
+                            .Where(x => x.ClassId == classId)
+                            .Single();
+
+                        if (course != null)
+                            FavoriteCourses.Add(HistoryItem.FromCourse(course));
+                    }
                 }
 
-                var favoriteIds = status.favorites ?? Array.Empty<string>();
-                foreach (var classId in favoriteIds)
+                // Load event favorites
+                var favoriteEvents = await _authService.GetFavoriteEventsAsync();
+                foreach (var eventItem in favoriteEvents)
                 {
-                    var course = await _authService.Client
-                        .From<CourseItem>()
-                        .Where(x => x.ClassId == classId)
-                        .Single();
-
-                    if (course != null)
-                        FavoriteCourses.Add(course);
+                    FavoriteCourses.Add(HistoryItem.FromEvent(eventItem));
                 }
             }
             catch (Exception ex)
@@ -191,7 +219,7 @@ namespace CommunityFinder.Views
         // 添加在类的其他方法之后
         private async void OnHistoryItemTapped(object sender, SelectionChangedEventArgs e)
         {
-            if (e.CurrentSelection?.FirstOrDefault() is CourseItem item)
+            if (e.CurrentSelection?.FirstOrDefault() is HistoryItem item)
             {
                 // 清除选择状态
                 if (sender is CollectionView collectionView)
@@ -202,26 +230,31 @@ namespace CommunityFinder.Views
                 // 检查 DetailUrl 是否有效
                 if (string.IsNullOrWhiteSpace(item.DetailUrl))
                 {
-                    await DisplayAlert("Error", "This course link is not available.", "OK");
+                    await DisplayAlert("Error", "This link is not available.", "OK");
                     return;
                 }
 
                 try
                 {
-                    // 尝试打开课程详情页
-                    await Navigation.PushAsync(new CourseDetailPage(item.DetailUrl, _authService));
+                    if (item.IsEvent)
+                    {
+                        await Navigation.PushAsync(new EventDetailPage(item.DetailUrl, _authService));
+                    }
+                    else
+                    {
+                        await Navigation.PushAsync(new CourseDetailPage(item.DetailUrl, _authService));
+                    }
                 }
                 catch (Exception ex)
                 {
-                    // 如果链接失效或其他错误
-                    await DisplayAlert("Course Closed", "This course has been closed or is no longer available.", "OK");
+                    await DisplayAlert("Item Closed", "This item has been closed or is no longer available.", "OK");
                 }
             }
         }
 
         private async void OnFavoriteItemTapped(object sender, SelectionChangedEventArgs e)
         {
-            if (e.CurrentSelection?.FirstOrDefault() is CourseItem item)
+            if (e.CurrentSelection?.FirstOrDefault() is HistoryItem item)
             {
                 // 清除选择状态
                 if (sender is CollectionView collectionView)
@@ -232,19 +265,24 @@ namespace CommunityFinder.Views
                 // 检查 DetailUrl 是否有效
                 if (string.IsNullOrWhiteSpace(item.DetailUrl))
                 {
-                    await DisplayAlert("Error", "This course link is not available.", "OK");
+                    await DisplayAlert("Error", "This link is not available.", "OK");
                     return;
                 }
 
                 try
                 {
-                    // 尝试打开课程详情页
-                    await Navigation.PushAsync(new CourseDetailPage(item.DetailUrl, _authService));
+                    if (item.IsEvent)
+                    {
+                        await Navigation.PushAsync(new EventDetailPage(item.DetailUrl, _authService));
+                    }
+                    else
+                    {
+                        await Navigation.PushAsync(new CourseDetailPage(item.DetailUrl, _authService));
+                    }
                 }
                 catch (Exception ex)
                 {
-                    // 如果链接失效或其他错误
-                    await DisplayAlert("Course Closed", "This course has been closed or is no longer available.", "OK");
+                    await DisplayAlert("Item Closed", "This item has been closed or is no longer available.", "OK");
                 }
             }
         }
