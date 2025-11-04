@@ -26,31 +26,87 @@ namespace CommunityFinder.Services
         {
             try
             {
+                Debug.WriteLine($"📡 [EventService] Fetching from URL: {url}");
+
                 var json = await _http.GetStringAsync(url);
+
+                // 打印前500字符的响应
+                var preview = json.Length > 500 ? json.Substring(0, 500) : json;
+                Debug.WriteLine($"📋 [EventService] Response preview: {preview}");
 
                 var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 };
 
-                var root = JsonSerializer.Deserialize<OnePaRoot>(json, options);
-
-                if (root == null || !root.Success || root.Data?.Results == null)
+                OnePaRoot root = null;
+                try
                 {
-                    Debug.WriteLine($"⚠️ API Response failed: Success={root?.Success}, Results={root?.Data?.Results?.Count}");
+                    root = JsonSerializer.Deserialize<OnePaRoot>(json, options);
+                    Debug.WriteLine($"✅ [EventService] JSON deserialized successfully");
+                }
+                catch (JsonException jex)
+                {
+                    Debug.WriteLine($"❌ [EventService] JSON deserialization failed: {jex.Message}");
+                    Debug.WriteLine($"   Path: {jex.Path}, Line: {jex.LineNumber}, Byte: {jex.BytePositionInLine}");
                     return new List<EventItem>();
                 }
 
-                var items = root.Data.Results
-                    .Select(EventItem.FromOnePa)
-                    .ToList();
+                if (root == null)
+                {
+                    Debug.WriteLine($"❌ [EventService] root is null after deserialization");
+                    return new List<EventItem>();
+                }
 
-                Debug.WriteLine($"✅ Fetched {items.Count} events from: {url}");
+                Debug.WriteLine($"📊 [EventService] root.Success={root.Success}, root.Data={root.Data}, Results count={root.Data?.Results?.Count}");
+
+                if (root.Data?.Results == null)  //只检查是否有实际数据
+                {
+                    return new List<EventItem>();
+                }
+
+                if (root.Data?.Results == null)
+                {
+                    Debug.WriteLine($"❌ [EventService] Data.Results is null");
+                    return new List<EventItem>();
+                }
+
+                if (root.Data.Results.Count == 0)
+                {
+                    Debug.WriteLine($"⚠️ [EventService] Results is empty (count=0)");
+                    return new List<EventItem>();
+                }
+
+                // 逐个转换，捕捉转换错误
+                var items = new List<EventItem>();
+                foreach (var result in root.Data.Results)
+                {
+                    try
+                    {
+                        var item = EventItem.FromOnePa(result);
+                        items.Add(item);
+                    }
+                    catch (Exception convEx)
+                    {
+                        Debug.WriteLine($"⚠️ [EventService] Failed to convert item: {convEx.Message}");
+                        // 继续处理下一个，不中断
+                    }
+                }
+
+                Debug.WriteLine($"✅ [EventService] Successfully converted {items.Count}/{root.Data.Results.Count} events");
                 return items;
+            }
+            catch (HttpRequestException hex)
+            {
+                Debug.WriteLine($"❌ [EventService] HTTP request failed: {hex.Message}");
+                Debug.WriteLine($"   StackTrace: {hex.StackTrace}");
+                return new List<EventItem>();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"❌ EventService error: {ex.Message}");
+                Debug.WriteLine($"❌ [EventService] Unexpected error: {ex.GetType().Name}");
+                Debug.WriteLine($"   Message: {ex.Message}");
+                Debug.WriteLine($"   StackTrace: {ex.StackTrace}");
                 return new List<EventItem>();
             }
         }
@@ -60,15 +116,29 @@ namespace CommunityFinder.Services
             var items = new List<EventItem>();
             int page = 1;
 
+            Debug.WriteLine($"🔄 [EventService] Starting FetchAllPagesAsync (maxPages={maxPages})");
+            Debug.WriteLine($"   Base URL: {baseUrl}");
+
             while (page <= maxPages)
             {
                 var url = EnsurePageParam(baseUrl, page);
+                Debug.WriteLine($"   Fetching page {page}: {url}");
+
                 var batch = await FetchEventsAsync(url);
-                if (batch.Count == 0) break;
+
+                Debug.WriteLine($"   Page {page} returned {batch.Count} items");
+
+                if (batch.Count == 0)
+                {
+                    Debug.WriteLine($"   Page {page} is empty, stopping pagination");
+                    break;
+                }
 
                 items.AddRange(batch);
                 page++;
             }
+
+            Debug.WriteLine($"✅ [EventService] FetchAllPagesAsync completed with {items.Count} total items");
             return items;
         }
 
@@ -80,15 +150,20 @@ namespace CommunityFinder.Services
             return $"{url}{sep}page={page}";
         }
 
-        public static string BuildSearchUrl(string category = "", string outlet = "", 
-                                           string timePeriod = "", string events = "", 
+        public static string BuildSearchUrl(string category = "", string outlet = "",
+                                           string timePeriod = "", string events = "",
                                            int page = 1)
         {
             string Enc(string s) => Uri.EscapeDataString(s ?? string.Empty);
 
-            return $"https://www.onepa.gov.sg/pacesapi/eventsearch/searchjson" +
+            var url = $"https://www.onepa.gov.sg/pacesapi/eventsearch/searchjson" +
                    $"?events={Enc(events)}&aoi={Enc(category)}&outlet={Enc(outlet)}" +
                    $"&timePeriod={Enc(timePeriod)}&sort=rel&page={page}";
+
+            Debug.WriteLine($"🔗 [EventService] BuildSearchUrl: category='{category}', outlet='{outlet}', timePeriod='{timePeriod}'");
+            Debug.WriteLine($"   Generated URL: {url}");
+
+            return url;
         }
     }
 }

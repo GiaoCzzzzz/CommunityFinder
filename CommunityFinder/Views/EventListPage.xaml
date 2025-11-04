@@ -69,6 +69,9 @@
             <CollectionView ItemsSource="{Binding Events}" 
                            SelectionMode="Single" 
                            SelectionChanged="OnItemTapped">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="8"/>
+                </CollectionView.ItemsLayout>
                 <CollectionView.EmptyView>
                     <Grid Padding="20">
                         <Label Text="No events found" 
