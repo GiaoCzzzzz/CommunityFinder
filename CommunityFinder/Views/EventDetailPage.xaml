@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="CommunityFinder.Views.EventDetailPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:CommunityFinder.Converters"
+             Title="Event Detail">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:LikeIconConverter x:Key="LikeIconConverter" />
+            <converters:FavoriteIconConverter x:Key="FavoriteIconConverter" />
+            <converters:LikeBorderColorConverter x:Key="LikeBorderColorConverter" />
+            <converters:FavoriteBorderColorConverter x:Key="FavoriteBorderColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Top Banner -->
+        <Grid HeightRequest="250" BackgroundColor="#333">
+            <Image Source="{Binding Detail.ImageUrl}" Aspect="AspectFill" Opacity="0.35" />
+            <VerticalStackLayout Padding="16,28,16,16" VerticalOptions="End" Spacing="6">
+                <Label Text="{Binding Detail.Title}" FontAttributes="Bold" FontSize="22" TextColor="White"/>
+                <Label Text="{Binding Detail.RefCode, StringFormat='Ref Code: {0}'}" TextColor="#EEEEEE"/>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Main Content - Responsive Layout -->
+        <ScrollView Grid.Row="1" x:Name="MainScrollView" IsVisible="True">
+            <Grid Padding="16" RowSpacing="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Small screen - Card on top -->
+                <Frame Grid.Row="0" Padding="12" CornerRadius="10" HasShadow="True" BackgroundColor="White">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Date &amp; Time" FontAttributes="Bold" FontSize="14"/>
+                        <Label Text="{Binding Detail.StartDayText}" FontSize="12" LineBreakMode="WordWrap"/>
+                        <Label Text="{Binding Detail.DateRangeText}" FontSize="12" LineBreakMode="WordWrap"/>
+                        <Label Text="{Binding Detail.SessionsText}" FontSize="12" LineBreakMode="WordWrap"/>
+
+                        <BoxView HeightRequest="1" BackgroundColor="#EEE" Margin="0,6"/>
+
+                        <Label Text="Price" FontAttributes="Bold" FontSize="13"/>
+                        <Label Text="{Binding Detail.PriceText}" FontSize="12" Margin="0,0,0,6"/>
+
+                        <Button Text="Book now"
+                                BackgroundColor="#E53935"
+                                TextColor="White"
+                                CornerRadius="6"
+                                FontSize="13"
+                                HeightRequest="38"
+                                Margin="0,0,0,12"
+                                Clicked="OnBookNowClicked"/>
+
+                        <!-- Like/Favorite/Registered stats -->
+                        <Grid ColumnDefinitions="*,*,*" HorizontalOptions="FillAndExpand" ColumnSpacing="8">
+                            <!-- Like button -->
+                            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="4">
+                                <Button Command="{Binding LikeCommand}"
+                                        Text="{Binding IsLiked, Converter={StaticResource LikeIconConverter}}"
+                                        BackgroundColor="Transparent"
+                                        BorderColor="{Binding IsLiked, Converter={StaticResource LikeBorderColorConverter}}"
+                                        BorderWidth="1.5"
+                                        FontSize="14"
+                                        CornerRadius="14"
+                                        WidthRequest="28" HeightRequest="28"
+                                        Padding="0"/>
+                                <Label Text="{Binding LikeCount}" FontSize="11" HorizontalOptions="Center" FontAttributes="Bold"/>
+                            </VerticalStackLayout>
+
+                            <!-- Favorite button -->
+                            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
+                                <Button Command="{Binding FavoriteCommand}"
+                                        Text="{Binding IsFavorited, Converter={StaticResource FavoriteIconConverter}}"
+                                        BackgroundColor="Transparent"
+                                        BorderColor="{Binding IsFavorited, Converter={StaticResource FavoriteBorderColorConverter}}"
+                                        BorderWidth="1.5"
+                                        FontSize="14"
+                                        CornerRadius="14"
+                                        WidthRequest="28" HeightRequest="28"
+                                        Padding="0"/>
+                                <Label Text="{Binding FavoriteCount}" FontSize="11" HorizontalOptions="Center" FontAttributes="Bold"/>
+                            </VerticalStackLayout>
+
+                            <!-- Registered count -->
+                            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4" >
+                                <Button Text="📝"
+                                        BackgroundColor="Transparent"
+                                        BorderColor="#DDD"
+                                        BorderWidth="1.5"
+                                        FontSize="16"
+                                        CornerRadius="14"
+                                        WidthRequest="28" HeightRequest="28"
+                                        Padding="0"
+                                        IsEnabled="False"
+                                        FontAttributes="Bold"/>
+                                <Label Text="{Binding RegisteredCount}" FontSize="11" HorizontalOptions="Center" FontAttributes="Bold"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Small screen - Main content below -->
+                <VerticalStackLayout Grid.Row="2" Spacing="20">
+                    <!-- Organising Committee -->
+                    <HorizontalStackLayout Spacing="12" IsVisible="{Binding Detail.HasOrganisingCommittee}">
+                        <Label Text="{Binding Detail.OrganisingCommittee}" 
+                               TextColor="#EF6C00" 
+                               FontAttributes="Bold" 
+                               FontSize="16"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Event Description -->
+                    <VerticalStackLayout IsVisible="{Binding Detail.HasDescription}" Spacing="8">
+                        <Label Text="Event Description" FontSize="20" FontAttributes="Bold"/>
+                        <Label Text="{Binding Detail.Description}" LineBreakMode="WordWrap" FontSize="15"/>
+                    </VerticalStackLayout>
+
+                    <!-- Venue -->
+                    <VerticalStackLayout IsVisible="{Binding Detail.HasVenue}" Spacing="8">
+                        <Label Text="Venue" FontSize="20" FontAttributes="Bold"/>
+                        <Label Text="{Binding Detail.Venue}" LineBreakMode="WordWrap" FontSize="15"/>
+                    </VerticalStackLayout>
+
+                    <Label Text="{Binding Error}" TextColor="#C62828" IsVisible="{Binding Error}" />
+                </VerticalStackLayout>
+            </Grid>
+        </ScrollView>
+
+        <!-- Large screen version -->
+        <ScrollView Grid.Row="1" x:Name="LargeScreenScrollView" IsVisible="False">
+            <Grid Padding="16" ColumnSpacing="20" RowSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Left column - Main content -->
+                <VerticalStackLayout Grid.Column="0" Spacing="20">
+                    <!-- Organising Committee -->
+                    <HorizontalStackLayout Spacing="12" IsVisible="{Binding Detail.HasOrganisingCommittee}">
+                        <Label Text="{Binding Detail.OrganisingCommittee}" 
+                               TextColor="#EF6C00" 
+                               FontAttributes="Bold" 
+                               FontSize="16"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Event Description -->
+                    <VerticalStackLayout IsVisible="{Binding Detail.HasDescription}" Spacing="8">
+                        <Label Text="Event Description" FontSize="20" FontAttributes="Bold"/>
+                        <Label Text="{Binding Detail.Description}" LineBreakMode="WordWrap" FontSize="15"/>
+                    </VerticalStackLayout>
+
+                    <!-- Venue -->
+                    <VerticalStackLayout IsVisible="{Binding Detail.HasVenue}" Spacing="8">
+                        <Label Text="Venue" FontSize="20" FontAttributes="Bold"/>
+                        <Label Text="{Binding Detail.Venue}" LineBreakMode="WordWrap" FontSize="15"/>
+                    </VerticalStackLayout>
+
+                    <Label Text="{Binding Error}" TextColor="#C62828" IsVisible="{Binding Error}" />
+                </VerticalStackLayout>
+
+                <!-- Right column - Side panel -->
+                <Grid Grid.Column="1">
+                    <VerticalStackLayout Spacing="10" VerticalOptions="Start">
+                        <!-- Date and price card -->
+                        <Frame Padding="12" CornerRadius="10" HasShadow="True" BackgroundColor="White">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Date &amp; Time" FontAttributes="Bold" FontSize="14"/>
+                                <Label Text="{Binding Detail.StartDayText}" FontSize="12" LineBreakMode="WordWrap"/>
+                                <Label Text="{Binding Detail.DateRangeText}" FontSize="12" LineBreakMode="WordWrap"/>
+                                <Label Text="{Binding Detail.SessionsText}" FontSize="12" LineBreakMode="WordWrap"/>
+
+                                <BoxView HeightRequest="1" BackgroundColor="#EEE" Margin="0,6"/>
+
+                                <Label Text="Price" FontAttributes="Bold" FontSize="13"/>
+                                <Label Text="{Binding Detail.PriceText}" FontSize="12" Margin="0,0,0,6"/>
+
+                                <Button Text="Book now"
+                                        BackgroundColor="#E53935"
+                                        TextColor="White"
+                                        CornerRadius="6"
+                                        FontSize="13"
+                                        HeightRequest="38"
+                                        Margin="0,0,0,12"
+                                        Clicked="OnBookNowClicked"/>
+
+                                <!-- Like/Favorite/Registered stats -->
+                                <Grid ColumnDefinitions="*,*,*" HorizontalOptions="FillAndExpand" ColumnSpacing="8">
+                                    <!-- Like button -->
+                                    <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="4">
+                                        <Button Command="{Binding LikeCommand}"
+                                                Text="{Binding IsLiked, Converter={StaticResource LikeIconConverter}}"
+                                                BackgroundColor="Transparent"
+                                                BorderColor="{Binding IsLiked, Converter={StaticResource LikeBorderColorConverter}}"
+                                                BorderWidth="1.5"
+                                                FontSize="14"
+                                                CornerRadius="14"
+                                                WidthRequest="28" HeightRequest="28"
+                                                Padding="0"/>
+                                        <Label Text="{Binding LikeCount}" FontSize="11" HorizontalOptions="Center" FontAttributes="Bold"/>
+                                    </VerticalStackLayout>
+
+                                    <!-- Favorite button -->
+                                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
+                                        <Button Command="{Binding FavoriteCommand}"
+                                                Text="{Binding IsFavorited, Converter={StaticResource FavoriteIconConverter}}"
+                                                BackgroundColor="Transparent"
+                                                BorderColor="{Binding IsFavorited, Converter={StaticResource FavoriteBorderColorConverter}}"
+                                                BorderWidth="1.5"
+                                                FontSize="14"
+                                                CornerRadius="14"
+                                                WidthRequest="28" HeightRequest="28"
+                                                Padding="0"/>
+                                        <Label Text="{Binding FavoriteCount}" FontSize="11" HorizontalOptions="Center" FontAttributes="Bold"/>
+                                    </VerticalStackLayout>
+
+                                    <!-- Registered count -->
+                                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4" >
+                                        <Button Text="📝"
+                                            BackgroundColor="Transparent"
+                                            BorderColor="#DDD"
+                                            BorderWidth="1.5"
+                                            FontSize="16"
+                                            CornerRadius="14"
+                                            WidthRequest="28" HeightRequest="28"
+                                            Padding="0"
+                                            IsEnabled="False"
+                                            FontAttributes="Bold"/>
+                                        <Label Text="{Binding RegisteredCount}" FontSize="11" HorizontalOptions="Center" FontAttributes="Bold"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </VerticalStackLayout>
+                </Grid>
+            </Grid>
+        </ScrollView>
+
+        <!-- Loading overlay -->
+        <Grid Grid.Row="1" x:Name="LoadingOverlay" IsVisible="{Binding IsBusy}" 
+              BackgroundColor="#66000000" InputTransparent="False" ZIndex="999">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               HorizontalOptions="Center" VerticalOptions="Center"
+                               WidthRequest="40" HeightRequest="40"/>
+        </Grid>
+    </Grid>
+</ContentPage>

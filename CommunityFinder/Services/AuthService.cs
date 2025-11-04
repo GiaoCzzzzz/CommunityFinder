@@ -549,6 +549,239 @@ namespace CommunityFinder.Services
 
             return resp.Model;
         }
+
+        // ========== Event-related methods ==========
+        
+        public async Task<bool> InsertEvents(EventItem item)
+        {
+            // Check existing record first
+            var existing = await _client.From<EventItem>()
+                .Where(x => x.EventId == item.EventId)
+                .Single();
+
+            if (existing != null)
+            {
+                // Preserve existing counts
+                item.LikeCount = existing.LikeCount;
+                item.FavoriteCount = existing.FavoriteCount;
+                item.RegisteredCount = existing.RegisteredCount;
+
+                await _client
+                    .From<EventItem>()
+                    .Upsert(new[] { item }, new Supabase.Postgrest.QueryOptions { OnConflict = "EventId" });
+            }
+            else
+            {
+                await _client.From<EventItem>().Insert(new[] { item });
+            }
+
+            return true;
+        }
+
+        public async Task<EventItem> getEventItem(string eventId)
+        {
+            var resp = await _client
+                .From<EventItem>()
+                .Where(x => x.EventId == eventId)
+                .Get();
+
+            return resp.Model;
+        }
+
+        public async Task<EventStatus> GetEventStatusAsync(string userId, string eventId)
+        {
+            var resp = await _client
+                .From<EventStatus>()
+                .Where(x => x.UserId == userId && x.EventId == eventId)
+                .Single();
+
+            return resp;
+        }
+
+        public async Task<bool> LikeEventAsync(string eventId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            var userId = userGuid.ToString();
+
+            var status = await GetEventStatusAsync(userId, eventId);
+            if (status == null)
+            {
+                status = new EventStatus 
+                { 
+                    UserId = userId, 
+                    EventId = eventId, 
+                    IsLiked = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                await _client.From<EventStatus>().Insert(new[] { status });
+            }
+            else
+            {
+                status.IsLiked = true;
+                status.UpdatedAt = DateTime.UtcNow;
+                await status.Update<EventStatus>();
+            }
+
+            // Update event like count
+            var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
+            if (eventItem != null)
+            {
+                eventItem.LikeCount = eventItem.LikeCount + 1;
+                await eventItem.Update<EventItem>();
+            }
+            return true;
+        }
+
+        public async Task<bool> UnlikeEventAsync(string eventId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            var userId = userGuid.ToString();
+
+            var status = await GetEventStatusAsync(userId, eventId);
+            if (status == null) return true;
+
+            status.IsLiked = false;
+            status.UpdatedAt = DateTime.UtcNow;
+            await status.Update<EventStatus>();
+
+            // Update event like count
+            var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
+            if (eventItem != null && eventItem.LikeCount > 0)
+            {
+                eventItem.LikeCount -= 1;
+                await eventItem.Update<EventItem>();
+            }
+            return true;
+        }
+
+        public async Task<bool> FavoriteEventAsync(string eventId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            var userId = userGuid.ToString();
+
+            var status = await GetEventStatusAsync(userId, eventId);
+            if (status == null)
+            {
+                status = new EventStatus 
+                { 
+                    UserId = userId, 
+                    EventId = eventId, 
+                    IsFavorited = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                await _client.From<EventStatus>().Insert(new[] { status });
+            }
+            else
+            {
+                status.IsFavorited = true;
+                status.UpdatedAt = DateTime.UtcNow;
+                await status.Update<EventStatus>();
+            }
+
+            // Update event favorite count
+            var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
+            if (eventItem != null)
+            {
+                eventItem.FavoriteCount = eventItem.FavoriteCount + 1;
+                await eventItem.Update<EventItem>();
+            }
+            return true;
+        }
+
+        public async Task<bool> UnfavoriteEventAsync(string eventId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            var userId = userGuid.ToString();
+
+            var status = await GetEventStatusAsync(userId, eventId);
+            if (status == null) return true;
+
+            status.IsFavorited = false;
+            status.UpdatedAt = DateTime.UtcNow;
+            await status.Update<EventStatus>();
+
+            // Update event favorite count
+            var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
+            if (eventItem != null && eventItem.FavoriteCount > 0)
+            {
+                eventItem.FavoriteCount -= 1;
+                await eventItem.Update<EventItem>();
+            }
+            return true;
+        }
+
+        public async Task<bool> RegisterEventAsync(string eventId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            var userId = userGuid.ToString();
+
+            var status = await GetEventStatusAsync(userId, eventId);
+            if (status == null)
+            {
+                status = new EventStatus 
+                { 
+                    UserId = userId, 
+                    EventId = eventId, 
+                    IsRegistered = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                await _client.From<EventStatus>().Insert(new[] { status });
+
+                // Update event registered count (only once per user)
+                var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
+                if (eventItem != null)
+                {
+                    eventItem.RegisteredCount = eventItem.RegisteredCount + 1;
+                    await eventItem.Update<EventItem>();
+                }
+            }
+            else if (!status.IsRegistered)
+            {
+                status.IsRegistered = true;
+                status.UpdatedAt = DateTime.UtcNow;
+                await status.Update<EventStatus>();
+
+                // Update event registered count
+                var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
+                if (eventItem != null)
+                {
+                    eventItem.RegisteredCount = eventItem.RegisteredCount + 1;
+                    await eventItem.Update<EventItem>();
+                }
+            }
+
+            return true;
+        }
+
+        public async Task<List<EventItem>> GetFavoriteEventsAsync()
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+            var userId = userGuid.ToString();
+
+            var statuses = await _client.From<EventStatus>()
+                .Where(x => x.UserId == userId && x.IsFavorited == true)
+                .Get();
+
+            if (statuses.Models == null || statuses.Models.Count == 0)
+                return new List<EventItem>();
+
+            var eventIds = statuses.Models.Select(s => s.EventId).ToList();
+            var events = new List<EventItem>();
+
+            foreach (var eventId in eventIds)
+            {
+                var eventItem = await _client.From<EventItem>()
+                    .Where(x => x.EventId == eventId)
+                    .Single();
+                if (eventItem != null)
+                    events.Add(eventItem);
+            }
+
+            return events;
+        }
     }
 }
 

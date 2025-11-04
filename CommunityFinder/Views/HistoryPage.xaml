@@ -31,6 +31,14 @@
                         <Frame Margin="10" Padding="10" HasShadow="True">
                             <StackLayout Orientation="Horizontal" VerticalOptions="Center">
                                 <StackLayout HorizontalOptions="StartAndExpand">
+                                    <HorizontalStackLayout Spacing="8" Margin="0,0,0,4">
+                                        <Label Text="{Binding ItemType}" 
+                                               FontSize="10" 
+                                               BackgroundColor="#FFA726"
+                                               TextColor="White"
+                                               Padding="4,2"
+                                               FontAttributes="Bold"/>
+                                    </HorizontalStackLayout>
                                     <Label Text="{Binding Title}"
                                            FontSize="18"
                                            FontAttributes="Bold"/>
@@ -72,6 +80,14 @@
                         <Frame Margin="10" Padding="10" HasShadow="True">
                             <StackLayout Orientation="Horizontal" VerticalOptions="Center">
                                 <StackLayout HorizontalOptions="StartAndExpand">
+                                    <HorizontalStackLayout Spacing="8" Margin="0,0,0,4">
+                                        <Label Text="{Binding ItemType}" 
+                                               FontSize="10" 
+                                               BackgroundColor="#FFA726"
+                                               TextColor="White"
+                                               Padding="4,2"
+                                               FontAttributes="Bold"/>
+                                    </HorizontalStackLayout>
                                     <Label Text="{Binding Title}"
                                            FontSize="18"
                                            FontAttributes="Bold"/>

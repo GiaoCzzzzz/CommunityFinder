@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CommunityFinder.Views.EventListPage"
+             Title="{Binding SelectedCategory}"
+             BackgroundColor="#F9FFE3">
+
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#E9FFD6" Offset="0.0"/>
+            <GradientStop Color="#DFF8B9" Offset="1.0"/>
+        </LinearGradientBrush>
+    </ContentPage.Background>
+
+    <Grid RowDefinitions="Auto,*" Padding="12">
+        
+        <!-- Search and Filters -->
+        <Grid Grid.Row="0"
+              RowDefinitions="Auto,Auto"
+              ColumnDefinitions="*"
+              Margin="0,0,0,10"
+              RowSpacing="8">
+
+            <!-- Search Box -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="FillAndExpand">
+                    <Label Text="Search by Event Name" FontAttributes="Bold" FontSize="14"/>
+                    <Entry Text="{Binding SearchText}" 
+                           Placeholder="Enter event name"
+                           BackgroundColor="White"
+                           HeightRequest="40"/>
+                </VerticalStackLayout>
+
+                <!-- Search Button -->
+                <Button Grid.Column="1"
+                        Text="🔍"
+                        FontSize="18"
+                        WidthRequest="44"
+                        HeightRequest="40"
+                        CornerRadius="20"
+                        BackgroundColor="#0078D7"
+                        TextColor="White"
+                        VerticalOptions="End"
+                        Clicked="OnSearchClicked"/>
+            </Grid>
+
+            <!-- Outlet and Time Period Filters -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="6">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="Outlet" FontAttributes="Bold" FontSize="14"/>
+                    <Picker ItemsSource="{Binding OutletOptions}" 
+                            SelectedItem="{Binding SelectedOutlet}"
+                            BackgroundColor="White"
+                            HeightRequest="40"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1" Spacing="2">
+                    <Label Text="Time Period" FontAttributes="Bold" FontSize="14"/>
+                    <Picker ItemsSource="{Binding TimePeriodOptions}" 
+                            SelectedItem="{Binding SelectedTimePeriod}"
+                            BackgroundColor="White"
+                            HeightRequest="40"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Grid>
+
+        <!-- Event List -->
+        <Grid Grid.Row="1" x:Name="ListRegion">
+            <CollectionView ItemsSource="{Binding Events}" 
+                           SelectionMode="Single" 
+                           SelectionChanged="OnItemTapped">
+                <CollectionView.EmptyView>
+                    <Grid Padding="20">
+                        <Label Text="No events found" 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center" 
+                               FontSize="16" 
+                               TextColor="#666"/>
+                    </Grid>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="12" Margin="0,6" RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" BackgroundColor="White">
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="6">
+                                <Border StrokeThickness="0" Padding="8,4" StrokeShape="RoundRectangle 8">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#FF6B6B" Offset="0"/>
+                                            <GradientStop Color="#FFE66D" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <HorizontalStackLayout Spacing="6">
+                                        <Label Text="🎉" FontSize="12"/>
+                                        <Label Text="EVENT" FontSize="12" FontAttributes="Bold" TextColor="White"/>
+                                    </HorizontalStackLayout>
+                                </Border>
+
+                                <Label Text="{Binding Title}" 
+                                       TextColor="#6A1B9A" 
+                                       FontAttributes="Bold" 
+                                       FontSize="18"
+                                       LineBreakMode="TailTruncation"/>
+
+                                <Label Text="{Binding EventId, StringFormat='Ref Code: {0}'}" 
+                                       FontSize="12" 
+                                       TextColor="#666"/>
+
+                                <Label Text="{Binding Outlet}" 
+                                       TextColor="#F57C00"/>
+
+                                <HorizontalStackLayout Spacing="18" Margin="0,4,0,0">
+                                    <HorizontalStackLayout Spacing="6">
+                                        <Label Text="📅"/>
+                                        <Label Text="{Binding StartDate, StringFormat='{0:ddd, dd MMM yyyy}'}"/>
+                                    </HorizontalStackLayout>
+
+                                    <HorizontalStackLayout Spacing="6">
+                                        <Label Text="⏰"/>
+                                        <Label Text="{Binding DateTimeText}"/>
+                                    </HorizontalStackLayout>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.RowSpan="2" Grid.Column="1" VerticalOptions="Center" Margin="12,0,0,0">
+                                <Label FontAttributes="Bold" FontSize="16" Text="{Binding PriceRangeDisplay}"/>
+                            </VerticalStackLayout>
+
+                            <BoxView Grid.Row="1" Grid.ColumnSpan="2" HeightRequest="1" BackgroundColor="#EEEEEE" Margin="0,12,0,0"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Loading overlay -->
+            <Grid BackgroundColor="#80000000" IsVisible="{Binding IsBusy}" InputTransparent="False">
+                <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                                      IsVisible="True" 
+                                      WidthRequest="48" 
+                                      HeightRequest="48"/>
+                    <Label Text="Loading..." 
+                           TextColor="White" 
+                           FontAttributes="Bold" 
+                           HorizontalTextAlignment="Center"/>
+                </StackLayout>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

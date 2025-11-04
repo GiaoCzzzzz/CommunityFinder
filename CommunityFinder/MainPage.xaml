@@ -105,7 +105,11 @@
                FontSize="13"
                Style="{StaticResource TopTab}"
                HorizontalOptions="Center"
-               VerticalOptions="Center"/>
+               VerticalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnEventsClicked"/>
+                    </Label.GestureRecognizers>
+                </Label>
 
                 <!-- Courses (active tab) -->
                 <Label Grid.Column="2"
