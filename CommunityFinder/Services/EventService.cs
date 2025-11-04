@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -23,21 +24,35 @@ namespace CommunityFinder.Services
 
         public async Task<List<EventItem>> FetchEventsAsync(string url)
         {
-            var json = await _http.GetStringAsync(url);
-
-            var options = new JsonSerializerOptions
+            try
             {
-                PropertyNameCaseInsensitive = true
-            };
+                var json = await _http.GetStringAsync(url);
 
-            var root = JsonSerializer.Deserialize<OnePaRoot>(json, options);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
 
-            if (root == null || !root.Success || root.Data?.Results == null)
+                var root = JsonSerializer.Deserialize<OnePaRoot>(json, options);
+
+                if (root == null || !root.Success || root.Data?.Results == null)
+                {
+                    Debug.WriteLine($"⚠️ API Response failed: Success={root?.Success}, Results={root?.Data?.Results?.Count}");
+                    return new List<EventItem>();
+                }
+
+                var items = root.Data.Results
+                    .Select(EventItem.FromOnePa)
+                    .ToList();
+
+                Debug.WriteLine($"✅ Fetched {items.Count} events from: {url}");
+                return items;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"❌ EventService error: {ex.Message}");
                 return new List<EventItem>();
-
-            return root.Data.Results
-                .Select(EventItem.FromOnePa)
-                .ToList();
+            }
         }
 
         public async Task<List<EventItem>> FetchAllPagesAsync(string baseUrl, int maxPages = 10)

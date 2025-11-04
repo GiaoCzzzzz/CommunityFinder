@@ -13,229 +13,42 @@
     </ContentPage.Background>
 
     <Grid RowDefinitions="Auto,Auto,*" Padding="12">
-        
-        <!-- Top Navigation Bar -->
-        <Grid Grid.Row="0"
-              ColumnDefinitions="Auto,*,Auto"
-              Padding="8,0"
-              BackgroundColor="#FFFFFF"
-              Margin="0,0,0,8"
-              HeightRequest="56"
-              VerticalOptions="Center">
+        <!-- 页面标题 -->
+        <Label Grid.Row="0" 
+               Text="Select Event Category" 
+               FontSize="18" 
+               FontAttributes="Bold"
+               TextColor="#333"
+               Margin="0,0,0,16"/>
 
-            <!-- Logo -->
-            <Frame Grid.Column="0"
-                   CornerRadius="20"
-                   HasShadow="False"
-                   BackgroundColor="Transparent"
-                   HeightRequest="40"
-                   WidthRequest="40"
-                   Padding="0"
-                   VerticalOptions="Center"
-                   Margin="4,0,0,0">
-                <Image Source="icon1.png"
-                       Aspect="AspectFit"
-                       HeightRequest="40"
-                       WidthRequest="40"/>
-            </Frame>
+        <!-- 事件分类按钮（垂直滚动） -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="10" Padding="0,0,0,20">
 
-            <!-- Tabs -->
-            <Grid Grid.Column="1"
-                  ColumnDefinitions="Auto,Auto,Auto,Auto"
-                  HorizontalOptions="Center"
-                  VerticalOptions="Center"
-                  ColumnSpacing="10">
-                
-                <Label Grid.Column="0"
-                       Text="About Us"
-                       FontSize="13"
-                       TextColor="#2A2A2A"
-                       Padding="8,0"
-                       VerticalOptions="Center"/>
-                
-                <Label Grid.Column="1"
-                       Text="Events"
-                       FontSize="13"
-                       TextColor="#F05A5A"
-                       FontAttributes="Bold"
-                       Padding="8,0"
-                       VerticalOptions="Center"/>
-                
-                <Label Grid.Column="2"
-                       Text="Courses"
-                       FontSize="13"
-                       TextColor="#2A2A2A"
-                       Padding="8,0"
-                       VerticalOptions="Center">
-                    <Label.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnCoursesClicked"/>
-                    </Label.GestureRecognizers>
-                </Label>
-                
-                <Label Grid.Column="3"
-                       Text="Forum"
-                       FontSize="13"
-                       TextColor="#2A2A2A"
-                       Padding="8,0"
-                       VerticalOptions="Center"/>
-            </Grid>
+                <CollectionView ItemsSource="{Binding EventCategories}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="8"/>
+                    </CollectionView.ItemsLayout>
 
-            <!-- Settings Button -->
-            <Frame Grid.Column="2"
-                   CornerRadius="18"
-                   HasShadow="False"
-                   BackgroundColor="Transparent"
-                   HeightRequest="36"
-                   WidthRequest="36"
-                   Padding="0"
-                   VerticalOptions="Center"
-                   Margin="0,0,4,0">
-                <ImageButton Source="settings.png"
-                             BackgroundColor="Transparent"
-                             HeightRequest="32"
-                             WidthRequest="32"
-                             Aspect="AspectFit"
-                             Clicked="OnSettingClicked"/>
-            </Frame>
-        </Grid>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Button 
+                                Text="{Binding .}"
+                                FontSize="16"
+                                FontAttributes="Bold"
+                                Padding="20,16"
+                                Margin="0,4"
+                                CornerRadius="8"
+                                BackgroundColor="#0078D7"
+                                TextColor="White"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectCategoryCommand}"
+                                CommandParameter="{Binding .}"/>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
-        <!-- Event Categories -->
-        <ScrollView Grid.Row="1" Orientation="Vertical" HeightRequest="200" Margin="0,0,0,10">
-            <VerticalStackLayout Spacing="8">
-                <Button Text="Active Aging" 
-                        BackgroundColor="#5DBB63" 
-                        TextColor="White" 
-                        Clicked="OnCategoryClicked"
-                        CommandParameter="Active Aging"/>
-                <Button Text="Arts &amp; Culture" 
-                        BackgroundColor="#5DBB63" 
-                        TextColor="White" 
-                        Clicked="OnCategoryClicked"
-                        CommandParameter="Arts &amp; Culture"/>
-                <Button Text="Celebrations &amp; Festivities" 
-                        BackgroundColor="#5DBB63" 
-                        TextColor="White" 
-                        Clicked="OnCategoryClicked"
-                        CommandParameter="Celebrations &amp; Festivities"/>
-                <Button Text="Kopi Talks &amp; Dialogues" 
-                        BackgroundColor="#5DBB63" 
-                        TextColor="White" 
-                        Clicked="OnCategoryClicked"
-                        CommandParameter="Kopi Talks &amp; Dialogues"/>
-                <Button Text="Parenting &amp; Education" 
-                        BackgroundColor="#5DBB63" 
-                        TextColor="White" 
-                        Clicked="OnCategoryClicked"
-                        CommandParameter="Parenting &amp; Education"/>
-                <Button Text="Exhibition &amp; Fair" 
-                        BackgroundColor="#5DBB63" 
-                        TextColor="White" 
-                        Clicked="OnCategoryClicked"
-                        CommandParameter="Exhibition &amp; Fair"/>
-                <Button Text="Health &amp; Fitness" 
-                        BackgroundColor="#5DBB63" 
-                        TextColor="White" 
-                        Clicked="OnCategoryClicked"
-                        CommandParameter="Health &amp; Fitness"/>
-                <Button Text="Neighbourhood Parties" 
-                        BackgroundColor="#5DBB63" 
-                        TextColor="White" 
-                        Clicked="OnCategoryClicked"
-                        CommandParameter="Neighbourhood Parties"/>
-                <Button Text="Outings &amp; Tours" 
-                        BackgroundColor="#5DBB63" 
-                        TextColor="White" 
-                        Clicked="OnCategoryClicked"
-                        CommandParameter="Outings &amp; Tours"/>
-                <Button Text="Charity &amp; Volunteerism" 
-                        BackgroundColor="#5DBB63" 
-                        TextColor="White" 
-                        Clicked="OnCategoryClicked"
-                        CommandParameter="Charity &amp; Volunteerism"/>
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- Event List -->
-        <Grid Grid.Row="2" x:Name="ListRegion">
-            <CollectionView ItemsSource="{Binding Events}" 
-                           SelectionMode="Single" 
-                           SelectionChanged="OnItemTapped">
-                <CollectionView.EmptyView>
-                    <Grid Padding="20">
-                        <Label Text="No events found. Please select a category." 
-                               HorizontalOptions="Center" 
-                               VerticalOptions="Center" 
-                               FontSize="16" 
-                               TextColor="#666"/>
-                    </Grid>
-                </CollectionView.EmptyView>
-
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Padding="12" Margin="0,6" RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" BackgroundColor="White">
-                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="6">
-                                <Border StrokeThickness="0" Padding="8,4" StrokeShape="RoundRectangle 8">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                            <GradientStop Color="#FF6B6B" Offset="0"/>
-                                            <GradientStop Color="#FFE66D" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                    <HorizontalStackLayout Spacing="6">
-                                        <Label Text="🎉" FontSize="12"/>
-                                        <Label Text="EVENT" FontSize="12" FontAttributes="Bold" TextColor="White"/>
-                                    </HorizontalStackLayout>
-                                </Border>
-
-                                <Label Text="{Binding Title}" 
-                                       TextColor="#6A1B9A" 
-                                       FontAttributes="Bold" 
-                                       FontSize="18"
-                                       LineBreakMode="TailTruncation"/>
-
-                                <Label Text="{Binding EventId, StringFormat='Ref Code: {0}'}" 
-                                       FontSize="12" 
-                                       TextColor="#666"/>
-
-                                <Label Text="{Binding Outlet}" 
-                                       TextColor="#F57C00"/>
-
-                                <HorizontalStackLayout Spacing="18" Margin="0,4,0,0">
-                                    <HorizontalStackLayout Spacing="6">
-                                        <Label Text="📅"/>
-                                        <Label Text="{Binding StartDate, StringFormat='{0:ddd, dd MMM yyyy}'}"/>
-                                    </HorizontalStackLayout>
-
-                                    <HorizontalStackLayout Spacing="6">
-                                        <Label Text="⏰"/>
-                                        <Label Text="{Binding DateTimeText}"/>
-                                    </HorizontalStackLayout>
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
-
-                            <VerticalStackLayout Grid.RowSpan="2" Grid.Column="1" VerticalOptions="Center" Margin="12,0,0,0">
-                                <Label FontAttributes="Bold" FontSize="16" Text="{Binding PriceRangeDisplay}"/>
-                            </VerticalStackLayout>
-
-                            <BoxView Grid.Row="1" Grid.ColumnSpan="2" HeightRequest="1" BackgroundColor="#EEEEEE" Margin="0,12,0,0"/>
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <!-- Loading overlay -->
-            <Grid BackgroundColor="#80000000" IsVisible="{Binding IsBusy}" InputTransparent="False">
-                <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
-                    <ActivityIndicator IsRunning="{Binding IsBusy}" 
-                                      IsVisible="True" 
-                                      WidthRequest="48" 
-                                      HeightRequest="48"/>
-                    <Label Text="Loading..." 
-                           TextColor="White" 
-                           FontAttributes="Bold" 
-                           HorizontalTextAlignment="Center"/>
-                </StackLayout>
-            </Grid>
-        </Grid>
     </Grid>
 </ContentPage>

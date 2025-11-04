@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -99,14 +100,17 @@ namespace CommunityFinder.ViewModels
                 Events.Clear();
 
                 if (string.IsNullOrWhiteSpace(SelectedCategory))
+                {
+                    Debug.WriteLine("❌ SelectedCategory is empty!");
                     return;
+                }
 
-                var outletParam = (string.IsNullOrWhiteSpace(SelectedOutlet) || 
+                var outletParam = (string.IsNullOrWhiteSpace(SelectedOutlet) ||
                                   SelectedOutlet.Equals("Any", StringComparison.OrdinalIgnoreCase))
                     ? ""
                     : SelectedOutlet;
 
-                var timePeriodParam = (string.IsNullOrWhiteSpace(SelectedTimePeriod) || 
+                var timePeriodParam = (string.IsNullOrWhiteSpace(SelectedTimePeriod) ||
                                       SelectedTimePeriod.Equals("Any", StringComparison.OrdinalIgnoreCase))
                     ? ""
                     : SelectedTimePeriod;
@@ -119,9 +123,13 @@ namespace CommunityFinder.ViewModels
                     page: 1
                 );
 
+                Debug.WriteLine($"🔍 Fetching from: {url}");
+
                 var all = await _service.FetchAllPagesAsync(url, maxPages);
 
-                // Filter by search text if provided
+                Debug.WriteLine($"📊 Got {all.Count} total events");
+
+                // 本地过滤
                 IEnumerable<EventItem> query = all;
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
@@ -132,13 +140,20 @@ namespace CommunityFinder.ViewModels
                 foreach (var e in query.OrderBy(e => e.StartDate ?? DateTime.MaxValue))
                     Events.Add(e);
 
-                // Update outlet options based on results
+                // 更新 Outlet 选项
                 var outlets = all.Select(e => e.Outlet)
                                 .Where(s => !string.IsNullOrWhiteSpace(s))
                                 .Distinct()
                                 .OrderBy(s => s)
                                 .ToList();
+
                 UpdateOutletOptions(outlets);
+
+                Debug.WriteLine($"✅ Added {Events.Count} events to display, {outlets.Count} outlets found");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"❌ SearchEventsAsync error: {ex.Message}\n{ex.StackTrace}");
             }
             finally
             {
