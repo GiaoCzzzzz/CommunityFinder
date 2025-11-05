@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Text.Json.Serialization;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
@@ -18,6 +19,7 @@ namespace CommunityFinder.Models
         public double? MinPrice { get; set; }
         public double? MaxPrice { get; set; }
 
+        [Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
         public string PriceRangeDisplay
         {
             get
@@ -33,8 +35,8 @@ namespace CommunityFinder.Models
         }
 
         public string DetailUrl { get; set; }
-        public string Category { get; set; }  // AOI category
-        
+        public string Category { get; set; }  // AOI category  
+
         public int ViewCount { get; set; }
         public int LikeCount { get; set; }
         public int FavoriteCount { get; set; }
@@ -43,7 +45,7 @@ namespace CommunityFinder.Models
         public static DateTime? ParseStartDate(string raw)
         {
             if (string.IsNullOrWhiteSpace(raw)) return null;
-            
+
             var s = raw.Trim();
             if (s.StartsWith("Starts ", StringComparison.OrdinalIgnoreCase))
                 s = s.Substring("Starts ".Length).Trim();
@@ -69,7 +71,7 @@ namespace CommunityFinder.Models
 
             return new EventItem
             {
-                EventId = r.ClassId,
+                EventId = !string.IsNullOrWhiteSpace(r.EventId) ? r.EventId : r.ClassId,
                 Title = r.Title ?? r.Name,
                 Outlet = r.Outlet,
                 StartDate = ParseStartDate(r.StartDateRaw),

@@ -27,6 +27,7 @@ namespace CommunityFinder.Models
         [JsonPropertyName("isPrivateClass")] public bool IsPrivateClass { get; set; }
         [JsonPropertyName("userEligibleForClass")] public bool UserEligibleForClass { get; set; }
         [JsonPropertyName("classId")] public string ClassId { get; set; }
+        [JsonPropertyName("eventId")] public string EventId { get; set; }
         [JsonPropertyName("type")] public string Type { get; set; }
         [JsonPropertyName("image")] public string Image { get; set; }
         [JsonPropertyName("outlet")] public string Outlet { get; set; }
