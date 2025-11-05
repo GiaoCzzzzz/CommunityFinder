@@ -1,8 +1,10 @@
-using System;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityFinder.Services;
 using CommunityFinder.ViewModels;
 using Microsoft.Maui.Controls;
+using CommunityFinder.Models;
 
 namespace CommunityFinder.Views
 {
@@ -51,19 +53,32 @@ namespace CommunityFinder.Views
                     var uri = new Uri(_vm.Detail.BookNowUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
                         ? _vm.Detail.BookNowUrl
                         : $"https://www.onepa.gov.sg{_vm.Detail.BookNowUrl}");
-                    
-                    // Increment registered count
+
+                    // 先将事件数据插入数据库
                     if (_vm.Detail.RefCode != null)
                     {
+                        var eventItem = new EventItem
+                        {
+                            EventId = _vm.Detail.RefCode,
+                            Title = _vm.Detail.Title,
+                            LikeCount = 0,
+                            FavoriteCount = 0,
+                            RegisteredCount = 0,
+
+                        };
+
+                        await _authService.InsertEvents(eventItem);
+
+                        // 然后增加报名计数
                         await _authService.RegisterEventAsync(_vm.Detail.RefCode);
                         _vm.RegisteredCount++;
                     }
-                    
+
                     await Launcher.OpenAsync(uri);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Ignore error
+                    Debug.WriteLine($"[OnBookNowClicked] Error: {ex.Message}");
                 }
             }
         }

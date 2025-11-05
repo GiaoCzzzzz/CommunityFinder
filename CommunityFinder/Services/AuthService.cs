@@ -550,80 +550,100 @@ namespace CommunityFinder.Services
             return resp.Model;
         }
 
-        // ========== Event-related methods ==========
-        
+        // ========== EVENT RELATED METHODS (仿照 Course 的模式) ==========
+
+        /// <summary>
+        /// 将事件信息插入到数据库（仿 InsertCourses）
+        /// </summary>
         public async Task<bool> InsertEvents(EventItem item)
         {
-            // Check existing record first
-            var existing = await _client.From<EventItem>()
-                .Where(x => x.EventId == item.EventId)
-                .Single();
-
-            if (existing != null)
+            try
             {
-                // Preserve existing counts
-                item.LikeCount = existing.LikeCount;
-                item.FavoriteCount = existing.FavoriteCount;
-                item.RegisteredCount = existing.RegisteredCount;
+                if (item == null || string.IsNullOrWhiteSpace(item.EventId))
+                {
+                    Debug.WriteLine("[InsertEvents] Invalid EventItem: null or empty EventId");
+                    return false;
+                }
 
-                await _client
-                    .From<EventItem>()
-                    .Upsert(new[] { item }, new Supabase.Postgrest.QueryOptions { OnConflict = "EventId" });
+                // 查询是否已存在
+                var existing = await _client.From<EventItem>()
+                    .Where(x => x.EventId == item.EventId)
+                    .Single();
+
+                if (existing != null)
+                {
+                    // 保留已有的计数
+                    item.LikeCount = existing.LikeCount;
+                    item.FavoriteCount = existing.FavoriteCount;
+                    item.RegisteredCount = existing.RegisteredCount;
+                    item.ViewCount = existing.ViewCount;
+
+                    Debug.WriteLine($"[InsertEvents] Updating existing event: {item.EventId}");
+
+                    // 使用 Upsert 更新
+                    await _client
+                        .From<EventItem>()
+                        .Upsert(new[] { item }, new Supabase.Postgrest.QueryOptions { OnConflict = "EventId" });
+                }
+                else
+                {
+                    Debug.WriteLine($"[InsertEvents] Inserting new event: {item.EventId}");
+
+                    // 插入新记录
+                    await _client.From<EventItem>().Insert(new[] { item });
+                }
+
+                Debug.WriteLine($"[InsertEvents] ✅ Successfully saved event {item.EventId}");
+                return true;
             }
-            else
+            catch (Exception ex)
             {
-                await _client.From<EventItem>().Insert(new[] { item });
+                Debug.WriteLine($"[InsertEvents] ❌ Error inserting event: {ex.Message}\n{ex.StackTrace}");
+                return false;
             }
-
-            return true;
         }
 
         public async Task<EventItem> getEventItem(string eventId)
         {
-            var resp = await _client
-                .From<EventItem>()
-                .Where(x => x.EventId == eventId)
-                .Get();
+            try
+            {
+                var resp = await _client
+                    .From<EventItem>()
+                    .Where(x => x.EventId == eventId)
+                    .Single();
 
-            return resp.Model;
+                return resp;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[getEventItem] Error: {ex.Message}");
+                return null;
+            }
         }
 
-        public async Task<EventStatus> GetEventStatusAsync(string userId, string eventId)
-        {
-            var resp = await _client
-                .From<EventStatus>()
-                .Where(x => x.UserId == userId && x.EventId == eventId)
-                .Single();
-
-            return resp;
-        }
-
+        /// <summary>
+        /// 点赞事件（仿 LikeCourseAsync）
+        /// </summary>
         public async Task<bool> LikeEventAsync(string eventId)
         {
             var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
-            var userId = userGuid.ToString();
+            var resp = await _client.From<EventStatus>().Where(x => x.id == userGuid).Single();
 
-            var status = await GetEventStatusAsync(userId, eventId);
-            if (status == null)
+            if (resp == null)
             {
-                status = new EventStatus 
-                { 
-                    UserId = userId, 
-                    EventId = eventId, 
-                    IsLiked = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
-                await _client.From<EventStatus>().Insert(new[] { status });
+                resp = new EventStatus { id = userGuid, likes = new[] { eventId } };
+                await _client.From<EventStatus>().Insert(new[] { resp });
             }
             else
             {
-                status.IsLiked = true;
-                status.UpdatedAt = DateTime.UtcNow;
-                await status.Update<EventStatus>();
+                var liked = resp.likes?.ToList() ?? new List<string>();
+                if (!liked.Contains(eventId))
+                    liked.Add(eventId);
+                resp.likes = liked.ToArray();
+                await resp.Update<EventStatus>();
             }
 
-            // Update event like count
+            // 更新事件点赞数
             var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
             if (eventItem != null)
             {
@@ -633,19 +653,22 @@ namespace CommunityFinder.Services
             return true;
         }
 
+        /// <summary>
+        /// 取消点赞（仿 UnlikeCourseAsync）
+        /// </summary>
         public async Task<bool> UnlikeEventAsync(string eventId)
         {
             var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
-            var userId = userGuid.ToString();
+            var resp = await _client.From<EventStatus>().Where(x => x.id == userGuid).Single();
+            if (resp == null) return true;
 
-            var status = await GetEventStatusAsync(userId, eventId);
-            if (status == null) return true;
+            var liked = resp.likes?.ToList() ?? new List<string>();
+            if (liked.Contains(eventId))
+                liked.Remove(eventId);
+            resp.likes = liked.ToArray();
+            await resp.Update<EventStatus>();
 
-            status.IsLiked = false;
-            status.UpdatedAt = DateTime.UtcNow;
-            await status.Update<EventStatus>();
-
-            // Update event like count
+            // 更新事件点赞数
             var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
             if (eventItem != null && eventItem.LikeCount > 0)
             {
@@ -655,32 +678,29 @@ namespace CommunityFinder.Services
             return true;
         }
 
+        /// <summary>
+        /// 收藏事件（仿 FavoriteCourseAsync）
+        /// </summary>
         public async Task<bool> FavoriteEventAsync(string eventId)
         {
             var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
-            var userId = userGuid.ToString();
+            var resp = await _client.From<EventStatus>().Where(x => x.id == userGuid).Single();
 
-            var status = await GetEventStatusAsync(userId, eventId);
-            if (status == null)
+            if (resp == null)
             {
-                status = new EventStatus 
-                { 
-                    UserId = userId, 
-                    EventId = eventId, 
-                    IsFavorited = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
-                await _client.From<EventStatus>().Insert(new[] { status });
+                resp = new EventStatus { id = userGuid, favorites = new[] { eventId } };
+                await _client.From<EventStatus>().Insert(new[] { resp });
             }
             else
             {
-                status.IsFavorited = true;
-                status.UpdatedAt = DateTime.UtcNow;
-                await status.Update<EventStatus>();
+                var favorite = resp.favorites?.ToList() ?? new List<string>();
+                if (!favorite.Contains(eventId))
+                    favorite.Add(eventId);
+                resp.favorites = favorite.ToArray();
+                await resp.Update<EventStatus>();
             }
 
-            // Update event favorite count
+            // 更新事件收藏数
             var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
             if (eventItem != null)
             {
@@ -690,19 +710,22 @@ namespace CommunityFinder.Services
             return true;
         }
 
+        /// <summary>
+        /// 取消收藏（仿 UnfavoriteCourseAsync）
+        /// </summary>
         public async Task<bool> UnfavoriteEventAsync(string eventId)
         {
             var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
-            var userId = userGuid.ToString();
+            var resp = await _client.From<EventStatus>().Where(x => x.id == userGuid).Single();
+            if (resp == null) return true;
 
-            var status = await GetEventStatusAsync(userId, eventId);
-            if (status == null) return true;
+            var favorite = resp.favorites?.ToList() ?? new List<string>();
+            if (favorite.Contains(eventId))
+                favorite.Remove(eventId);
+            resp.favorites = favorite.ToArray();
+            await resp.Update<EventStatus>();
 
-            status.IsFavorited = false;
-            status.UpdatedAt = DateTime.UtcNow;
-            await status.Update<EventStatus>();
-
-            // Update event favorite count
+            // 更新事件收藏数
             var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
             if (eventItem != null && eventItem.FavoriteCount > 0)
             {
@@ -712,75 +735,130 @@ namespace CommunityFinder.Services
             return true;
         }
 
+        /// <summary>
+        /// 报名事件（仿 AddRegisteredCountAsync）
+        /// </summary>
         public async Task<bool> RegisterEventAsync(string eventId)
         {
             var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
-            var userId = userGuid.ToString();
 
-            var status = await GetEventStatusAsync(userId, eventId);
-            if (status == null)
+            var resp = await _client
+                .From<EventStatus>()
+                .Where(x => x.id == userGuid)
+                .Single();
+
+            if (resp == null)
             {
-                status = new EventStatus 
-                { 
-                    UserId = userId, 
-                    EventId = eventId, 
-                    IsRegistered = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                resp = new EventStatus
+                {
+                    id = userGuid,
+                    registered = new[] { eventId }
                 };
-                await _client.From<EventStatus>().Insert(new[] { status });
-
-                // Update event registered count (only once per user)
-                var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
-                if (eventItem != null)
-                {
-                    eventItem.RegisteredCount = eventItem.RegisteredCount + 1;
-                    await eventItem.Update<EventItem>();
-                }
+                await _client.From<EventStatus>().Insert(new[] { resp });
             }
-            else if (!status.IsRegistered)
+            else
             {
-                status.IsRegistered = true;
-                status.UpdatedAt = DateTime.UtcNow;
-                await status.Update<EventStatus>();
-
-                // Update event registered count
-                var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
-                if (eventItem != null)
-                {
-                    eventItem.RegisteredCount = eventItem.RegisteredCount + 1;
-                    await eventItem.Update<EventItem>();
-                }
+                var registered = resp.registered?.ToList() ?? new List<string>();
+                if (!registered.Contains(eventId))
+                    registered.Add(eventId);
+                resp.registered = registered.ToArray();
+                await resp.Update<EventStatus>();
             }
+
+            // 更新事件报名数
+            var eventItem = await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
+            if (eventItem != null)
+            {
+                eventItem.RegisteredCount = eventItem.RegisteredCount + 1;
+                await eventItem.Update<EventItem>();
+            }
+            return true;
+        }
+        /// <summary>
+        /// 添加事件到历史记录（仿 AddHistoryAsync）
+        /// </summary>
+        public async Task<bool> AddEventHistoryAsync(string eventId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+
+            var resp = await _client
+                .From<EventStatus>()
+                .Where(x => x.id == userGuid)
+                .Single();
+
+            if (resp == null)
+            {
+                resp = new EventStatus
+                {
+                    id = userGuid,
+                    history = new[] { eventId }
+                };
+                await _client.From<EventStatus>().Insert(new[] { resp });
+                return true;
+            }
+
+            var history = resp.history?.ToList() ?? new List<string>();
+            if (!history.Contains(eventId))
+                history.Add(eventId);
+
+            resp.history = history.ToArray();
+            await resp.Update<EventStatus>();
+            return true;
+        }
+
+        /// <summary>
+        /// 从历史记录移除事件（仿 RemoveHistoryAsync）
+        /// </summary>
+        public async Task<bool> RemoveEventHistoryAsync(string eventId)
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+
+            var resp = await _client
+                .From<EventStatus>()
+                .Where(x => x.id == userGuid)
+                .Single();
+
+            if (resp == null) return true;
+
+            var history = resp.history?.ToList() ?? new List<string>();
+            if (history.Contains(eventId))
+                history.Remove(eventId);
+
+            resp.history = history.ToArray();
+            await resp.Update<EventStatus>();
+            return true;
+        }
+
+        /// <summary>
+        /// 清空所有事件历史记录
+        /// </summary>
+        public async Task<bool> ClearAllEventHistoryAsync()
+        {
+            var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
+
+            await _client
+                .From<EventStatus>()
+                .Where(x => x.id == userGuid)
+                .Set(x => x.history, Array.Empty<string>())
+                .Update();
 
             return true;
         }
 
-        public async Task<List<EventItem>> GetFavoriteEventsAsync()
+        /// <summary>
+        /// 清空所有事件收藏
+        /// </summary>
+        public async Task<bool> ClearAllEventFavoritesAsync()
         {
             var userGuid = Guid.Parse(_client.Auth.CurrentSession.User.Id);
-            var userId = userGuid.ToString();
 
-            var statuses = await _client.From<EventStatus>()
-                .Where(x => x.UserId == userId && x.IsFavorited == true)
-                .Get();
+            await _client
+                .From<EventStatus>()
+                .Where(x => x.id == userGuid)
+                .Set(x => x.favorites, Array.Empty<string>())
+                .Update();
 
-            if (statuses.Models == null || statuses.Models.Count == 0)
-                return new List<EventItem>();
-
-            var eventIds = statuses.Models.Select(s => s.EventId).ToList();
-            var events = new List<EventItem>();
-
-            foreach (var eventId in eventIds)
-            {
-                var eventItem = await _client.From<EventItem>()
-                    .Where(x => x.EventId == eventId)
-                    .Single();
-                if (eventItem != null)
-                    events.Add(eventItem);
-            }
-
-            return events;
+            return true;
         }
     }
 }

@@ -1,35 +1,26 @@
-using System;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
+using System;
 
 namespace CommunityFinder.Models
 {
     [Table("EventStatus")]
     public class EventStatus : BaseModel
     {
-        [PrimaryKey("id", false)]
+        [PrimaryKey("id")]
         [Column("id")]
-        public int Id { get; set; }
+        public Guid id { get; set; }
 
-        [Column("user_id")]
-        public string UserId { get; set; }
+        [Column("history")]
+        public string[] history { get; set; }
 
-        [Column("event_id")]
-        public string EventId { get; set; }
+        [Column("likes")]
+        public string[] likes { get; set; }
 
-        [Column("is_liked")]
-        public bool IsLiked { get; set; }
+        [Column("favorites")]
+        public string[] favorites { get; set; }
 
-        [Column("is_favorited")]
-        public bool IsFavorited { get; set; }
-
-        [Column("is_registered")]
-        public bool IsRegistered { get; set; }
-
-        [Column("created_at")]
-        public DateTime CreatedAt { get; set; }
-
-        [Column("updated_at")]
-        public DateTime UpdatedAt { get; set; }
+        [Column("registered")]
+        public string[] registered { get; set; }
     }
 }
