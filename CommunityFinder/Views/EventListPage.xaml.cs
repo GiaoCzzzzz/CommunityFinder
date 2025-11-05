@@ -58,13 +58,14 @@ namespace CommunityFinder.Views
 
         private async void OnItemTapped(object sender, SelectionChangedEventArgs e)
         {
-            if (e.CurrentSelection?.FirstOrDefault() is EventItem item && 
+            if (e.CurrentSelection?.FirstOrDefault() is EventItem item &&
                 !string.IsNullOrWhiteSpace(item.DetailUrl))
             {
                 // Insert event into database (similar to course)
                 try
                 {
                     await _authService.InsertEvents(item);
+                    await _authService.AddEventHistoryAsync(item.EventId);
                 }
                 catch
                 {

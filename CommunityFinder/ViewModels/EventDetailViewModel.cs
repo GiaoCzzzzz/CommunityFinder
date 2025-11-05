@@ -1,11 +1,11 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityFinder.Models;
 using CommunityFinder.Services;
 using System.Diagnostics;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace CommunityFinder.ViewModels
 {
@@ -73,9 +73,7 @@ namespace CommunityFinder.ViewModels
         public bool IsBusy { get => _isBusy; set { _isBusy = value; OnPropertyChanged(); } }
 
         private string? _error;
-        public string? Error { get => _error; set { _error = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); } }
-
-        public bool HasError => !string.IsNullOrEmpty(Error);
+        public string? Error { get => _error; set { _error = value; OnPropertyChanged(); } }
 
         public EventDetailViewModel(AuthService authService)
         {
@@ -91,103 +89,118 @@ namespace CommunityFinder.ViewModels
             Error = null;
             try
             {
+                Debug.WriteLine($"[EventDetail] Loading from URL: {detailUrl}");
+
                 Detail = await _service.GetEventDetailAsync(detailUrl);
+
                 if (Detail == null)
                 {
+                    Debug.WriteLine("[EventDetail] ParseFromRawHtml returned null");
                     Error = "Failed to load event detail.";
-                    Debug.WriteLine("[EventDetailViewModel] Failed to load event detail");
                 }
                 else
                 {
-                    Debug.WriteLine($"[EventDetailViewModel] Loaded event: {Detail.Title}");
-
+                    Debug.WriteLine($"[EventDetail] Loaded: {Detail.Title}");
                     if (Detail.RefCode != null)
-                    {
-                        // ✅ 将事件保存到数据库
-                        await SaveEventToDatabaseAsync(Detail);
-
-                        // 加载用户交互状态
                         await LoadStatusAsync(Detail.RefCode);
-                    }
                 }
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"[EventDetail] Exception: {ex.Message}\n{ex.StackTrace}");
                 Error = ex.Message;
-                Debug.WriteLine($"[EventDetailViewModel] LoadAsync error: {ex.Message}");
             }
             finally { IsBusy = false; }
         }
 
-        /// <summary>
-        /// 将事件保存到数据库
-        /// </summary>
-        private async Task SaveEventToDatabaseAsync(EventDetail eventDetail)
+        public async Task LoadStatusAsync(string eventId)
         {
+            // 获取事件统计
+            var eventItem = await _authService.Client.From<EventItem>()
+                .Where(x => x.EventId == eventId)
+                .Single();
+
+            LikeCount = eventItem?.LikeCount ?? 0;
+            FavoriteCount = eventItem?.FavoriteCount ?? 0;
+            RegisteredCount = eventItem?.RegisteredCount ?? 0;
+
+            // 获取用户点赞/收藏状态
+            var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
+            var status = await _authService.Client.From<EventStatus>().Where(x => x.id == userGuid).Single();
+            IsLiked = status?.likes?.Contains(eventId) ?? false;
+            IsFavorited = status?.favorites?.Contains(eventId) ?? false;
+
+            // 增加浏览计数 (不显示但保留功能)
+            await _authService.AddEventViewCountAsync(eventId);
+        }
+
+        private async Task ToggleLike()
+        {
+            if (IsLikeBusy || Detail?.RefCode == null) return;
+            IsLikeBusy = true;
+            ((Command)LikeCommand).ChangeCanExecute();
+
             try
             {
-                if (string.IsNullOrWhiteSpace(eventDetail.RefCode))
-                    return;
-
-                // 创建 EventItem 对象
-                var eventItem = new EventItem
+                if (IsLiked)
                 {
-                    EventId = eventDetail.RefCode,
-                    Title = eventDetail.Title ?? "No Title",
-                    Outlet = eventDetail.OrganisingCommittee ?? "Unknown",
-                    DetailUrl = eventDetail.BookNowUrl,
-                    DateTimeText = eventDetail.SessionsText,
-                    StartDate = null,  // 如果 DateRangeText 包含日期，可以尝试解析
-                    Category = "Event",  // 或从其他地方获取
-                    LikeCount = 0,
-                    FavoriteCount = 0,
-                    RegisteredCount = 0,
-                    ViewCount = 0
-                };
+                    await _authService.UnlikeEventAsync(Detail.RefCode);
+                }
+                else
+                {
+                    await _authService.LikeEventAsync(Detail.RefCode);
+                }
 
-                Debug.WriteLine($"[SaveEventToDatabaseAsync] Saving event: {eventItem.EventId}");
-
-                // 调用 AuthService 保存
-                await _authService.InsertEvents(eventItem);
-
-                Debug.WriteLine($"[SaveEventToDatabaseAsync] ✅ Event saved successfully");
+                // 重新从数据库获取最新计数，保证同步
+                var eventItem = await _authService.Client.From<EventItem>().Where(x => x.EventId == Detail.RefCode).Single();
+                LikeCount = eventItem?.LikeCount ?? 0;
+                IsLiked = !IsLiked;
+                OnPropertyChanged(nameof(IsLiked));
+                OnPropertyChanged(nameof(LikeCount));
             }
-            catch (Exception ex)
+            finally
             {
-                Debug.WriteLine($"[SaveEventToDatabaseAsync] ❌ Error: {ex.Message}");
-                // 不抛出异常，继续加载页面
+                IsLikeBusy = false;
+                ((Command)LikeCommand).ChangeCanExecute();
             }
         }
 
-        public async Task LoadStatusAsync(string eventId)
+        private async Task ToggleFavorite()
         {
+            if (IsFavoriteBusy || Detail?.RefCode == null) return;
+            IsFavoriteBusy = true;
+            ((Command)FavoriteCommand).ChangeCanExecute();
+
             try
             {
-                // 获取事件统计
-                var eventItem = await _authService.getEventItem(eventId);
-                LikeCount = eventItem?.LikeCount ?? 0;
+                if (IsFavorited)
+                {
+                    await _authService.UnfavoriteEventAsync(Detail.RefCode);
+                }
+                else
+                {
+                    await _authService.FavoriteEventAsync(Detail.RefCode);
+                }
+
+                // 重新从数据库获取最新计数，保证同步
+                var eventItem = await _authService.Client.From<EventItem>().Where(x => x.EventId == Detail.RefCode).Single();
                 FavoriteCount = eventItem?.FavoriteCount ?? 0;
-                RegisteredCount = eventItem?.RegisteredCount ?? 0;
-
-                // 获取用户点赞/收藏/报名状态
-                var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
-                var status = await _authService.Client.From<EventStatus>().Where(x => x.id == userGuid).Single();
-                IsLiked = status?.likes?.Contains(eventId) ?? false;
-                IsFavorited = status?.favorites?.Contains(eventId) ?? false;
-
-                // 增加浏览计数
-                await _authService.AddEventHistoryAsync(eventId);
-
-                Debug.WriteLine($"[LoadStatusAsync] Loaded status for event: {eventId}");
+                IsFavorited = !IsFavorited;
+                OnPropertyChanged(nameof(IsFavorited));
+                OnPropertyChanged(nameof(FavoriteCount));
             }
-            catch (Exception ex)
+            finally
             {
-                Debug.WriteLine($"[LoadStatusAsync] Error: {ex.Message}");
+                IsFavoriteBusy = false;
+                ((Command)FavoriteCommand).ChangeCanExecute();
             }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string? name = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        public void OnPropertyChanged([CallerMemberName] string name = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 }

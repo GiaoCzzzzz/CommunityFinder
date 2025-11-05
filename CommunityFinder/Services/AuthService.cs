@@ -580,10 +580,8 @@ namespace CommunityFinder.Services
 
                     Debug.WriteLine($"[InsertEvents] Updating existing event: {item.EventId}");
 
-                    // 使用 Upsert 更新
-                    await _client
-                        .From<EventItem>()
-                        .Upsert(new[] { item }, new Supabase.Postgrest.QueryOptions { OnConflict = "EventId" });
+                    // 使用 Update 更新
+                    await existing.Update<EventItem>();
                 }
                 else
                 {
@@ -858,6 +856,17 @@ namespace CommunityFinder.Services
                 .Set(x => x.favorites, Array.Empty<string>())
                 .Update();
 
+            return true;
+        }
+
+        public async Task<bool> AddEventViewCountAsync(string classId)
+        {
+            var events = await _client.From<EventItem>().Where(x => x.EventId == classId).Single();
+            if (events != null)
+            {
+                events.ViewCount = events.ViewCount + 1;
+                await events.Update<EventItem>();
+            }
             return true;
         }
     }
