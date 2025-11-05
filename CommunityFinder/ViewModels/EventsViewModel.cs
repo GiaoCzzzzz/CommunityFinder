@@ -16,26 +16,26 @@ namespace CommunityFinder.ViewModels
 
         public ObservableCollection<EventItem> Events { get; } = new();
         public ObservableCollection<string> OutletOptions { get; } = new(new[] { "Any" });
-        public ObservableCollection<string> TimePeriodOptions { get; } = new(new[] 
-        { 
-            "Any", 
-            "This Month", 
-            "This Weekend", 
-            "This Week", 
-            "Next Weekend", 
-            "Next Week", 
-            "Next Month" 
+        public ObservableCollection<string> TimePeriodOptions { get; } = new(new[]
+        {
+            "Any",
+            "This Month",
+            "This Weekend",
+            "This Week",
+            "Next Weekend",
+            "Next Week",
+            "Next Month"
         });
 
         private string _searchText;
-        public string SearchText 
-        { 
-            get => _searchText; 
-            set 
-            { 
-                _searchText = value; 
-                OnPropertyChanged(); 
-            } 
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+            }
         }
 
         private string _selectedOutlet = "Any";
@@ -47,6 +47,9 @@ namespace CommunityFinder.ViewModels
                 if (_selectedOutlet == value) return;
                 _selectedOutlet = value;
                 OnPropertyChanged();
+
+                // ✅ 添加：选择 Outlet 后立即触发筛选
+                _ = SearchEventsAsync();
             }
         }
 
@@ -59,6 +62,9 @@ namespace CommunityFinder.ViewModels
                 if (_selectedTimePeriod == value) return;
                 _selectedTimePeriod = value;
                 OnPropertyChanged();
+
+                // ✅ 添加：选择 Time Period 后立即触发筛选
+                _ = SearchEventsAsync();
             }
         }
 
@@ -75,14 +81,14 @@ namespace CommunityFinder.ViewModels
         }
 
         private bool _isBusy;
-        public bool IsBusy 
-        { 
-            get => _isBusy; 
-            set 
-            { 
-                _isBusy = value; 
-                OnPropertyChanged(); 
-            } 
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                _isBusy = value;
+                OnPropertyChanged();
+            }
         }
 
         public EventsViewModel(EventService service = null)
