@@ -11,6 +11,7 @@
             <converters:FavoriteIconConverter x:Key="FavoriteIconConverter" />
             <converters:LikeBorderColorConverter x:Key="LikeBorderColorConverter" />
             <converters:FavoriteBorderColorConverter x:Key="FavoriteBorderColorConverter" />
+            <converters:HtmlToFormattedStringConverter x:Key="HtmlToFormattedStringConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -107,26 +108,33 @@
                 <!-- Small screen - Main content below -->
                 <VerticalStackLayout Grid.Row="2" Spacing="20">
                     <!-- Organising Committee -->
-                    <HorizontalStackLayout Spacing="12" IsVisible="{Binding Detail.HasOrganisingCommittee}">
+                    <VerticalStackLayout IsVisible="{Binding Detail.HasOrganisingCommittee}" Spacing="6">
+                        <Label Text="Organising Committee" FontSize="16" FontAttributes="Bold"/>
                         <Label Text="{Binding Detail.OrganisingCommittee}" 
                                TextColor="#EF6C00" 
                                FontAttributes="Bold" 
-                               FontSize="16"/>
-                    </HorizontalStackLayout>
+                               FontSize="14"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
 
                     <!-- Event Description -->
                     <VerticalStackLayout IsVisible="{Binding Detail.HasDescription}" Spacing="8">
-                        <Label Text="Event Description" FontSize="20" FontAttributes="Bold"/>
-                        <Label Text="{Binding Detail.Description}" LineBreakMode="WordWrap" FontSize="15"/>
+                        <Label Text="Event Description" FontSize="16" FontAttributes="Bold"/>
+                        <Label FormattedText="{Binding Detail.Description, Converter={StaticResource HtmlToFormattedStringConverter}}" 
+                               LineBreakMode="WordWrap" 
+                               FontSize="14"/>
                     </VerticalStackLayout>
 
                     <!-- Venue -->
                     <VerticalStackLayout IsVisible="{Binding Detail.HasVenue}" Spacing="8">
-                        <Label Text="Venue" FontSize="20" FontAttributes="Bold"/>
-                        <Label Text="{Binding Detail.Venue}" LineBreakMode="WordWrap" FontSize="15"/>
+                        <Label Text="Venue" FontSize="16" FontAttributes="Bold"/>
+                        <Label Text="{Binding Detail.Venue}" 
+                               LineBreakMode="WordWrap" 
+                               FontSize="14"
+                               Margin="0,0,0,12"/>
                     </VerticalStackLayout>
 
-                    <Label Text="{Binding Error}" TextColor="#C62828" IsVisible="{Binding Error}" />
+                    <Label Text="{Binding Error}" TextColor="#C62828" IsVisible="{Binding HasError}" />
                 </VerticalStackLayout>
             </Grid>
         </ScrollView>
@@ -142,26 +150,33 @@
                 <!-- Left column - Main content -->
                 <VerticalStackLayout Grid.Column="0" Spacing="20">
                     <!-- Organising Committee -->
-                    <HorizontalStackLayout Spacing="12" IsVisible="{Binding Detail.HasOrganisingCommittee}">
+                    <VerticalStackLayout IsVisible="{Binding Detail.HasOrganisingCommittee}" Spacing="6">
+                        <Label Text="Organising Committee" FontSize="16" FontAttributes="Bold"/>
                         <Label Text="{Binding Detail.OrganisingCommittee}" 
                                TextColor="#EF6C00" 
                                FontAttributes="Bold" 
-                               FontSize="16"/>
-                    </HorizontalStackLayout>
+                               FontSize="14"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
 
                     <!-- Event Description -->
                     <VerticalStackLayout IsVisible="{Binding Detail.HasDescription}" Spacing="8">
-                        <Label Text="Event Description" FontSize="20" FontAttributes="Bold"/>
-                        <Label Text="{Binding Detail.Description}" LineBreakMode="WordWrap" FontSize="15"/>
+                        <Label Text="Event Description" FontSize="16" FontAttributes="Bold"/>
+                        <Label FormattedText="{Binding Detail.Description, Converter={StaticResource HtmlToFormattedStringConverter}}" 
+                               LineBreakMode="WordWrap" 
+                               FontSize="14"/>
                     </VerticalStackLayout>
 
                     <!-- Venue -->
                     <VerticalStackLayout IsVisible="{Binding Detail.HasVenue}" Spacing="8">
-                        <Label Text="Venue" FontSize="20" FontAttributes="Bold"/>
-                        <Label Text="{Binding Detail.Venue}" LineBreakMode="WordWrap" FontSize="15"/>
+                        <Label Text="Venue" FontSize="16" FontAttributes="Bold"/>
+                        <Label Text="{Binding Detail.Venue}" 
+                               LineBreakMode="WordWrap" 
+                               FontSize="14"
+                               Margin="0,0,0,12"/>
                     </VerticalStackLayout>
 
-                    <Label Text="{Binding Error}" TextColor="#C62828" IsVisible="{Binding Error}" />
+                    <Label Text="{Binding Error}" TextColor="#C62828" IsVisible="{Binding HasError}" />
                 </VerticalStackLayout>
 
                 <!-- Right column - Side panel -->

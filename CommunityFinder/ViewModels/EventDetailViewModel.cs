@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -88,14 +89,25 @@ namespace CommunityFinder.ViewModels
             Error = null;
             try
             {
+                Debug.WriteLine($"[EventDetail] Loading from URL: {detailUrl}");
+
                 Detail = await _service.GetEventDetailAsync(detailUrl);
+
                 if (Detail == null)
+                {
+                    Debug.WriteLine("[EventDetail] ParseFromRawHtml returned null");
                     Error = "Failed to load event detail.";
-                else if (Detail.RefCode != null)
-                    await LoadStatusAsync(Detail.RefCode);
+                }
+                else
+                {
+                    Debug.WriteLine($"[EventDetail] Loaded: {Detail.Title}");
+                    if (Detail.RefCode != null)
+                        await LoadStatusAsync(Detail.RefCode);
+                }
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"[EventDetail] Exception: {ex.Message}\n{ex.StackTrace}");
                 Error = ex.Message;
             }
             finally { IsBusy = false; }
