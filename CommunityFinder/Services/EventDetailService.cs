@@ -98,6 +98,22 @@ namespace CommunityFinder.Services
                         }
                     }
 
+                    // 安全的数字提取器
+                    double? N(Func<JsonElement> g)
+                    {
+                        try
+                        {
+                            var v = g();
+                            if (v.ValueKind == JsonValueKind.Number)
+                                return v.GetDouble();
+                            return null;
+                        }
+                        catch
+                        {
+                            return null;
+                        }
+                    }
+
                     // URL 绝对路径转换
                     string Abs(string? url) => string.IsNullOrWhiteSpace(url)
                         ? string.Empty
@@ -127,10 +143,10 @@ namespace CommunityFinder.Services
 
                     // 优先级：mainOrganisingCommitteeName > organisingCommitteeName > ccName > outletName > organiserName
                     detail.OrganisingCommittee = mainOrganisingCommitteeName
-                                               ?? organisingCommitteeName
-                                               ?? ccName
-                                               ?? outletName
-                                               ?? organiserName;
+                                                ?? organisingCommitteeName
+                                                ?? ccName
+                                                ?? outletName
+                                                ?? organiserName;
 
                     Debug.WriteLine($"[EventDetailService] OrganisingCommittee: {detail.OrganisingCommittee}");
 
@@ -174,6 +190,11 @@ namespace CommunityFinder.Services
                     }
 
                     // ====== 处理 PRICE ======
+                    // 优先从 data 层级获取 minPrice 和 maxPrice
+                    var minPrice = N(() => data.GetProperty("minPrice"));
+                    var maxPrice = N(() => data.GetProperty("maxPrice"));
+
+                    // 备用：从 price 对象获取
                     var memberPrice = S(() => price.GetProperty("memberPrice"));
                     var nonMemberPrice = S(() => price.GetProperty("nonMemberPrice"));
                     var priceText = S(() => price.GetProperty("priceText"));
@@ -181,6 +202,26 @@ namespace CommunityFinder.Services
                     if (!string.IsNullOrWhiteSpace(priceText))
                     {
                         detail.PriceText = priceText;
+                    }
+                    else if (minPrice.HasValue && maxPrice.HasValue)
+                    {
+                        // 使用 minPrice 和 maxPrice
+                        if (Math.Abs(minPrice.Value - maxPrice.Value) < 0.01)
+                        {
+                            detail.PriceText = $"${minPrice.Value:0.00}";
+                        }
+                        else
+                        {
+                            detail.PriceText = $"From ${minPrice.Value:0.00} to ${maxPrice.Value:0.00}";
+                        }
+                    }
+                    else if (minPrice.HasValue)
+                    {
+                        detail.PriceText = $"${minPrice.Value:0.00}";
+                    }
+                    else if (maxPrice.HasValue)
+                    {
+                        detail.PriceText = $"${maxPrice.Value:0.00}";
                     }
                     else if (!string.IsNullOrWhiteSpace(memberPrice) && !string.IsNullOrWhiteSpace(nonMemberPrice))
                     {
@@ -198,6 +239,8 @@ namespace CommunityFinder.Services
                     {
                         detail.PriceText = "Free";
                     }
+
+                    Debug.WriteLine($"[EventDetailService] PriceText: {detail.PriceText}");
 
                     // ====== 处理 VENUE ======
                     try

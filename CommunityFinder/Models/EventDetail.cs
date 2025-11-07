@@ -24,6 +24,9 @@ namespace CommunityFinder.Models
             set => _description = CleanHtmlContent(value);
         }
 
+        public double? MinPrice { get; set; }
+        public double? MaxPrice { get; set; }
+
         public string? Venue { get; set; }
 
         private string? _organisingCommittee;
