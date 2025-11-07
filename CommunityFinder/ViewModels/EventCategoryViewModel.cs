@@ -26,12 +26,12 @@ namespace CommunityFinder.ViewModels
             {
                 "Active Aging",
                 "Arts & Culture",
-                "Celebrations & Festivities",
+                "Celebration & Festivity",
                 "Kopi Talks & Dialogues",
                 "Parenting & Education",
                 "Exhibition & Fair",
                 "Health & Fitness",
-                "Neighbourhood Parties",
+                "Neighbourhood Events",
                 "Outings & Tours",
                 "Charity & Volunteerism"
             };

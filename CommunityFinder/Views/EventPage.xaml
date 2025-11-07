@@ -12,27 +12,28 @@
         </LinearGradientBrush>
     </ContentPage.Background>
 
-    <Grid RowDefinitions="Auto,Auto,*" Padding="12">
-        <!-- 页面标题 -->
-        <Label Grid.Row="0" 
+    <ScrollView>
+        <Grid RowDefinitions="Auto,Auto,*" Padding="12">
+            <!-- 页面标题 -->
+            <Label Grid.Row="0" 
                Text="Select Event Category" 
                FontSize="18" 
                FontAttributes="Bold"
                TextColor="#333"
                Margin="0,0,0,16"/>
 
-        <!-- 事件分类按钮（垂直滚动） -->
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Spacing="10" Padding="0,0,0,20">
+            <!-- 事件分类按钮（垂直滚动） -->
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Spacing="10" Padding="0,0,0,20">
 
-                <CollectionView ItemsSource="{Binding EventCategories}">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="8"/>
-                    </CollectionView.ItemsLayout>
+                    <CollectionView ItemsSource="{Binding EventCategories}">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="8"/>
+                        </CollectionView.ItemsLayout>
 
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Button 
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Button 
                                 Text="{Binding .}"
                                 FontSize="16"
                                 FontAttributes="Bold"
@@ -43,12 +44,13 @@
                                 TextColor="White"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectCategoryCommand}"
                                 CommandParameter="{Binding .}"/>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
-            </VerticalStackLayout>
-        </ScrollView>
+                </VerticalStackLayout>
+            </ScrollView>
 
-    </Grid>
+        </Grid>
+    </ScrollView>
 </ContentPage>
