@@ -42,14 +42,14 @@
                                         <DataTrigger TargetType="Frame"
                                                      Binding="{Binding ItemType}"
                                                      Value="COURSE">
-                                            <Setter Property="BackgroundColor" Value="#B6D7A8"/>
+                                            <Setter Property="BackgroundColor" Value="#A4C2F4"/>
                                         </DataTrigger>
 
                                         <!-- ✅ 活动项（EVENT）为橙黄色 -->
                                         <DataTrigger TargetType="Frame"
                                                      Binding="{Binding ItemType}"
                                                      Value="EVENT">
-                                            <Setter Property="BackgroundColor" Value="#F9CB9C"/>
+                                            <Setter Property="BackgroundColor" Value="#EAD1DC"/>
                                         </DataTrigger>
 
                                     </Style.Triggers>

@@ -12,10 +12,7 @@ public partial class LoginPage : ContentPage
         InitializeComponent();
         _authService = authService;
 
-        //EmailEntry.Text = prefillEmail;
-        //PasswordEntry.Text = prefillPassword;
-
-        // For testing purpose
+        // 测试用自动填充
         EmailEntry.Text = "chen2004peter@gmail.com";
         PasswordEntry.Text = "Ccz8855110123_";
     }
@@ -56,24 +53,55 @@ public partial class LoginPage : ContentPage
         if (hasError)
             return;
 
-        var ok = await _authService.SignInAsync(email, pwd);
-        if (ok)
+        // 显示加载动画
+        await ShowLoadingAsync();
+
+        try
         {
-            Preferences.Set("QuickLogin", "Yes");
-            Preferences.Set("Email", email);
-            Preferences.Set("Password", pwd);
-            var first = _authService.FirstProfiles();
-            if (await first)
+            var ok = await _authService.SignInAsync(email, pwd);
+            if (ok)
             {
-                await Navigation.PushAsync(new MainPage(_authService));
+                Preferences.Set("QuickLogin", "Yes");
+                Preferences.Set("Email", email);
+                Preferences.Set("Password", pwd);
+
+                var first = _authService.FirstProfiles();
+                if (await first)
+                    await Navigation.PushAsync(new MainPage(_authService));
+                else
+                    await Navigation.PushAsync(new InitialProfilePage(_authService));
             }
             else
-                await Navigation.PushAsync(new InitialProfilePage(_authService));
+            {
+                await DisplayAlert("Fail", "Incorrect email or password", "Confirm");
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await DisplayAlert("Fail", "Incorrect email or password", "confirm");
+            await DisplayAlert("Error", ex.Message, "OK");
         }
+        finally
+        {
+            await HideLoadingAsync();
+        }
+    }
+
+    private async Task ShowLoadingAsync()
+    {
+        LoadingOverlay.IsVisible = true;
+        await Task.WhenAll(
+            LoadingOverlay.FadeTo(1, 300, Easing.CubicIn),
+            LoadingOverlay.ScaleTo(1.05, 200, Easing.SinIn)
+        );
+    }
+
+    private async Task HideLoadingAsync()
+    {
+        await Task.WhenAll(
+            LoadingOverlay.FadeTo(0, 300, Easing.CubicOut),
+            LoadingOverlay.ScaleTo(1, 200, Easing.SinOut)
+        );
+        LoadingOverlay.IsVisible = false;
     }
 
     async void OnForgotPasswordClicked(object sender, EventArgs e)

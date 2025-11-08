@@ -6,16 +6,18 @@
              BackgroundColor="#F9FFE3">
 
     <Grid>
+        <!-- 顶部 Logo -->
         <Image Source="icon1.png" WidthRequest="60" HeightRequest="60"
                HorizontalOptions="Start" VerticalOptions="Start" Margin="10" />
 
+        <!-- 主体滚动内容 -->
         <ScrollView>
             <StackLayout Padding="30" Spacing="20" VerticalOptions="Center">
 
                 <Label Text="Log in" FontSize="28" FontAttributes="Bold"
                        HorizontalOptions="Center" TextColor="#333" Margin="0,0,0,10" />
 
-                <!-- 邮箱/用户名/手机号 -->
+                <!-- 邮箱 -->
                 <Entry x:Name="EmailEntry"
                        Placeholder="Username / Email / Mobile Number"
                        PlaceholderColor="#000000"
@@ -30,7 +32,7 @@
                        IsVisible="False"
                        Margin="0,-10,0,10" />
 
-                <!-- 密码输入框 -->
+                <!-- 密码 -->
                 <Grid Margin="0,0,0,10">
                     <Entry x:Name="PasswordEntry"
                            Placeholder="Password"
@@ -54,7 +56,7 @@
                                  Scale="0.6"/>
                 </Grid>
 
-                <!-- 密码规则提示 -->
+                <!-- 密码规则 -->
                 <StackLayout x:Name="PasswordRulesStack" IsVisible="False" Spacing="2">
                     <Label x:Name="PasswordRuleLength" FontSize="12" TextColor="Red" />
                     <Label x:Name="PasswordRuleUpper" FontSize="12" TextColor="Red" />
@@ -63,6 +65,7 @@
                     <Label x:Name="PasswordRuleSpecial" FontSize="12" TextColor="Red" />
                 </StackLayout>
 
+                <!-- Confirm 按钮 -->
                 <Button Text="Confirm"
                         Clicked="OnLoginClicked"
                         BackgroundColor="#4CAF50"
@@ -71,6 +74,7 @@
                         CornerRadius="8"
                         HeightRequest="50" />
 
+                <!-- 忘记密码 -->
                 <Label Text="Forget password？"
                        TextColor="#2196F3"
                        FontSize="14"
@@ -81,6 +85,7 @@
                     </Label.GestureRecognizers>
                 </Label>
 
+                <!-- 注册跳转 -->
                 <Label Text="Don't have an account? Sign up now."
                        TextColor="#2196F3"
                        FontSize="14"
@@ -93,5 +98,33 @@
 
             </StackLayout>
         </ScrollView>
+
+        <!-- 🌈 超精美加载动画层 -->
+        <Grid x:Name="LoadingOverlay"
+              BackgroundColor="#80000000"
+              IsVisible="False"
+              Opacity="0">
+            <StackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
+                <Frame Padding="25"
+                       CornerRadius="50"
+                       BackgroundColor="#FFFFFF"
+                       HasShadow="True"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Scale="0.5">
+                    <StackLayout>
+                        <ActivityIndicator IsRunning="True"
+                                           Color="#4CAF50"
+                                           WidthRequest="60"
+                                           HeightRequest="60" />
+                        <Label Text="Logging in..."
+                               FontSize="16"
+                               TextColor="#333"
+                               HorizontalOptions="Center"
+                               Margin="0,10,0,0" />
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </Grid>
     </Grid>
 </ContentPage>
