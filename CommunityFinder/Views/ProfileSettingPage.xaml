@@ -29,13 +29,13 @@
                 <Label Text="About You" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#333" />
 
                 <Label Text="Email" FontSize="14" TextColor="#333" />
-                <Entry x:Name="EmailEntry" IsReadOnly="True" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" />
+                <Entry x:Name="EmailEntry" IsReadOnly="True" BackgroundColor="#F9FFE3" HeightRequest="48" FontSize="16" />
 
                 <Label Text="Display Name" FontSize="14" TextColor="#333" />
-                <Entry x:Name="DisplayNameEntry" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" />
+                <Entry x:Name="DisplayNameEntry" BackgroundColor="#F9FFE3" HeightRequest="48" FontSize="16" />
 
                 <Label Text="Gender" FontSize="14" TextColor="#333" />
-                <Picker x:Name="SexPicker" Title="Select your gender" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16">
+                <Picker x:Name="SexPicker" Title="Select your gender" BackgroundColor="#F9FFE3" HeightRequest="48" FontSize="16">
                     <Picker.Items>
                         <x:String>Male</x:String>
                         <x:String>Female</x:String>
@@ -43,7 +43,7 @@
                 </Picker>
 
                 <Label Text="Age" FontSize="14" TextColor="#333" />
-                <Entry x:Name="AgeEntry" Keyboard="Numeric" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnAgeChanged" />
+                <Entry x:Name="AgeEntry" Keyboard="Numeric" BackgroundColor="#F9FFE3" HeightRequest="48" FontSize="16" TextChanged="OnAgeChanged" />
                 <Label x:Name="AgeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
                 <!-- Nationality -->
@@ -60,7 +60,7 @@
                 <Label x:Name="NationalityErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
                 <Label Text="Phone Number" FontSize="14" TextColor="#333" />
-                <Entry x:Name="PhoneEntry" Keyboard="Telephone" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnPhoneChanged" />
+                <Entry x:Name="PhoneEntry" Keyboard="Telephone" BackgroundColor="#F9FFE3" HeightRequest="48" FontSize="16" TextChanged="OnPhoneChanged" />
                 <Label x:Name="PhoneErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
                 <!-- Occupation -->
@@ -77,7 +77,7 @@
                 <Label x:Name="OccupationErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
                 <Label Text="Postal Code" FontSize="14" TextColor="#333" />
-                <Entry x:Name="PostalCodeEntry" Keyboard="Numeric" BackgroundColor="#FFFFFF" HeightRequest="48" FontSize="16" TextChanged="OnPostalCodeChanged" />
+                <Entry x:Name="PostalCodeEntry" Keyboard="Numeric" BackgroundColor="#F9FFE3" HeightRequest="48" FontSize="16" TextChanged="OnPostalCodeChanged" />
                 <Label x:Name="PostalCodeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
                 <Grid ColumnSpacing="10" RowSpacing="15" Margin="0,20,0,0">

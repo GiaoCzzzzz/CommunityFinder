@@ -5,12 +5,13 @@ using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using CommunityFinder.Views;
 using CommunityFinder.Services;
+using CommunityFinder.Models;
 
 namespace CommunityFinder.ViewModels
 {
     public class EventCategoryViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<string> EventCategories { get; }
+        public ObservableCollection<EventCategory> EventCategories { get; }
         public ICommand SelectCategoryCommand { get; }
 
         private readonly AuthService _authService;
@@ -21,28 +22,27 @@ namespace CommunityFinder.ViewModels
             _authService = authService;
             _navigation = navigation;
 
-            // 10个事件大类，按顺序
-            EventCategories = new ObservableCollection<string>
+            // 10个事件大类 + 图片
+            EventCategories = new ObservableCollection<EventCategory>
             {
-                "Active Aging",
-                "Arts & Culture",
-                "Celebration & Festivity",
-                "Kopi Talks & Dialogues",
-                "Parenting & Education",
-                "Exhibition & Fair",
-                "Health & Fitness",
-                "Neighbourhood Events",
-                "Outings & Tours",
-                "Charity & Volunteerism"
+                new EventCategory { Name = "Active Aging", ImagePath = "event1.png" },
+                new EventCategory { Name = "Arts & Culture", ImagePath = "event2.png" },
+                new EventCategory { Name = "Celebration & Festivity", ImagePath = "event3.png" },
+                new EventCategory { Name = "Kopi Talks & Dialogues", ImagePath = "event4.png" },
+                new EventCategory { Name = "Parenting & Education", ImagePath = "event5.png" },
+                new EventCategory { Name = "Exhibition & Fair", ImagePath = "event6.png" },
+                new EventCategory { Name = "Health & Fitness", ImagePath = "event7.png" },
+                new EventCategory { Name = "Neighbourhood Events", ImagePath = "event8.png" },
+                new EventCategory { Name = "Outings & Tours", ImagePath = "event9.png" },
+                new EventCategory { Name = "Charity & Volunteerism", ImagePath = "event10.png" }
             };
 
-            SelectCategoryCommand = new Command<string>(async (category) =>
+            SelectCategoryCommand = new Command<EventCategory>(async (category) =>
             {
-                await OnCategorySelected(category);
+                await OnCategorySelected(category?.Name);
             });
         }
 
-        // 在 EventPage 中调用此方法传入 Navigation
         public void SetNavigation(INavigation navigation)
         {
             _navigation = navigation;
@@ -58,7 +58,6 @@ namespace CommunityFinder.ViewModels
 
             try
             {
-                // 使用 Navigation.PushAsync 而不是 Shell.Current.GoToAsync
                 await _navigation.PushAsync(new EventListPage(_authService, category));
             }
             catch (Exception ex)
