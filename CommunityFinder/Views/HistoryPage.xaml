@@ -7,7 +7,54 @@
              BackgroundColor="#DEF685">
 
     <ScrollView>
-        <StackLayout>
+        <StackLayout Padding="10">
+
+            <!-- =============== 搜索区域 =============== -->
+            <Frame BackgroundColor="#CDE6F5"
+                   Padding="10"
+                   CornerRadius="8"
+                   HasShadow="True"
+                   Margin="0,10,0,20">
+
+                <VerticalStackLayout Spacing="10">
+
+                    <!-- 搜索输入框 -->
+                    <Entry Placeholder="Search by title or outlet..."
+                           Text="{Binding SearchText}"
+                           TextChanged="OnSearchTextChanged"
+                           BackgroundColor="White"
+                           PlaceholderColor="Gray"
+                           FontSize="16"
+                           Margin="0,5" />
+
+                    <!-- 分类筛选：范围与类型 -->
+                    <HorizontalStackLayout Spacing="10">
+
+                        <!-- 搜索范围选择 -->
+                        <Picker x:Name="ScopePicker"
+                                Title="Search Scope"
+                                SelectedIndexChanged="OnScopeChanged">
+                            <Picker.Items>
+                                <x:String>All</x:String>
+                                <x:String>Browsing History</x:String>
+                                <x:String>Favorite Courses</x:String>
+                            </Picker.Items>
+                        </Picker>
+
+                        <!-- 类型选择 -->
+                        <Picker x:Name="TypePicker"
+                                Title="Item Type"
+                                SelectedIndexChanged="OnTypeChanged">
+                            <Picker.Items>
+                                <x:String>All</x:String>
+                                <x:String>Course</x:String>
+                                <x:String>Event</x:String>
+                            </Picker.Items>
+                        </Picker>
+
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
 
             <!-- ====================== Browsing History ====================== -->
             <Label Text="Browsing History"
@@ -21,7 +68,7 @@
                     Margin="10"
                     Clicked="OnClearAllHistoryClicked"/>
 
-            <CollectionView ItemsSource="{Binding BrowsingHistory}"
+            <CollectionView ItemsSource="{Binding FilteredBrowsingHistory}"
                             SelectionMode="Single"
                             SelectionChanged="OnHistoryItemTapped">
                 <CollectionView.ItemTemplate>
@@ -30,33 +77,24 @@
                                Padding="10"
                                HasShadow="True"
                                CornerRadius="8">
-
-                            <!-- ✅ 使用 DataTrigger 根据 ItemType 改变颜色 -->
                             <Frame.Style>
                                 <Style TargetType="Frame">
                                     <Setter Property="BackgroundColor" Value="#D5B7B6"/>
-                                    <!-- 默认底色 -->
                                     <Style.Triggers>
-
-                                        <!-- ✅ 课程项（COURSE）为淡绿色 -->
                                         <DataTrigger TargetType="Frame"
                                                      Binding="{Binding ItemType}"
                                                      Value="COURSE">
                                             <Setter Property="BackgroundColor" Value="#A4C2F4"/>
                                         </DataTrigger>
-
-                                        <!-- ✅ 活动项（EVENT）为橙黄色 -->
                                         <DataTrigger TargetType="Frame"
                                                      Binding="{Binding ItemType}"
                                                      Value="EVENT">
                                             <Setter Property="BackgroundColor" Value="#EAD1DC"/>
                                         </DataTrigger>
-
                                     </Style.Triggers>
                                 </Style>
                             </Frame.Style>
 
-                            <!-- 卡片内容 -->
                             <StackLayout Orientation="Horizontal" VerticalOptions="Center">
                                 <StackLayout HorizontalOptions="StartAndExpand">
                                     <HorizontalStackLayout Spacing="8" Margin="0,0,0,4">
@@ -101,7 +139,7 @@
                     Margin="10"
                     Clicked="OnClearAllFavoritesClicked"/>
 
-            <CollectionView ItemsSource="{Binding FavoriteCourses}"
+            <CollectionView ItemsSource="{Binding FilteredFavoriteCourses}"
                             SelectionMode="Single"
                             SelectionChanged="OnFavoriteItemTapped">
                 <CollectionView.ItemTemplate>
@@ -110,33 +148,24 @@
                                Padding="10"
                                HasShadow="True"
                                CornerRadius="8">
-
-                            <!-- ✅ 根据 ItemType 切换颜色 -->
                             <Frame.Style>
                                 <Style TargetType="Frame">
                                     <Setter Property="BackgroundColor" Value="#88ACBC"/>
-                                    <!-- 默认底色 -->
                                     <Style.Triggers>
-
-                                        <!-- ✅ 课程项（COURSE）为浅蓝 -->
                                         <DataTrigger TargetType="Frame"
                                                      Binding="{Binding ItemType}"
                                                      Value="COURSE">
                                             <Setter Property="BackgroundColor" Value="#A4C2F4"/>
                                         </DataTrigger>
-
-                                        <!-- ✅ 活动项（EVENT）为粉紫 -->
                                         <DataTrigger TargetType="Frame"
                                                      Binding="{Binding ItemType}"
                                                      Value="EVENT">
                                             <Setter Property="BackgroundColor" Value="#EAD1DC"/>
                                         </DataTrigger>
-
                                     </Style.Triggers>
                                 </Style>
                             </Frame.Style>
 
-                            <!-- 卡片内容 -->
                             <StackLayout Orientation="Horizontal" VerticalOptions="Center">
                                 <StackLayout HorizontalOptions="StartAndExpand">
                                     <HorizontalStackLayout Spacing="8" Margin="0,0,0,4">
