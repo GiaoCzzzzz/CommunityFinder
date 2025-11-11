@@ -12,7 +12,7 @@ public partial class LoginPage : ContentPage
         InitializeComponent();
         _authService = authService;
 
-        // 测试用自动填充
+        // 默认填充
         EmailEntry.Text = "chen2004peter@gmail.com";
         PasswordEntry.Text = "Ccz8855110123_";
     }
@@ -28,6 +28,7 @@ public partial class LoginPage : ContentPage
         }
     }
 
+    // ---------------- 登录按钮逻辑 ----------------
     async void OnLoginClicked(object sender, EventArgs e)
     {
         var email = EmailEntry.Text?.Trim();
@@ -35,7 +36,7 @@ public partial class LoginPage : ContentPage
 
         bool hasError = false;
 
-        // 邮箱验证
+        // 验证输入
         if (string.IsNullOrEmpty(email))
         {
             EmailErrorLabel.Text = "Email is required.";
@@ -43,7 +44,6 @@ public partial class LoginPage : ContentPage
             hasError = true;
         }
 
-        // 密码验证
         if (!IsValidPassword(pwd))
         {
             PasswordRulesStack.IsVisible = true;
@@ -54,7 +54,7 @@ public partial class LoginPage : ContentPage
             return;
 
         // 显示加载动画
-        await ShowLoadingAsync();
+        await ShowLoadingAsync("Logging in...");
 
         try
         {
@@ -86,53 +86,86 @@ public partial class LoginPage : ContentPage
         }
     }
 
-    private async Task ShowLoadingAsync()
+    // ---------------- 忘记密码动画跳转 ----------------
+    async void OnForgotPasswordClicked(object sender, EventArgs e)
     {
+        await ShowLoadingAsync("Loading password reset...");
+        try
+        {
+            // 模拟加载时间
+            await Task.Delay(1000);
+            await Navigation.PushAsync(new ForgotPasswordPage(_authService));
+        }
+        finally
+        {
+            await HideLoadingAsync();
+        }
+    }
+
+    // ---------------- 注册跳转动画 ----------------
+    async void OnGoToSignUpClicked(object sender, EventArgs e)
+    {
+        await ShowLoadingAsync("Preparing Sign Up...");
+        try
+        {
+            await Task.Delay(1000);
+            await Navigation.PushAsync(new SignUpPage(_authService));
+        }
+        finally
+        {
+            await HideLoadingAsync();
+        }
+    }
+
+    // ---------------- 加载动画控制 ----------------
+    private async Task ShowLoadingAsync(string message)
+    {
+        LoadingText.Text = message;
         LoadingOverlay.IsVisible = true;
+        LoadingOverlay.Opacity = 0;
+        LoadingOverlay.Scale = 0.9;
+
         await Task.WhenAll(
             LoadingOverlay.FadeTo(1, 300, Easing.CubicIn),
-            LoadingOverlay.ScaleTo(1.05, 200, Easing.SinIn)
+            LoadingOverlay.ScaleTo(1.05, 300, Easing.CubicInOut)
         );
+
+        // 增强动画：轻微呼吸效果
+        _ = Task.Run(async () =>
+        {
+            while (LoadingOverlay.IsVisible)
+            {
+                await LoadingOverlay.ScaleTo(1.1, 700, Easing.CubicInOut);
+                await LoadingOverlay.ScaleTo(1.0, 700, Easing.CubicInOut);
+            }
+        });
     }
 
     private async Task HideLoadingAsync()
     {
         await Task.WhenAll(
             LoadingOverlay.FadeTo(0, 300, Easing.CubicOut),
-            LoadingOverlay.ScaleTo(1, 200, Easing.SinOut)
+            LoadingOverlay.ScaleTo(1, 200, Easing.CubicOut)
         );
         LoadingOverlay.IsVisible = false;
     }
 
-    async void OnForgotPasswordClicked(object sender, EventArgs e)
-    {
-        await Navigation.PushAsync(new ForgotPasswordPage(_authService));
-    }
-
-    async void OnGoToSignUpClicked(object sender, EventArgs e)
-    {
-        await Navigation.PushAsync(new SignUpPage(_authService));
-    }
-
+    // ---------------- 密码可见切换 ----------------
     private void OnPasswordToggleClicked(object sender, EventArgs e)
     {
         PasswordEntry.IsPassword = !PasswordEntry.IsPassword;
         PasswordToggleButton.Source = PasswordEntry.IsPassword ? "icon4.png" : "icon3.png";
     }
 
+    // ---------------- 邮箱输入验证 ----------------
     private void OnEmailTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(e.NewTextValue))
-        {
+        EmailErrorLabel.IsVisible = string.IsNullOrWhiteSpace(e.NewTextValue);
+        if (EmailErrorLabel.IsVisible)
             EmailErrorLabel.Text = "Email is required.";
-            EmailErrorLabel.IsVisible = true;
-        }
-        else
-        {
-            EmailErrorLabel.IsVisible = false;
-        }
     }
 
+    // ---------------- 密码规则显示 ----------------
     private void OnPasswordTextChanged(object sender, TextChangedEventArgs e)
     {
         var pwd = e.NewTextValue ?? string.Empty;

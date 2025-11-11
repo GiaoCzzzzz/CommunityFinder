@@ -5,39 +5,68 @@
              BackgroundColor="#F9FFE3"
              Title="Welcome">
 
-    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="30">
+    <Grid x:Name="MainGrid">
+        <!-- 主体布局 -->
+        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="30">
 
-        <!-- 顶部图标 -->
-        <Image Source="icon1.png" WidthRequest="150" HeightRequest="150" HorizontalOptions="Center" />
+            <!-- 顶部图标 -->
+            <Image Source="icon1.png" WidthRequest="150" HeightRequest="150" HorizontalOptions="Center" />
 
-        <!-- 应用名称 -->
-        <Label Text="Community Finder"
-               FontSize="24"
-               FontAttributes="Bold"
-               TextColor="Black"
-               HorizontalOptions="Center" />
+            <!-- 应用名称 -->
+            <Label Text="Community Finder"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   TextColor="Black"
+                   HorizontalOptions="Center" />
 
-        <!-- 登录按钮 -->
-        <Button Text="Login"
-                x:Name="LoginButton"
-                BackgroundColor="green"
-                TextColor="White"
-                FontAttributes="Bold"
-                CornerRadius="10"
-                WidthRequest="200"
-                HeightRequest="50"
-                Clicked="OnLoginClicked" />
+            <!-- 登录按钮 -->
+            <Button Text="Login"
+                    x:Name="LoginButton"
+                    BackgroundColor="green"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="10"
+                    WidthRequest="200"
+                    HeightRequest="50"
+                    Clicked="OnLoginClicked" />
 
-        <!-- 注册按钮 -->
-        <Button Text="Sign Up"
-                x:Name="SignupButton"
-                BackgroundColor="#CC1416"
-                TextColor="White"
-                FontAttributes="Bold"
-                CornerRadius="10"
-                WidthRequest="200"
-                HeightRequest="50"
-                Clicked="OnSignupClicked" />
+            <!-- 注册按钮 -->
+            <Button Text="Sign Up"
+                    x:Name="SignupButton"
+                    BackgroundColor="#CC1416"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="10"
+                    WidthRequest="200"
+                    HeightRequest="50"
+                    Clicked="OnSignupClicked" />
+        </VerticalStackLayout>
 
-    </VerticalStackLayout>
+        <!-- 🌈 加载动画遮罩层 -->
+        <Grid x:Name="LoadingOverlay"
+              BackgroundColor="#AAFFFFFF"
+              IsVisible="False"
+              Opacity="0">
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
+
+                <!-- 动态旋转的加载圆环 -->
+                <Grid>
+                    <Ellipse x:Name="LoadingRing"
+                             WidthRequest="70"
+                             HeightRequest="70"
+                             Stroke="Green"
+                             StrokeThickness="6"
+                             StrokeDashArray="30 20"
+                             StrokeDashOffset="0" />
+                </Grid>
+
+                <!-- 加载文字 -->
+                <Label Text="Loading..."
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="Black"
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
 </ContentPage>

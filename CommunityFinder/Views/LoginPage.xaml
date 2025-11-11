@@ -113,11 +113,14 @@
                        VerticalOptions="Center"
                        Scale="0.5">
                     <StackLayout>
+                        <!-- 活动指示器 -->
                         <ActivityIndicator IsRunning="True"
                                            Color="#4CAF50"
                                            WidthRequest="60"
                                            HeightRequest="60" />
-                        <Label Text="Logging in..."
+                        <!-- 动态文字 -->
+                        <Label x:Name="LoadingText"
+                               Text="Loading..."
                                FontSize="16"
                                TextColor="#333"
                                HorizontalOptions="Center"
