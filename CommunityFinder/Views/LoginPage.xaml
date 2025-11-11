@@ -22,7 +22,7 @@
                        Placeholder="Username / Email / Mobile Number"
                        PlaceholderColor="#000000"
                        FontSize="16"
-                       BackgroundColor="#D9D9D9"
+                       BackgroundColor="#F9FFE3"
                        HeightRequest="50"
                        Margin="0,0,0,10"
                        TextChanged="OnEmailTextChanged" />
@@ -39,7 +39,7 @@
                            PlaceholderColor="#000000"
                            IsPassword="True"
                            FontSize="16"
-                           BackgroundColor="#D9D9D9"
+                           BackgroundColor="#F9FFE3"
                            HeightRequest="50"
                            HorizontalOptions="Fill"
                            TextChanged="OnPasswordTextChanged" />

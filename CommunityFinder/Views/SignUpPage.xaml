@@ -18,7 +18,7 @@
 
                 <!-- 用户名 -->
                 <Entry x:Name="UsernameEntry" Placeholder="Username"
-                       PlaceholderColor="#000000" BackgroundColor="#D9D9D9"
+                       PlaceholderColor="#000000" BackgroundColor="#F9FFE3"
                        HeightRequest="48" FontSize="16"
                        TextChanged="OnUsernameTextChanged" />
                 <Label x:Name="UsernameErrorLabel" TextColor="Red"
@@ -28,7 +28,7 @@
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                     <Entry x:Name="EmailEntry" Placeholder="Email address"
                            PlaceholderColor="#000000" Keyboard="Email"
-                           BackgroundColor="#D9D9D9" HeightRequest="48"
+                           BackgroundColor="#F9FFE3" HeightRequest="48"
                            FontSize="16" Grid.Column="0"
                            TextChanged="OnEmailTextChanged" />
                 </Grid>
@@ -39,7 +39,7 @@
                 <Grid>
                     <Entry x:Name="PasswordEntry" Placeholder="Password"
                            PlaceholderColor="#000000" IsPassword="True"
-                           BackgroundColor="#D9D9D9" HeightRequest="48"
+                           BackgroundColor="#F9FFE3" HeightRequest="48"
                            FontSize="16" HorizontalOptions="Fill"
                            TextChanged="OnPasswordTextChanged" />
                     <ImageButton x:Name="PasswordToggleButton" Source="icon4.png"
@@ -61,7 +61,7 @@
                 <Grid>
                     <Entry x:Name="ConfirmPasswordEntry" Placeholder="Confirm Password"
                            PlaceholderColor="#000000" IsPassword="True"
-                           BackgroundColor="#D9D9D9" HeightRequest="48"
+                           BackgroundColor="#F9FFE3" HeightRequest="48"
                            FontSize="16" HorizontalOptions="Fill"
                            TextChanged="OnConfirmPasswordTextChanged" />
                     <ImageButton x:Name="ConfirmPasswordToggleButton" Source="icon4.png"
