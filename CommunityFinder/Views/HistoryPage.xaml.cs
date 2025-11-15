@@ -9,26 +9,30 @@ namespace CommunityFinder.Views
     {
         private readonly AuthService _authService;
 
-        // 原始数据源
+        // Original data sources
         public ObservableCollection<HistoryItem> BrowsingHistory { get; } = new();
         public ObservableCollection<HistoryItem> FavoriteCourses { get; } = new();
 
-        // 过滤后的显示集合
+        // Filtered display collections
         public ObservableCollection<HistoryItem> FilteredBrowsingHistory { get; } = new();
         public ObservableCollection<HistoryItem> FilteredFavoriteCourses { get; } = new();
 
-        // 搜索相关属性
+        // Search-related properties
         public string SearchText { get; set; } = string.Empty;
-        private string _selectedScope = "All";   // 搜索范围
-        private string _selectedType = "All";    // 搜索类型
+        private string _selectedScope = "All";   // Search scope
+        private string _selectedType = "All";    // Search type
 
-        // 命令
+        // Commands
         public ICommand DeleteHistoryCommand { get; }
         public ICommand ClearAllHistoryCommand { get; }
         public ICommand DeleteFavoriteCourseCommand { get; }
         public ICommand ClearAllFavoritesCommand { get; }
 
-        public HistoryPage(AuthService authService)
+        // Selection mode for Forum integration
+        public bool IsSelectionMode { get; set; }
+        public event EventHandler<HistoryItem> ItemSelected;
+
+        public HistoryPage(AuthService authService, bool selectionMode = false)
         {
             InitializeComponent();
             _authService = authService;
@@ -212,6 +216,15 @@ namespace CommunityFinder.Views
             if (e.CurrentSelection?.FirstOrDefault() is HistoryItem item)
             {
                 if (sender is CollectionView cv) cv.SelectedItem = null;
+                
+                // If in selection mode, trigger the ItemSelected event and return
+                if (IsSelectionMode)
+                {
+                    ItemSelected?.Invoke(this, item);
+                    await Navigation.PopAsync();
+                    return;
+                }
+
                 if (string.IsNullOrWhiteSpace(item.DetailUrl))
                 {
                     await DisplayAlert("Error", "This link is not available.", "OK");
@@ -237,6 +250,15 @@ namespace CommunityFinder.Views
             if (e.CurrentSelection?.FirstOrDefault() is HistoryItem item)
             {
                 if (sender is CollectionView cv) cv.SelectedItem = null;
+                
+                // If in selection mode, trigger the ItemSelected event and return
+                if (IsSelectionMode)
+                {
+                    ItemSelected?.Invoke(this, item);
+                    await Navigation.PopAsync();
+                    return;
+                }
+
                 if (string.IsNullOrWhiteSpace(item.DetailUrl))
                 {
                     await DisplayAlert("Error", "This link is not available.", "OK");
