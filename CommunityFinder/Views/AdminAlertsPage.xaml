@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CommunityFinder.Views.AdminAlertsPage"
-             Title="Reports & Alerts (Admin)"
+             Title="Reports and Alerts (Admin)"
              BackgroundColor="#F5F5F5">
 
     <ScrollView>

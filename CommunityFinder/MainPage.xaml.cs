@@ -206,5 +206,11 @@ namespace CommunityFinder
         {
             await Navigation.PushAsync(new EventPage(_authService));
         }
+
+        private async void OnForumClicked(object sender, EventArgs e)
+        {
+            var forumService = new ForumService(_authService.Client);
+            await Navigation.PushAsync(new ForumCategoriesPage(forumService, _authService));
+        }
     }
 }

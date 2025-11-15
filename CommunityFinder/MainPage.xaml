@@ -126,7 +126,11 @@
                Style="{StaticResource TopTab}"
                HorizontalOptions="Center"
                VerticalOptions="Center"
-               Margin="0,0,6,0"/>
+               Margin="0,0,6,0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnForumClicked"/>
+                    </Label.GestureRecognizers>
+                </Label>
                 <!-- 略往左移 -->
             </Grid>
 

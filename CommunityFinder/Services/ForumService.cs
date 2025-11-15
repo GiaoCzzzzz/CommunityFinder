@@ -200,10 +200,12 @@ namespace CommunityFinder.Services
             {
                 var replies = await _client.From<ForumReply>()
                     .Where(x => x.PostId == postId)
-                    .Filter("user_id", Supabase.Postgrest.Constants.Operator.NotEquals, userId.ToString())
                     .Order(x => x.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
                     .Get();
-                allReplies.AddRange(replies.Models);
+                
+                // Filter out user's own replies in memory
+                var filteredReplies = replies.Models.Where(r => r.UserId != userId).ToList();
+                allReplies.AddRange(filteredReplies);
             }
 
             return allReplies;
