@@ -35,20 +35,22 @@ namespace CommunityFinder.Views
 
         private async void OnAddLinkClicked(object sender, EventArgs e)
         {
-            _isReturningFromHistory = true;
-            var historyPage = new HistoryPage(_authService);
+            var historyPage = new HistoryPage(_authService, selectionMode: true);
             
-            // Subscribe to the history page's item selection
-            historyPage.Disappearing += async (s, args) =>
+            // Subscribe to the item selection event
+            historyPage.ItemSelected += (s, item) =>
             {
-                // When returning from history page, check if navigation data was set
-                await Task.Delay(100); // Small delay to ensure navigation completes
+                if (item.IsEvent)
+                {
+                    SetLinkedEvent(item.Id, item.Title);
+                }
+                else
+                {
+                    SetLinkedCourse(item.Id, item.Title);
+                }
             };
 
             await Navigation.PushAsync(historyPage);
-            
-            // Show prompt to inform user
-            await DisplayAlert("Select Link", "Please select a course or event from your history to link to this post", "OK");
         }
 
         public void SetLinkedCourse(string courseId, string courseName)

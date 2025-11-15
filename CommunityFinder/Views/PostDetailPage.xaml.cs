@@ -368,8 +368,24 @@ namespace CommunityFinder.Views
 
         private async void OnAddLinkToReplyClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new HistoryPage(_authService));
-            await DisplayAlert("Select Link", "Please select a course or event to link", "OK");
+            var historyPage = new HistoryPage(_authService, selectionMode: true);
+            
+            // Subscribe to the item selection event
+            historyPage.ItemSelected += (s, item) =>
+            {
+                if (item.IsEvent)
+                {
+                    SetLinkedEvent(item.Id);
+                }
+                else
+                {
+                    SetLinkedCourse(item.Id);
+                }
+                
+                DisplayAlert("Link Added", $"Added link to {item.Title}", "OK");
+            };
+
+            await Navigation.PushAsync(historyPage);
         }
 
         public void SetLinkedCourse(string courseId)
