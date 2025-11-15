@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CommunityFinder.Views.CreatePostPage"
+             Title="Create Post"
+             BackgroundColor="#F5F5F5">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <!-- Topic -->
+            <Label Text="Topic" FontAttributes="Bold" FontSize="16"/>
+            <Entry x:Name="TopicEntry" 
+                   Placeholder="Enter topic title..."
+                   BackgroundColor="White"/>
+
+            <!-- Post Type -->
+            <Label Text="Post Type" FontAttributes="Bold" FontSize="16"/>
+            <Picker x:Name="PostTypePicker">
+                <Picker.Items>
+                    <x:String>Ask a Question</x:String>
+                    <x:String>Sharing posts</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <!-- Content -->
+            <Label Text="Content" FontAttributes="Bold" FontSize="16"/>
+            <Frame BackgroundColor="White" Padding="0" CornerRadius="8">
+                <Editor x:Name="ContentEditor" 
+                        Placeholder="Write your post content..."
+                        HeightRequest="200"
+                        BackgroundColor="White"/>
+            </Frame>
+
+            <!-- Linked Course/Event -->
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="+ Add Course/Event Link"
+                        BackgroundColor="#4A90E2"
+                        TextColor="White"
+                        HorizontalOptions="FillAndExpand"
+                        Clicked="OnAddLinkClicked"/>
+            </HorizontalStackLayout>
+
+            <Frame x:Name="LinkedItemFrame"
+                   IsVisible="False"
+                   BackgroundColor="#E3F2FD"
+                   Padding="10"
+                   CornerRadius="8">
+                <VerticalStackLayout>
+                    <HorizontalStackLayout>
+                        <Label x:Name="LinkedItemLabel" 
+                               Text="No link selected"
+                               HorizontalOptions="StartAndExpand"/>
+                        <Button Text="Remove"
+                                BackgroundColor="#DC3545"
+                                TextColor="White"
+                                Padding="8,4"
+                                Clicked="OnRemoveLinkClicked"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Submit Button -->
+            <Button Text="Create Post"
+                    BackgroundColor="#28A745"
+                    TextColor="White"
+                    FontSize="18"
+                    Margin="0,20,0,0"
+                    Clicked="OnCreatePostClicked"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

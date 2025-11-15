@@ -34,6 +34,7 @@ namespace CommunityFinder
 
             builder.Services.AddSingleton(client);
             builder.Services.AddSingleton<AuthService>();
+            builder.Services.AddSingleton<ForumService>();
             //builder.Services.AddSingleton<IProfileService,ProfileService>();
 
             Routing.RegisterRoute("reset-password", typeof(ResetPasswordPage));

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CommunityFinder.Views.PostDetailPage"
+             Title="Post Detail"
+             BackgroundColor="#F5F5F5">
+
+    <Grid RowDefinitions="*,Auto">
+        <!-- Posts and Replies List -->
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout x:Name="PostContainer" Padding="10" Spacing="10"/>
+        </ScrollView>
+
+        <!-- Reply Input (Bottom) -->
+        <Frame Grid.Row="1" 
+               BackgroundColor="White" 
+               Padding="10" 
+               CornerRadius="0"
+               HasShadow="True">
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="+"
+                        BackgroundColor="#4A90E2"
+                        TextColor="White"
+                        WidthRequest="40"
+                        Clicked="OnAddLinkToReplyClicked"/>
+                <Entry x:Name="ReplyEntry"
+                       Placeholder="Write a reply..."
+                       HorizontalOptions="FillAndExpand"
+                       VerticalOptions="Center"/>
+                <Button Text="Send"
+                        BackgroundColor="#28A745"
+                        TextColor="White"
+                        Clicked="OnSendReplyClicked"/>
+            </HorizontalStackLayout>
+        </Frame>
+    </Grid>
+</ContentPage>

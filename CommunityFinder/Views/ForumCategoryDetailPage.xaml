@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CommunityFinder.Views.ForumCategoryDetailPage"
+             x:Name="ThisPage"
+             BackgroundColor="#F5F5F5">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+        <!-- Category Name -->
+        <Label Grid.Row="0" 
+               x:Name="CategoryNameLabel"
+               FontSize="24"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               Margin="10"/>
+
+        <!-- Announcement Section -->
+        <Frame Grid.Row="1" 
+               BackgroundColor="#FFF3CD"
+               Margin="10,0,10,10"
+               Padding="15"
+               CornerRadius="8"
+               HasShadow="True">
+            <VerticalStackLayout>
+                <HorizontalStackLayout Spacing="10">
+                    <Label Text="📢 Announcement" 
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="#856404"
+                           HorizontalOptions="StartAndExpand"/>
+                    <Button Text="Edit"
+                            x:Name="EditAnnouncementButton"
+                            IsVisible="False"
+                            BackgroundColor="#FFC107"
+                            TextColor="White"
+                            Padding="10,5"
+                            Clicked="OnEditAnnouncementClicked"/>
+                </HorizontalStackLayout>
+                <Label x:Name="AnnouncementLabel"
+                       Text="No announcement"
+                       TextColor="#856404"
+                       Margin="0,5,0,0"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Post Category Filter -->
+        <HorizontalStackLayout Grid.Row="2" Margin="10,0" Spacing="10">
+            <Label Text="Post Category:" VerticalOptions="Center" FontAttributes="Bold"/>
+            <Picker x:Name="PostTypePicker" 
+                    HorizontalOptions="FillAndExpand"
+                    SelectedIndexChanged="OnPostTypeChanged">
+                <Picker.Items>
+                    <x:String>All</x:String>
+                    <x:String>Ask a Question</x:String>
+                    <x:String>Sharing posts</x:String>
+                </Picker.Items>
+            </Picker>
+        </HorizontalStackLayout>
+
+        <!-- Posts List -->
+        <ScrollView Grid.Row="3">
+            <CollectionView x:Name="PostsCollection"
+                            SelectionMode="Single"
+                            SelectionChanged="OnPostSelected">
+                <CollectionView.EmptyView>
+                    <Label Text="No posts yet. Be the first to post!"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="Gray"
+                           Margin="20"/>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="10" 
+                               Padding="15" 
+                               BackgroundColor="White"
+                               CornerRadius="8"
+                               HasShadow="True">
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto">
+                                <!-- Username (Left Top) -->
+                                <Label Grid.Row="0" Grid.Column="0"
+                                       Text="{Binding Username}"
+                                       FontSize="12"
+                                       TextColor="Gray"/>
+
+                                <!-- Post Type (Right Top) -->
+                                <Label Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding PostType}"
+                                       FontSize="12"
+                                       BackgroundColor="#4A90E2"
+                                       TextColor="White"
+                                       Padding="8,4"
+                                       HorizontalOptions="End"/>
+
+                                <!-- Topic (Center) -->
+                                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                       Text="{Binding Topic}"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       Margin="0,10,0,5"/>
+
+                                <!-- Reply Count (Below Topic) -->
+                                <Label Grid.Row="2" Grid.Column="0"
+                                       FontSize="12"
+                                       TextColor="Gray"
+                                       Margin="0,0,0,5">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="💬 "/>
+                                            <Span Text="{Binding ReplyCount}"/>
+                                            <Span Text=" replies"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+
+                                <!-- Report Button (Right Bottom) -->
+                                <Button Grid.Row="2" Grid.Column="1"
+                                        Text="🚩 Report"
+                                        FontSize="11"
+                                        BackgroundColor="#DC3545"
+                                        TextColor="White"
+                                        Padding="8,4"
+                                        HorizontalOptions="End"
+                                        Clicked="OnReportPostClicked"
+                                        CommandParameter="{Binding .}"/>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+
+        <!-- Add Post Button (Floating) -->
+        <Frame Grid.Row="4"
+               BackgroundColor="#28A745"
+               CornerRadius="30"
+               WidthRequest="60"
+               HeightRequest="60"
+               Padding="0"
+               Margin="0,0,20,20"
+               HorizontalOptions="End"
+               VerticalOptions="End"
+               HasShadow="True">
+            <Frame.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnCreatePostClicked"/>
+            </Frame.GestureRecognizers>
+            <Label Text="+"
+                   FontSize="36"
+                   TextColor="White"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"/>
+        </Frame>
+    </Grid>
+</ContentPage>

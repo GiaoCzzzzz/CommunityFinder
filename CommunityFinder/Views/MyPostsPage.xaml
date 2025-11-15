@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CommunityFinder.Views.MyPostsPage"
+             Title="My Posts"
+             BackgroundColor="#F5F5F5">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Tab Selector -->
+        <Grid Grid.Row="0" Margin="10" ColumnDefinitions="*,*">
+            <Button x:Name="MyPostsTabButton"
+                    Grid.Column="0"
+                    Text="My Posts"
+                    BackgroundColor="#4A90E2"
+                    TextColor="White"
+                    CornerRadius="8"
+                    Margin="0,0,5,0"
+                    Clicked="OnMyPostsTabClicked"/>
+            <Button x:Name="RepliesToMeTabButton"
+                    Grid.Column="1"
+                    Text="Replies to Your Posts"
+                    BackgroundColor="#E0E0E0"
+                    TextColor="Black"
+                    CornerRadius="8"
+                    Margin="5,0,0,0"
+                    Clicked="OnRepliesToMeTabClicked"/>
+        </Grid>
+
+        <!-- Content Area -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout x:Name="ContentContainer" Padding="10" Spacing="10"/>
+        </ScrollView>
+    </Grid>
+</ContentPage>
