@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CommunityFinder.Views.CreatePostPage"
              Title="Create Post"
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="#F9FFE3">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">

@@ -25,29 +25,42 @@ namespace CommunityFinder.Views
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await LoadPostAndRepliesAsync();
+            await LoadPostAndRepliesAnimatedAsync();
         }
 
-        private async Task LoadPostAndRepliesAsync()
+        // --------------------- 加载主帖和回复（动画版） ---------------------
+        private async Task LoadPostAndRepliesAnimatedAsync()
         {
             PostContainer.Clear();
+            var cards = new List<VisualElement>();
 
-            // Add main post (Floor 0)
-            AddPostCard(_post);
+            // 主帖
+            var mainPostFrame = CreatePostCard(_post);
+            mainPostFrame.Opacity = 0;
+            mainPostFrame.Scale = 0.8;
+            PostContainer.Add(mainPostFrame);
+            cards.Add(mainPostFrame);
 
-            // Load and add replies
+            // 回复
             try
             {
                 _replies = await _forumService.GetRepliesByPostIdAsync(_post.Id);
-                
+
                 foreach (var reply in _replies.Where(r => r.ParentReplyId == null))
                 {
-                    AddReplyCard(reply, isMainReply: true);
-                    
-                    // Add sub-replies
+                    var replyFrame = CreateReplyCard(reply, isMainReply: true);
+                    replyFrame.Opacity = 0;
+                    replyFrame.Scale = 0.8;
+                    PostContainer.Add(replyFrame);
+                    cards.Add(replyFrame);
+
                     foreach (var subReply in _replies.Where(r => r.ParentReplyId == reply.Id))
                     {
-                        AddReplyCard(subReply, isMainReply: false, parentUsername: reply.Username);
+                        var subReplyFrame = CreateReplyCard(subReply, isMainReply: false, parentUsername: reply.Username);
+                        subReplyFrame.Opacity = 0;
+                        subReplyFrame.Scale = 0.8;
+                        PostContainer.Add(subReplyFrame);
+                        cards.Add(subReplyFrame);
                     }
                 }
             }
@@ -55,9 +68,23 @@ namespace CommunityFinder.Views
             {
                 await DisplayAlert("Error", $"Failed to load replies: {ex.Message}", "OK");
             }
+
+            // 动画：依次显示每个卡片
+            int delay = 0;
+            foreach (var card in cards)
+            {
+                await Task.Delay(delay);
+                await Task.WhenAll(
+                    card.FadeTo(1, 400, Easing.CubicOut),
+                    card.TranslateTo(0, -10, 400, Easing.CubicOut),
+                    card.ScaleTo(1, 400, Easing.SpringOut)
+                );
+                delay = 100; // 每张卡片间隔 100ms
+            }
         }
 
-        private void AddPostCard(ForumPost post)
+        // --------------------- 创建主帖卡片 ---------------------
+        private Frame CreatePostCard(ForumPost post)
         {
             var frame = new Frame
             {
@@ -84,7 +111,6 @@ namespace CommunityFinder.Views
                 }
             };
 
-            // Username (Left Top)
             var usernameLabel = new Label
             {
                 Text = $"👤 {post.Username} (OP)",
@@ -96,7 +122,6 @@ namespace CommunityFinder.Views
             Grid.SetColumn(usernameLabel, 0);
             grid.Add(usernameLabel);
 
-            // Date (Right Top)
             var dateLabel = new Label
             {
                 Text = post.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
@@ -108,7 +133,6 @@ namespace CommunityFinder.Views
             Grid.SetColumn(dateLabel, 1);
             grid.Add(dateLabel);
 
-            // Topic
             var topicLabel = new Label
             {
                 Text = post.Topic,
@@ -120,7 +144,6 @@ namespace CommunityFinder.Views
             Grid.SetColumnSpan(topicLabel, 2);
             grid.Add(topicLabel);
 
-            // Content
             var contentLabel = new Label
             {
                 Text = post.Content,
@@ -131,7 +154,6 @@ namespace CommunityFinder.Views
             Grid.SetColumnSpan(contentLabel, 2);
             grid.Add(contentLabel);
 
-            // Linked course/event
             if (!string.IsNullOrEmpty(post.LinkedCourseId) || !string.IsNullOrEmpty(post.LinkedEventId))
             {
                 var linkFrame = CreateLinkedItemFrame(post.LinkedCourseId, post.LinkedEventId);
@@ -141,10 +163,11 @@ namespace CommunityFinder.Views
             }
 
             frame.Content = grid;
-            PostContainer.Add(frame);
+            return frame;
         }
 
-        private void AddReplyCard(ForumReply reply, bool isMainReply, string parentUsername = null)
+        // --------------------- 创建回复卡片 ---------------------
+        private Frame CreateReplyCard(ForumReply reply, bool isMainReply, string parentUsername = null)
         {
             var frame = new Frame
             {
@@ -172,13 +195,12 @@ namespace CommunityFinder.Views
                 }
             };
 
-            // Username (Left Top)
             var usernameText = $"👤 {reply.Username}";
             if (!isMainReply && !string.IsNullOrEmpty(parentUsername))
             {
                 usernameText = $"👤 {reply.Username} → {parentUsername}";
             }
-            
+
             var usernameLabel = new Label
             {
                 Text = usernameText,
@@ -190,7 +212,6 @@ namespace CommunityFinder.Views
             Grid.SetColumn(usernameLabel, 0);
             grid.Add(usernameLabel);
 
-            // Date (Right Top)
             var dateLabel = new Label
             {
                 Text = reply.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
@@ -202,7 +223,6 @@ namespace CommunityFinder.Views
             Grid.SetColumn(dateLabel, 1);
             grid.Add(dateLabel);
 
-            // Content
             var contentLabel = new Label
             {
                 Text = reply.Content,
@@ -213,7 +233,6 @@ namespace CommunityFinder.Views
             Grid.SetColumnSpan(contentLabel, 2);
             grid.Add(contentLabel);
 
-            // Linked course/event
             if (!string.IsNullOrEmpty(reply.LinkedCourseId) || !string.IsNullOrEmpty(reply.LinkedEventId))
             {
                 var linkFrame = CreateLinkedItemFrame(reply.LinkedCourseId, reply.LinkedEventId);
@@ -222,10 +241,7 @@ namespace CommunityFinder.Views
                 grid.Add(linkFrame);
             }
 
-            // Action Buttons
             var actionStack = new HorizontalStackLayout { Spacing = 10 };
-            
-            // Reply button (only for main replies)
             if (isMainReply)
             {
                 var replyButton = new Button
@@ -240,7 +256,6 @@ namespace CommunityFinder.Views
                 actionStack.Add(replyButton);
             }
 
-            // Report button
             var reportButton = new Button
             {
                 Text = "Report",
@@ -252,7 +267,6 @@ namespace CommunityFinder.Views
             reportButton.Clicked += async (s, e) => await OnReportReplyClicked(reply.Id);
             actionStack.Add(reportButton);
 
-            // Delete button (admin only)
             if (_forumService.IsAdmin())
             {
                 var deleteButton = new Button
@@ -272,7 +286,7 @@ namespace CommunityFinder.Views
             grid.Add(actionStack);
 
             frame.Content = grid;
-            PostContainer.Add(frame);
+            return frame;
         }
 
         private Frame CreateLinkedItemFrame(string courseId, string eventId)
@@ -308,17 +322,13 @@ namespace CommunityFinder.Views
                 {
                     var course = await _forumService.GetCourseAsync(courseId);
                     if (course != null)
-                    {
                         await Navigation.PushAsync(new CourseDetailPage(course.DetailUrl, _authService));
-                    }
                 }
                 else if (!string.IsNullOrEmpty(eventId))
                 {
                     var eventItem = await _forumService.GetEventAsync(eventId);
                     if (eventItem != null)
-                    {
                         await Navigation.PushAsync(new EventDetailPage(eventItem.DetailUrl, _authService));
-                    }
                 }
             }
             catch (Exception ex)
@@ -345,12 +355,7 @@ namespace CommunityFinder.Views
 
             try
             {
-                await _forumService.CreateReplyAsync(
-                    _post.Id, 
-                    content, 
-                    _replyingToId,
-                    _linkedCourseId,
-                    _linkedEventId);
+                await _forumService.CreateReplyAsync(_post.Id, content, _replyingToId, _linkedCourseId, _linkedEventId);
 
                 ReplyEntry.Text = string.Empty;
                 ReplyEntry.Placeholder = "Write a reply...";
@@ -358,7 +363,7 @@ namespace CommunityFinder.Views
                 _linkedCourseId = null;
                 _linkedEventId = null;
 
-                await LoadPostAndRepliesAsync();
+                await LoadPostAndRepliesAnimatedAsync(); // 回复发送后也播放动画
             }
             catch (Exception ex)
             {
@@ -369,22 +374,12 @@ namespace CommunityFinder.Views
         private async void OnAddLinkToReplyClicked(object sender, EventArgs e)
         {
             var historyPage = new HistoryPage(_authService, selectionMode: true);
-            
-            // Subscribe to the item selection event
             historyPage.ItemSelected += (s, item) =>
             {
-                if (item.IsEvent)
-                {
-                    SetLinkedEvent(item.Id);
-                }
-                else
-                {
-                    SetLinkedCourse(item.Id);
-                }
-                
+                if (item.IsEvent) SetLinkedEvent(item.Id);
+                else SetLinkedCourse(item.Id);
                 DisplayAlert("Link Added", $"Added link to {item.Title}", "OK");
             };
-
             await Navigation.PushAsync(historyPage);
         }
 
@@ -402,9 +397,7 @@ namespace CommunityFinder.Views
 
         private async Task OnReportReplyClicked(Guid replyId)
         {
-            var confirm = await DisplayAlert("Report Reply", 
-                "Are you sure you want to report this reply?", "Yes", "No");
-            
+            var confirm = await DisplayAlert("Report Reply", "Are you sure you want to report this reply?", "Yes", "No");
             if (confirm)
             {
                 try
@@ -421,16 +414,14 @@ namespace CommunityFinder.Views
 
         private async Task OnDeleteReplyClicked(Guid replyId)
         {
-            var confirm = await DisplayAlert("Delete Reply", 
-                "Are you sure you want to delete this reply and all its sub-replies?", "Yes", "No");
-            
+            var confirm = await DisplayAlert("Delete Reply", "Are you sure you want to delete this reply and all its sub-replies?", "Yes", "No");
             if (confirm)
             {
                 try
                 {
                     await _forumService.DeleteReplyAsync(replyId);
                     await DisplayAlert("Success", "Reply deleted", "OK");
-                    await LoadPostAndRepliesAsync();
+                    await LoadPostAndRepliesAnimatedAsync();
                 }
                 catch (Exception ex)
                 {

@@ -1,4 +1,4 @@
-using CommunityFinder.Models;
+﻿using CommunityFinder.Models;
 using CommunityFinder.Services;
 using System.Collections.ObjectModel;
 
@@ -8,7 +8,8 @@ namespace CommunityFinder.Views
     {
         private readonly ForumService _forumService;
         private readonly AuthService _authService;
-        private ObservableCollection<ForumCategory> _categories;
+
+        private ObservableCollection<ForumCategoryDisplay> _categories;
         private List<ForumCategory> _allCategories;
 
         public ForumCategoriesPage(ForumService forumService, AuthService authService)
@@ -16,10 +17,10 @@ namespace CommunityFinder.Views
             InitializeComponent();
             _forumService = forumService;
             _authService = authService;
-            _categories = new ObservableCollection<ForumCategory>();
+
+            _categories = new ObservableCollection<ForumCategoryDisplay>();
             CategoriesCollection.ItemsSource = _categories;
 
-            // Show admin button if user is admin
             AddCategoryButton.IsVisible = _forumService.IsAdmin();
         }
 
@@ -34,8 +35,7 @@ namespace CommunityFinder.Views
             try
             {
                 _allCategories = await _forumService.GetAllCategoriesAsync();
-                
-                // If no categories exist, create default ones
+
                 if (_allCategories.Count == 0)
                 {
                     await CreateDefaultCategoriesAsync();
@@ -43,9 +43,16 @@ namespace CommunityFinder.Views
                 }
 
                 _categories.Clear();
-                foreach (var category in _allCategories)
+
+                foreach (var c in _allCategories)
                 {
-                    _categories.Add(category);
+                    _categories.Add(new ForumCategoryDisplay
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        DisplayOrder = c.DisplayOrder,
+                        ImagePath = GetImageForCategory(c.Name)
+                    });
                 }
             }
             catch (Exception ex)
@@ -54,11 +61,27 @@ namespace CommunityFinder.Views
             }
         }
 
+        // 🔥 使用精确映射，避免字符串替换错误
+        private string GetImageForCategory(string name)
+        {
+            var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Training Provider Directory", "training_provider.png" },
+                { "Education & Enrichment", "education_enrichment.png" },
+                { "Health & Wellness", "health_wellness.png" },
+                { "Lifelong Learning", "lifelong_learning.png" },
+                { "Lifestyle & Leisure", "lifestyle_leisure.png" },
+                { "Sports & Fitness", "sports_fitness.png" }
+            };
+
+            return map.ContainsKey(name) ? map[name] : "default_category.png";
+        }
+
         private async Task CreateDefaultCategoriesAsync()
         {
             if (!_forumService.IsAdmin()) return;
 
-            var defaultCategories = new[]
+            var defaults = new[]
             {
                 "Training Provider Directory",
                 "Education & Enrichment",
@@ -68,18 +91,30 @@ namespace CommunityFinder.Views
                 "Sports & Fitness"
             };
 
-            for (int i = 0; i < defaultCategories.Length; i++)
+            int order = 1;
+            foreach (var name in defaults)
             {
-                await _forumService.CreateCategoryAsync(defaultCategories[i], i + 1);
+                await _forumService.CreateCategoryAsync(name, order++);
             }
         }
 
         private async void OnCategorySelected(object sender, SelectionChangedEventArgs e)
         {
-            if (e.CurrentSelection?.FirstOrDefault() is ForumCategory category)
+            if (e.CurrentSelection?.FirstOrDefault() is ForumCategoryDisplay category)
             {
                 CategoriesCollection.SelectedItem = null;
-                await Navigation.PushAsync(new ForumCategoryDetailPage(category, _forumService, _authService));
+
+                var original = _allCategories.First(c => c.Id == category.Id);
+                await Navigation.PushAsync(new ForumCategoryDetailPage(original, _forumService, _authService));
+            }
+        }
+
+        private async void OnCategoryTapped(object sender, TappedEventArgs e)
+        {
+            if (sender is Frame frame)
+            {
+                await frame.ScaleTo(0.95, 80);
+                await frame.ScaleTo(1, 80);
             }
         }
 
@@ -87,25 +122,21 @@ namespace CommunityFinder.Views
         {
             if (string.IsNullOrWhiteSpace(e.NewTextValue))
             {
-                _categories.Clear();
-                foreach (var cat in _allCategories)
-                {
-                    _categories.Add(cat);
-                }
+                await LoadCategoriesAsync();
                 return;
             }
 
             try
             {
-                var searchResults = await _forumService.SearchPostsAsync(e.NewTextValue);
-                
-                if (searchResults.Count == 0)
+                var results = await _forumService.SearchPostsAsync(e.NewTextValue);
+
+                if (results.Count == 0)
                 {
                     await DisplayAlert("Search", "No posts found", "OK");
                     return;
                 }
 
-                await Navigation.PushAsync(new ForumSearchResultsPage(searchResults, _forumService, _authService));
+                await Navigation.PushAsync(new ForumSearchResultsPage(results, _forumService, _authService));
             }
             catch (Exception ex)
             {
@@ -121,19 +152,29 @@ namespace CommunityFinder.Views
         private async void OnAddCategoryClicked(object sender, EventArgs e)
         {
             var name = await DisplayPromptAsync("Add Category", "Enter category name:");
-            if (!string.IsNullOrWhiteSpace(name))
+
+            if (string.IsNullOrWhiteSpace(name))
+                return;
+
+            try
             {
-                try
-                {
-                    var maxOrder = _allCategories.Any() ? _allCategories.Max(c => c.DisplayOrder) : 0;
-                    await _forumService.CreateCategoryAsync(name, maxOrder + 1);
-                    await LoadCategoriesAsync();
-                }
-                catch (Exception ex)
-                {
-                    await DisplayAlert("Error", $"Failed to create category: {ex.Message}", "OK");
-                }
+                var maxOrder = _allCategories.Any() ? _allCategories.Max(c => c.DisplayOrder) : 0;
+                await _forumService.CreateCategoryAsync(name, maxOrder + 1);
+                await LoadCategoriesAsync();
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to create category: {ex.Message}", "OK");
             }
         }
+    }
+
+    // ✔ 修复后的显示模型
+    public class ForumCategoryDisplay
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public int DisplayOrder { get; set; }
+        public string ImagePath { get; set; }
     }
 }
