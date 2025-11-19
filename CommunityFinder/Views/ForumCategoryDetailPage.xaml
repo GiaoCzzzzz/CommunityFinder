@@ -57,6 +57,7 @@
             </Picker>
         </HorizontalStackLayout>
 
+
         <!-- Posts List -->
         <ScrollView Grid.Row="3">
             <CollectionView x:Name="PostsCollection"
@@ -112,17 +113,6 @@
                                         </FormattedString>
                                     </Label.FormattedText>
                                 </Label>
-
-                                <!-- Report Button (Right Bottom) -->
-                                <Button Grid.Row="2" Grid.Column="1"
-                                        Text="🚩 Report"
-                                        FontSize="11"
-                                        BackgroundColor="#DC3545"
-                                        TextColor="White"
-                                        Padding="8,4"
-                                        HorizontalOptions="End"
-                                        Clicked="OnReportPostClicked"
-                                        CommandParameter="{Binding .}"/>
                             </Grid>
                         </Frame>
                     </DataTemplate>

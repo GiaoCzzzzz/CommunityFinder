@@ -2,6 +2,7 @@
 using CommunityFinder.Services;
 using System.Collections.ObjectModel;
 
+
 namespace CommunityFinder.Views
 {
     public partial class ForumCategoriesPage : ContentPage
@@ -21,7 +22,23 @@ namespace CommunityFinder.Views
             _categories = new ObservableCollection<ForumCategoryDisplay>();
             CategoriesCollection.ItemsSource = _categories;
 
+            
             AddCategoryButton.IsVisible = _forumService.IsAdmin();
+            ReportsButton.IsVisible = _forumService.IsAdmin();
+        }
+
+
+        private async void OnReportsClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                // Corrected class name and variable name  
+                await Navigation.PushAsync(new AdminAlertsPage(_forumService, _authService));
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to open admin alerts: {ex.Message}", "OK");
+            }
         }
 
         protected override async void OnAppearing()
