@@ -42,6 +42,8 @@ namespace CommunityFinder.Views
             ClearAllHistoryCommand = new Command(ClearAllHistoryAsync);
             DeleteFavoriteCourseCommand = new Command<HistoryItem>(DeleteFavoriteAsync);
             ClearAllFavoritesCommand = new Command(ClearAllFavoritesAsync);
+
+            IsSelectionMode = selectionMode;
         }
 
         // ==================== 过滤逻辑 ====================
@@ -276,6 +278,15 @@ namespace CommunityFinder.Views
                 {
                     await DisplayAlert("Item Closed", "This item is no longer available.", "OK");
                 }
+            }
+        }
+
+        private async void OnSelectButtonClicked(object sender, EventArgs e)
+        {
+            if (sender is Button btn && btn.CommandParameter is HistoryItem item)
+            {
+                ItemSelected?.Invoke(this, item);
+                await Navigation.PopAsync();
             }
         }
     }

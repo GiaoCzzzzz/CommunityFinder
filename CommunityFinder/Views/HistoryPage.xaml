@@ -120,6 +120,17 @@
                                         Padding="10,5"
                                         Command="{Binding BindingContext.DeleteHistoryCommand, Source={x:Reference ThisPage}}"
                                         CommandParameter="{Binding .}"/>
+                                <Button Text="+"
+                                        WidthRequest="36"
+                                        HeightRequest="36"
+                                        CornerRadius="18"
+                                        BackgroundColor="#4A90E2"
+                                        TextColor="White"
+                                        FontSize="20"
+                                        Margin="8,0,0,0"
+                                        Clicked="OnSelectButtonClicked"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsSelectionMode}" />
                             </StackLayout>
                         </Frame>
                     </DataTemplate>
@@ -191,6 +202,17 @@
                                         Padding="10,5"
                                         Command="{Binding BindingContext.DeleteFavoriteCourseCommand, Source={x:Reference ThisPage}}"
                                         CommandParameter="{Binding .}"/>
+                                <Button Text="+"
+                                        WidthRequest="36"
+                                        HeightRequest="36"
+                                        CornerRadius="18"
+                                        BackgroundColor="#4A90E2"
+                                        TextColor="White"
+                                        FontSize="20"
+                                        Margin="8,0,0,0"
+                                        Clicked="OnSelectButtonClicked"
+                                        CommandParameter="{Binding .}"
+                                        IsVisible="{Binding Source={x:Reference ThisPage}, Path=IsSelectionMode}" />
                             </StackLayout>
                         </Frame>
                     </DataTemplate>
