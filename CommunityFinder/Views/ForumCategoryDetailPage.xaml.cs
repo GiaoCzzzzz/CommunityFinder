@@ -70,6 +70,10 @@ namespace CommunityFinder.Views
         private void ApplyFilter()
         {
             _posts.Clear();
+            if (_allPosts == null)
+            {
+                return;
+            }
             var filtered = _allPosts;
 
             if (_selectedPostType != "All")
