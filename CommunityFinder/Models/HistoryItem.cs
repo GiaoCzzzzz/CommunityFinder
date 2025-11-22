@@ -8,6 +8,7 @@ namespace CommunityFinder.Models
         public string DetailUrl { get; set; }
         public string ItemType { get; set; }  // "COURSE" or "EVENT"
         public bool IsEvent { get; set; }
+        public bool IsFavorite { get; set; }
 
         public static HistoryItem FromCourse(CourseItem course)
         {
@@ -18,7 +19,8 @@ namespace CommunityFinder.Models
                 Outlet = course.Outlet,
                 DetailUrl = course.DetailUrl,
                 ItemType = "COURSE",
-                IsEvent = false
+                IsEvent = false,
+                IsFavorite = false
             };
         }
 
@@ -31,7 +33,8 @@ namespace CommunityFinder.Models
                 Outlet = eventItem.Outlet,
                 DetailUrl = eventItem.DetailUrl,
                 ItemType = "EVENT",
-                IsEvent = true
+                IsEvent = true,
+                IsFavorite = false
             };
         }
     }
