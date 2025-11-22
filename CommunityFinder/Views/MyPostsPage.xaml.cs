@@ -1,6 +1,8 @@
 using CommunityFinder.Models;
 using CommunityFinder.Services;
 using Microsoft.Maui.Controls;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CommunityFinder.Views
 {
@@ -11,6 +13,7 @@ namespace CommunityFinder.Views
         private bool _showingMyPosts = true;
         private List<ForumPost> _myPosts;
         private List<ForumReply> _repliesToMe;
+        private List<ForumCategory> _categoriesCache;
 
         public MyPostsPage(ForumService forumService, AuthService authService)
         {
@@ -29,6 +32,7 @@ namespace CommunityFinder.Views
         {
             try
             {
+                _categoriesCache = await _forumService.GetAllCategoriesAsync();
                 _myPosts = await _forumService.GetUserPostsAsync();
                 _repliesToMe = await _forumService.GetRepliesToUserPostsAsync();
                 await ShowContentAnimated();
@@ -248,6 +252,8 @@ namespace CommunityFinder.Views
                 }
             };
 
+            var post = _myPosts?.FirstOrDefault(p => p.Id == reply.PostId);
+
             var usernameLabel = new Label
             {
                 Text = $"👤 {reply.Username}",
@@ -272,11 +278,22 @@ namespace CommunityFinder.Views
             Grid.SetColumn(reportButton, 1);
             grid.Add(reportButton);
 
+            var topicLabel = new Label
+            {
+                Text = post?.Topic ?? "View reply",
+                FontSize = 13,
+                TextColor = Colors.Gray,
+                Margin = new Thickness(0, 6, 0, 0)
+            };
+            Grid.SetRow(topicLabel, 1);
+            Grid.SetColumnSpan(topicLabel, 2);
+            grid.Add(topicLabel);
+
             var contentLabel = new Label
             {
                 Text = reply.Content,
                 FontSize = 14,
-                Margin = new Thickness(0, 10, 0, 0),
+                Margin = new Thickness(0, 28, 0, 0),
                 LineBreakMode = LineBreakMode.WordWrap
             };
             Grid.SetRow(contentLabel, 1);
@@ -287,7 +304,11 @@ namespace CommunityFinder.Views
             return frame;
         }
 
-        private string GetCategoryName(Guid categoryId) => "Category";
+        private string GetCategoryName(Guid categoryId)
+        {
+            var category = _categoriesCache?.FirstOrDefault(c => c.Id == categoryId);
+            return category?.Name ?? "Category";
+        }
 
         private async Task OnPostCardTapped(ForumPost post) =>
             await Navigation.PushAsync(new PostDetailPage(post, _forumService, _authService));

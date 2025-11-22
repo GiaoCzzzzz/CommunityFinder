@@ -1,6 +1,8 @@
 using CommunityFinder.Models;
 using Supabase;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CommunityFinder.Services
 {
@@ -25,6 +27,19 @@ namespace CommunityFinder.Services
             var userId = Guid.Parse(_client.Auth.CurrentSession.User.Id);
             var profile = await _client.From<Profiles>().Where(x => x.id == userId).Single();
             return profile?.username ?? "Anonymous";
+        }
+
+        private async Task<string> GetUsernameByIdAsync(Guid userId)
+        {
+            try
+            {
+                var profile = await _client.From<Profiles>().Where(x => x.id == userId).Single();
+                return profile?.username ?? "Anonymous";
+            }
+            catch
+            {
+                return "Unknown";
+            }
         }
 
         // ========== Category Operations ==========
@@ -192,7 +207,7 @@ namespace CommunityFinder.Services
         public async Task<List<ForumReply>> GetRepliesToUserPostsAsync()
         {
             var userId = Guid.Parse(_client.Auth.CurrentSession.User.Id);
-            
+
             // Get all user's posts
             var userPosts = await GetUserPostsAsync();
             var postIds = userPosts.Select(p => p.Id).ToList();
@@ -201,19 +216,35 @@ namespace CommunityFinder.Services
 
             // Get all replies to those posts, excluding replies from the user themselves
             var allReplies = new List<ForumReply>();
+            var usernameCache = new Dictionary<Guid, string>();
             foreach (var postId in postIds)
             {
                 var replies = await _client.From<ForumReply>()
                     .Where(x => x.PostId == postId)
                     .Order(x => x.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
                     .Get();
-                
+
                 // Filter out user's own replies in memory
                 var filteredReplies = replies.Models.Where(r => r.UserId != userId).ToList();
-                allReplies.AddRange(filteredReplies);
+
+                foreach (var reply in filteredReplies)
+                {
+                    if (string.IsNullOrWhiteSpace(reply.Username))
+                    {
+                        if (!usernameCache.TryGetValue(reply.UserId, out var cachedUsername))
+                        {
+                            cachedUsername = await GetUsernameByIdAsync(reply.UserId);
+                            usernameCache[reply.UserId] = cachedUsername;
+                        }
+
+                        reply.Username = cachedUsername;
+                    }
+
+                    allReplies.Add(reply);
+                }
             }
 
-            return allReplies;
+            return allReplies.OrderByDescending(r => r.CreatedAt).ToList();
         }
 
         public async Task<ForumReply> CreateReplyAsync(Guid postId, string content, 
