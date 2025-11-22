@@ -186,10 +186,15 @@ namespace CommunityFinder.Views
                 }
                 else if (report.ReplyId.HasValue)
                 {
-                    var replies = await _forumService.GetRepliesByPostIdAsync(Guid.Empty); // Need to get all replies
-                    // Find the reply and its post
-                    // This is simplified - in production, you'd want a better way to get the reply's post
-                    await DisplayAlert("Info", "Reply reported. Navigate to the post to view it.", "OK");
+                    var reply = await _forumService.GetReplyByIdAsync(report.ReplyId.Value);
+                    if (reply != null)
+                    {
+                        var post = await _forumService.GetPostByIdAsync(reply.PostId);
+                        if (post != null)
+                        {
+                            await Navigation.PushAsync(new PostDetailPage(post, _forumService, _authService, reply.Id));
+                        }
+                    }
                 }
             }
             catch (Exception ex)

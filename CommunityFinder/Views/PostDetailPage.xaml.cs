@@ -1,6 +1,8 @@
 using CommunityFinder.Models;
 using CommunityFinder.Services;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Platform;
+using System.Collections.Generic;
 
 namespace CommunityFinder.Views
 {
@@ -10,16 +12,19 @@ namespace CommunityFinder.Views
         private readonly ForumService _forumService;
         private readonly AuthService _authService;
         private List<ForumReply> _replies;
+        private readonly Guid? _targetReplyId;
         private Guid? _replyingToId = null;
         private string _linkedCourseId;
         private string _linkedEventId;
+        private Dictionary<Guid, Frame> _replyFrames = new();
 
-        public PostDetailPage(ForumPost post, ForumService forumService, AuthService authService)
+        public PostDetailPage(ForumPost post, ForumService forumService, AuthService authService, Guid? targetReplyId = null)
         {
             InitializeComponent();
             _post = post;
             _forumService = forumService;
             _authService = authService;
+            _targetReplyId = targetReplyId;
         }
 
         protected override async void OnAppearing()
@@ -32,6 +37,7 @@ namespace CommunityFinder.Views
         private async Task LoadPostAndRepliesAnimatedAsync()
         {
             PostContainer.Clear();
+            _replyFrames = new Dictionary<Guid, Frame>();
             var cards = new List<VisualElement>();
 
             // 主帖
@@ -53,6 +59,7 @@ namespace CommunityFinder.Views
                     replyFrame.Scale = 0.8;
                     PostContainer.Add(replyFrame);
                     cards.Add(replyFrame);
+                    _replyFrames[reply.Id] = replyFrame;
 
                     foreach (var subReply in _replies.Where(r => r.ParentReplyId == reply.Id))
                     {
@@ -61,6 +68,7 @@ namespace CommunityFinder.Views
                         subReplyFrame.Scale = 0.8;
                         PostContainer.Add(subReplyFrame);
                         cards.Add(subReplyFrame);
+                        _replyFrames[subReply.Id] = subReplyFrame;
                     }
                 }
             }
@@ -80,6 +88,21 @@ namespace CommunityFinder.Views
                     card.ScaleTo(1, 400, Easing.SpringOut)
                 );
                 delay = 100; // 每张卡片间隔 100ms
+            }
+
+            await ScrollToTargetReplyAsync();
+        }
+
+        private async Task ScrollToTargetReplyAsync()
+        {
+            if (!_targetReplyId.HasValue) return;
+
+            if (_replyFrames.TryGetValue(_targetReplyId.Value, out var frame))
+            {
+                frame.BorderColor = Color.FromArgb("#FFC107");
+                frame.BackgroundColor = Color.FromArgb("#FFF8E1");
+                await Task.Delay(150); // ensure layout ready
+                await MainScrollView.ScrollToAsync(frame, ScrollToPosition.Center, true);
             }
         }
 

@@ -184,6 +184,11 @@ namespace CommunityFinder.Services
             return response.Models;
         }
 
+        public async Task<ForumReply> GetReplyByIdAsync(Guid replyId)
+        {
+            return await _client.From<ForumReply>().Where(x => x.Id == replyId).Single();
+        }
+
         public async Task<List<ForumReply>> GetRepliesToUserPostsAsync()
         {
             var userId = Guid.Parse(_client.Auth.CurrentSession.User.Id);
@@ -334,5 +339,7 @@ namespace CommunityFinder.Services
         {
             return await _client.From<EventItem>().Where(x => x.EventId == eventId).Single();
         }
+
+
     }
 }

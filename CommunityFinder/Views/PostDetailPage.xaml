@@ -7,7 +7,7 @@
 
     <Grid RowDefinitions="*,Auto">
         <!-- Posts and Replies List -->
-        <ScrollView Grid.Row="0">
+        <ScrollView x:Name="MainScrollView" Grid.Row="0">
             <VerticalStackLayout x:Name="PostContainer" Padding="10" Spacing="10"/>
         </ScrollView>
 
