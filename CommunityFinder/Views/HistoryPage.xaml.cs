@@ -9,26 +9,21 @@ namespace CommunityFinder.Views
     {
         private readonly AuthService _authService;
 
-        // Original data sources
         public ObservableCollection<HistoryItem> BrowsingHistory { get; } = new();
         public ObservableCollection<HistoryItem> FavoriteCourses { get; } = new();
 
-        // Filtered display collections
         public ObservableCollection<HistoryItem> FilteredBrowsingHistory { get; } = new();
         public ObservableCollection<HistoryItem> FilteredFavoriteCourses { get; } = new();
 
-        // Search-related properties
         public string SearchText { get; set; } = string.Empty;
-        private string _selectedScope = "All";   // Search scope
-        private string _selectedType = "All";    // Search type
+        private string _selectedScope = "All";
+        private string _selectedType = "All";
 
-        // Commands
         public ICommand DeleteHistoryCommand { get; }
         public ICommand ClearAllHistoryCommand { get; }
         public ICommand DeleteFavoriteCourseCommand { get; }
         public ICommand ClearAllFavoritesCommand { get; }
 
-        // Selection mode for Forum integration
         public bool IsSelectionMode { get; set; }
         public event EventHandler<HistoryItem> ItemSelected;
 
@@ -46,33 +41,31 @@ namespace CommunityFinder.Views
             IsSelectionMode = selectionMode;
         }
 
-        // ==================== 过滤逻辑 ====================
+        // ==================== 搜索按钮点击 ====================
+        private void OnSearchButtonClicked(object sender, EventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        // ==================== 过滤 ====================
         private void ApplyFilters()
         {
-            // 过滤浏览记录
             FilteredBrowsingHistory.Clear();
             foreach (var item in BrowsingHistory)
-            {
                 if (MatchFilter(item))
                     FilteredBrowsingHistory.Add(item);
-            }
 
-            // 过滤收藏
             FilteredFavoriteCourses.Clear();
             foreach (var item in FavoriteCourses)
-            {
                 if (MatchFilter(item))
                     FilteredFavoriteCourses.Add(item);
-            }
         }
 
         private bool MatchFilter(HistoryItem item)
         {
-            // 按搜索类型过滤
             if (_selectedType == "Course" && item.ItemType != "COURSE") return false;
             if (_selectedType == "Event" && item.ItemType != "EVENT") return false;
 
-            // 按文本搜索
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 var lower = SearchText.ToLower();
@@ -81,21 +74,18 @@ namespace CommunityFinder.Views
                     return false;
             }
 
-            // 按范围过滤
             if (_selectedScope == "Browsing History" && !BrowsingHistory.Contains(item)) return false;
             if (_selectedScope == "Favorite Courses" && !FavoriteCourses.Contains(item)) return false;
 
             return true;
         }
 
-        // 搜索框变化时调用
         private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
         {
             SearchText = e.NewTextValue ?? string.Empty;
             ApplyFilters();
         }
 
-        // Picker事件
         private void OnScopeChanged(object sender, EventArgs e)
         {
             if (ScopePicker.SelectedItem is string value)
@@ -110,7 +100,7 @@ namespace CommunityFinder.Views
             ApplyFilters();
         }
 
-        // ==================== 数据加载 ====================
+        // ==================== 数据加载 (保持原样) ====================
         protected override async void OnAppearing()
         {
             base.OnAppearing();
@@ -124,7 +114,6 @@ namespace CommunityFinder.Views
 
                 var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
 
-                // Load course history
                 var courseStatus = await _authService.Client
                     .From<CourseStatus>()
                     .Where(x => x.id == userGuid)
@@ -132,7 +121,6 @@ namespace CommunityFinder.Views
 
                 if (courseStatus != null)
                 {
-                    // 课程浏览记录
                     var courseHistoryIds = courseStatus.history ?? Array.Empty<string>();
                     foreach (var id in courseHistoryIds)
                     {
@@ -144,7 +132,6 @@ namespace CommunityFinder.Views
                             BrowsingHistory.Add(HistoryItem.FromCourse(course));
                     }
 
-                    // 收藏课程
                     var courseFavoriteIds = courseStatus.favorites ?? Array.Empty<string>();
                     foreach (var id in courseFavoriteIds)
                     {
@@ -157,7 +144,6 @@ namespace CommunityFinder.Views
                     }
                 }
 
-                // Load event history
                 var eventStatus = await _authService.Client
                     .From<EventStatus>()
                     .Where(x => x.id == userGuid)
@@ -188,7 +174,6 @@ namespace CommunityFinder.Views
                     }
                 }
 
-                // 初次应用过滤
                 ApplyFilters();
             }
             catch (Exception ex)
@@ -197,16 +182,18 @@ namespace CommunityFinder.Views
             }
         }
 
-        // ==================== 其余按钮事件保留 ====================
-        private async void DeleteHistoryAsync(HistoryItem item) { /* 保留原逻辑 */ }
-        private async void ClearAllHistoryAsync() { /* 保留原逻辑 */ }
-        private async void DeleteFavoriteAsync(HistoryItem item) { /* 保留原逻辑 */ }
-        private async void ClearAllFavoritesAsync() { /* 保留原逻辑 */ }
+        // ==================== 其他点击逻辑 (保持原样) ====================
+        private async void DeleteHistoryAsync(HistoryItem item) { }
+        private async void ClearAllHistoryAsync() { }
+        private async void DeleteFavoriteAsync(HistoryItem item) { }
+        private async void ClearAllFavoritesAsync() { }
+
         private void OnClearAllHistoryClicked(object sender, EventArgs e)
         {
             if (ClearAllHistoryCommand?.CanExecute(null) == true)
                 ClearAllHistoryCommand.Execute(null);
         }
+
         private void OnClearAllFavoritesClicked(object sender, EventArgs e)
         {
             if (ClearAllFavoritesCommand?.CanExecute(null) == true)
@@ -219,7 +206,6 @@ namespace CommunityFinder.Views
             {
                 if (sender is CollectionView cv) cv.SelectedItem = null;
 
-                // If in selection mode, trigger the ItemSelected event and return
                 if (IsSelectionMode)
                 {
                     ItemSelected?.Invoke(this, item);
@@ -253,7 +239,6 @@ namespace CommunityFinder.Views
             {
                 if (sender is CollectionView cv) cv.SelectedItem = null;
 
-                // If in selection mode, trigger the ItemSelected event and return
                 if (IsSelectionMode)
                 {
                     ItemSelected?.Invoke(this, item);

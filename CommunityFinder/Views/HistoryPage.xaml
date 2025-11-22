@@ -18,14 +18,23 @@
 
                 <VerticalStackLayout Spacing="10">
 
-                    <!-- 搜索输入框 -->
-                    <Entry Placeholder="Search by title or outlet..."
-                           Text="{Binding SearchText}"
-                           TextChanged="OnSearchTextChanged"
-                           BackgroundColor="White"
-                           PlaceholderColor="Gray"
-                           FontSize="16"
-                           Margin="0,5" />
+                    <!-- 搜索输入框 + 搜索按钮 -->
+                    <HorizontalStackLayout Spacing="8">
+
+                        <Entry Placeholder="Search by title or outlet..."
+                               Text="{Binding SearchText}"
+                               BackgroundColor="White"
+                               PlaceholderColor="Gray"
+                               FontSize="16"
+                               HorizontalOptions="FillAndExpand"
+                               Margin="0,5" />
+
+                        <Button Text="Search"
+                                BackgroundColor="#4A90E2"
+                                TextColor="White"
+                                Padding="12,6"
+                                Clicked="OnSearchButtonClicked"/>
+                    </HorizontalStackLayout>
 
                     <!-- 分类筛选：范围与类型 -->
                     <HorizontalStackLayout Spacing="10">
