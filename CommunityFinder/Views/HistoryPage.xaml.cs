@@ -5,20 +5,6 @@ using System.Windows.Input;
 
 namespace CommunityFinder.Views
 {
-    public class HistoryGroup : ObservableCollection<HistoryItem>
-    {
-        public string Title { get; }
-        public ICommand ClearCommand { get; }
-        public string ClearButtonText { get; }
-
-        public HistoryGroup(string title, string clearButtonText, ICommand clearCommand)
-        {
-            Title = title;
-            ClearButtonText = clearButtonText;
-            ClearCommand = clearCommand;
-        }
-    }
-
     public partial class HistoryPage : ContentPage
     {
         private readonly AuthService _authService;
@@ -30,7 +16,6 @@ namespace CommunityFinder.Views
         // Filtered display collections
         public ObservableCollection<HistoryItem> FilteredBrowsingHistory { get; } = new();
         public ObservableCollection<HistoryItem> FilteredFavoriteCourses { get; } = new();
-        public ObservableCollection<HistoryGroup> CombinedHistory { get; } = new();
 
         // Search-related properties
         public string SearchText { get; set; } = string.Empty;
@@ -68,7 +53,6 @@ namespace CommunityFinder.Views
             FilteredBrowsingHistory.Clear();
             foreach (var item in BrowsingHistory)
             {
-                item.IsFavorite = false;
                 if (MatchFilter(item))
                     FilteredBrowsingHistory.Add(item);
             }
@@ -77,27 +61,9 @@ namespace CommunityFinder.Views
             FilteredFavoriteCourses.Clear();
             foreach (var item in FavoriteCourses)
             {
-                item.IsFavorite = true;
                 if (MatchFilter(item))
                     FilteredFavoriteCourses.Add(item);
             }
-
-            RebuildGroupedItems();
-        }
-
-        private void RebuildGroupedItems()
-        {
-            CombinedHistory.Clear();
-
-            var browsingGroup = new HistoryGroup("Browsing History", "Clear All History", ClearAllHistoryCommand);
-            foreach (var item in FilteredBrowsingHistory)
-                browsingGroup.Add(item);
-            CombinedHistory.Add(browsingGroup);
-
-            var favoriteGroup = new HistoryGroup("Favorite Courses", "Clear All Favorites", ClearAllFavoritesCommand);
-            foreach (var item in FilteredFavoriteCourses)
-                favoriteGroup.Add(item);
-            CombinedHistory.Add(favoriteGroup);
         }
 
         private bool MatchFilter(HistoryItem item)
@@ -155,7 +121,6 @@ namespace CommunityFinder.Views
                 FavoriteCourses.Clear();
                 FilteredBrowsingHistory.Clear();
                 FilteredFavoriteCourses.Clear();
-                CombinedHistory.Clear();
 
                 var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
 
@@ -188,11 +153,7 @@ namespace CommunityFinder.Views
                             .Where(x => x.ClassId == id)
                             .Single();
                         if (course != null)
-                        {
-                            var favorite = HistoryItem.FromCourse(course);
-                            favorite.IsFavorite = true;
-                            FavoriteCourses.Add(favorite);
-                        }
+                            FavoriteCourses.Add(HistoryItem.FromCourse(course));
                     }
                 }
 
@@ -223,11 +184,7 @@ namespace CommunityFinder.Views
                             .Where(x => x.EventId == id)
                             .Single();
                         if (ev != null)
-                        {
-                            var favorite = HistoryItem.FromEvent(ev);
-                            favorite.IsFavorite = true;
-                            FavoriteCourses.Add(favorite);
-                        }
+                            FavoriteCourses.Add(HistoryItem.FromEvent(ev));
                     }
                 }
 
