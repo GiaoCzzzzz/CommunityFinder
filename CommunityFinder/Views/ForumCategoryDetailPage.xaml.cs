@@ -1,6 +1,9 @@
 using CommunityFinder.Models;
 using CommunityFinder.Services;
+using Microsoft.Maui.Storage;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 
 namespace CommunityFinder.Views
 {
@@ -12,6 +15,7 @@ namespace CommunityFinder.Views
         private ObservableCollection<ForumPost> _posts;
         private List<ForumPost> _allPosts;
         private string _selectedPostType = "All";
+        private const string CategoryViewKey = "ForumCategoryViews";
 
         public ForumCategoryDetailPage(ForumCategory category, ForumService forumService, AuthService authService)
         {
@@ -32,6 +36,7 @@ namespace CommunityFinder.Views
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            TrackCategoryVisit();
             await LoadDataAsync();
         }
 
@@ -39,6 +44,26 @@ namespace CommunityFinder.Views
         {
             await LoadAnnouncementAsync();
             await LoadPostsAsync();
+        }
+
+        private void TrackCategoryVisit()
+        {
+            try
+            {
+                var json = Preferences.Get(CategoryViewKey, "{}");
+                var data = JsonSerializer.Deserialize<Dictionary<Guid, int>>(json) ?? new();
+
+                if (data.ContainsKey(_category.Id))
+                    data[_category.Id]++;
+                else
+                    data[_category.Id] = 1;
+
+                Preferences.Set(CategoryViewKey, JsonSerializer.Serialize(data));
+            }
+            catch
+            {
+                // Ignore telemetry failures
+            }
         }
 
         private async Task LoadAnnouncementAsync()
