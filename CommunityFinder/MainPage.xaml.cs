@@ -203,6 +203,19 @@ namespace CommunityFinder
             }
         }
 
+
+        private async void OnAboutUsClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new AboutusPage());
+        }
+
+
+
+
+
+
+
+
         private async void OnEventsClicked(object sender, EventArgs e)
         {
             try

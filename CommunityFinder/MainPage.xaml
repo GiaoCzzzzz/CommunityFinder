@@ -90,13 +90,19 @@
                 <!-- 控制标签间距，让它们靠近一点 -->
 
                 <!-- About Us -->
+                <!-- About Us -->
                 <Label Grid.Column="0"
-               Text="About Us"
-               FontSize="13"
-               Style="{StaticResource TopTab}"
-               HorizontalOptions="Center"
-               VerticalOptions="Center"
-               Margin="6,0,0,0"/>
+       Text="About Us"
+       FontSize="13"
+       Style="{StaticResource TopTab}"
+       HorizontalOptions="Center"
+       VerticalOptions="Center"
+       Margin="6,0,0,0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnAboutUsClicked"/>
+                    </Label.GestureRecognizers>
+                </Label>
+
                 <!-- 略往右移 -->
 
                 <!-- Events -->

@@ -71,6 +71,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <MauiXaml Update="Views\AboutusPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Views\CourseDetailPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
