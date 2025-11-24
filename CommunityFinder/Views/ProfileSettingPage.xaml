@@ -7,7 +7,7 @@
 
     <ScrollView>
 
-        <Grid>
+        <Grid x:Name="RootLayout">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="5*"/>
@@ -90,42 +90,77 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- 第一行：两个按钮并排 -->
                     <Button Grid.Row="0" Grid.Column="0"
-            Text="Change Password"
-            BackgroundColor="Transparent"
-            TextColor="#2196F3"
-            FontSize="14"
-            Clicked="OnChangePasswordClicked"
-            Padding="10,5"/>
+                            Text="Change Password"
+                            BackgroundColor="Transparent"
+                            TextColor="#2196F3"
+                            FontSize="14"
+                            Clicked="OnChangePasswordClicked"
+                            Padding="10,5"/>
 
                     <Button Grid.Row="0" Grid.Column="1"
-            Text="Change Interest"
-            BackgroundColor="Transparent"
-            TextColor="#2196F3"
-            FontSize="14"
-            Clicked="OnChangeInterestClicked"
-            Padding="10,5"/>
+                            Text="Change Interest"
+                            BackgroundColor="Transparent"
+                            TextColor="#2196F3"
+                            FontSize="14"
+                            Clicked="OnChangeInterestClicked"
+                            Padding="10,5"/>
 
-                    <!-- 第二行：Save 按钮占满整行 -->
                     <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-            Text="Save"
-            BackgroundColor="#4CAF50"
-            TextColor="White"
-            FontAttributes="Bold"
-            CornerRadius="8"
-            HeightRequest="50"
-            Clicked="OnSaveClicked"
-            HorizontalOptions="Fill"
-            Padding="10,5"/>
+                            Text="Save"
+                            BackgroundColor="#4CAF50"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            CornerRadius="8"
+                            HeightRequest="50"
+                            Clicked="OnSaveClicked"
+                            HorizontalOptions="Fill"
+                            Padding="10,5"/>
                 </Grid>
 
-
-
-
-
-
             </StackLayout>
+
+
+            <!-- ⚡⚡⚡ 超级精美加载动画层 -->
+            <Grid x:Name="LoadingOverlay"
+      BackgroundColor="#80000000"
+      IsVisible="False"
+      Opacity="0"
+      Grid.ColumnSpan="2"
+      VerticalOptions="Fill"
+      HorizontalOptions="Fill">
+
+                <StackLayout VerticalOptions="Center"
+                 HorizontalOptions="Center"
+                 Spacing="18">
+
+                    <!-- 白色圆角盒子 + 缩放动画 -->
+                    <Frame x:Name="LoadingBox"
+               BackgroundColor="White"
+               WidthRequest="120"
+               HeightRequest="120"
+               CornerRadius="20"
+               Padding="25"
+               HasShadow="True"
+               Scale="0.5"
+               Opacity="0">
+                        <ActivityIndicator IsRunning="True"
+                               WidthRequest="50"
+                               HeightRequest="50" />
+                    </Frame>
+
+                    <!-- Loading 文本 -->
+                    <Label x:Name="LoadingLabel"
+               Text="Loading..."
+               TextColor="White"
+               FontSize="18"
+               Opacity="0"
+               HorizontalOptions="Center"/>
+                </StackLayout>
+
+            </Grid>
+
+
         </Grid>
     </ScrollView>
 </ContentPage>

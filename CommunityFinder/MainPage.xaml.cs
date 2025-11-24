@@ -12,6 +12,7 @@ namespace CommunityFinder
     {
         private readonly CoursesViewModel _vm = new();
         readonly AuthService _authService;
+        private Grid _loadingOverlay;
 
         private const string BaseUrl =
             "https://www.onepa.gov.sg/pacesapi/coursessearch/searchjson?course=&outlet=&days=&time=&vacancy=false&sort=&page=1&aoilname=Abacus%20%26%20Mental&aoil2=enrichment&aoil3=abacus-mental";
@@ -204,13 +205,101 @@ namespace CommunityFinder
 
         private async void OnEventsClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new EventPage(_authService));
+            try
+            {
+                ShowLoadingOverlay(); // 显示加载动画
+                await Task.Delay(200); // 可微调，让动画先显示
+                await Navigation.PushAsync(new EventPage(_authService));
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to open Events page: {ex.Message}", "OK");
+            }
+            finally
+            {
+                HideLoadingOverlay(); // 隐藏动画
+            }
         }
 
         private async void OnForumClicked(object sender, EventArgs e)
         {
-            var forumService = new ForumService(_authService.Client);
-            await Navigation.PushAsync(new ForumCategoriesPage(forumService, _authService));
+            try
+            {
+                ShowLoadingOverlay();
+                await Task.Delay(200);
+                var forumService = new ForumService(_authService.Client);
+                await Navigation.PushAsync(new ForumCategoriesPage(forumService, _authService));
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to open Forum page: {ex.Message}", "OK");
+            }
+            finally
+            {
+                HideLoadingOverlay();
+            }
         }
+
+
+
+        private void ShowLoadingOverlay()
+        {
+            if (_loadingOverlay != null) return; // 已显示则跳过
+
+            _loadingOverlay = new Grid
+            {
+                BackgroundColor = Color.FromArgb("#88000000"), // 半透明黑
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                VerticalOptions = LayoutOptions.FillAndExpand,
+                InputTransparent = false
+            };
+
+            // 模糊效果（MAUI 可以用 GraphicsView 或额外库实现简单模糊，这里先用半透明代替）
+            var stack = new VerticalStackLayout
+            {
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center,
+                Spacing = 12
+            };
+
+            var indicator = new ActivityIndicator
+            {
+                IsRunning = true,
+                Color = Colors.White, // MAUI 正确写法
+                WidthRequest = 60,
+                HeightRequest = 60
+            };
+
+            stack.Children.Add(indicator);
+            stack.Children.Add(new Label
+            {
+                Text = "Loading...",
+                TextColor = Colors.White,
+                FontAttributes = FontAttributes.Bold,
+                HorizontalTextAlignment = TextAlignment.Center
+            });
+
+            _loadingOverlay.Children.Add(stack);
+
+            // 加到页面最顶层
+            if (this.Content is Layout layout)
+            {
+                layout.Children.Add(_loadingOverlay);
+            }
+        }
+
+        private void HideLoadingOverlay()
+        {
+            if (_loadingOverlay == null) return;
+
+            if (this.Content is Layout layout)
+            {
+                layout.Children.Remove(_loadingOverlay);
+            }
+
+            _loadingOverlay = null;
+        }
+
+
     }
 }

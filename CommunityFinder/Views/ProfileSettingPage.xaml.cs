@@ -434,8 +434,47 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
 
     async void OnHistoryClicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new HistoryPage(_authService));
+        LoadingOverlay.IsVisible = true;
+
+        // 动画开始：遮罩淡入
+        var overlayFadeTask = LoadingOverlay.FadeTo(1, 250, Easing.SinIn);
+
+        // ⚡⚡⚡ 一开始就后台预加载目标页面（不卡 UI）
+        var page = new HistoryPage(_authService);
+
+        // 如果你的 HistoryPage 有加载逻辑，推荐让它提供一个 Init 方法
+        // await page.InitAsync(); （如果你后面需要，我可以帮你加）
+
+        // 等待遮罩淡入
+        await overlayFadeTask;
+
+        // 白色框：缩放 + 淡入（并行）
+        var boxAnim = LoadingBox.ScaleTo(1, 300, Easing.SpringOut);
+        var boxFade = LoadingBox.FadeTo(1, 250);
+
+        await Task.WhenAll(boxAnim, boxFade);
+
+        // 文本淡入
+        await LoadingLabel.FadeTo(1, 250);
+
+        // 显示加载动画期间，后台页面已经在加载了
+        // 这里的 delay 只是让动画完整播放
+        await Task.Delay(400);
+
+        // ⚡ 动画结束后立即跳转（因为页面已经加载完毕 → 不会卡顿）
+        await Navigation.PushAsync(page);
+
+        // 淡出动画
+        await LoadingLabel.FadeTo(0, 150);
+        await LoadingBox.FadeTo(0, 150);
+        await LoadingOverlay.FadeTo(0, 250);
+
+        LoadingOverlay.IsVisible = false;
+        LoadingBox.Scale = 0.5; // 复位
     }
+
+
+
 
     async void OnSaveClicked(object sender, EventArgs e)
     {

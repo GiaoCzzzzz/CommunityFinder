@@ -3,6 +3,8 @@ using CommunityFinder.Services;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Platform;
 using System.Collections.Generic;
+using Microsoft.Maui.Graphics;
+
 
 namespace CommunityFinder.Views
 {
@@ -396,15 +398,59 @@ namespace CommunityFinder.Views
 
         private async void OnAddLinkToReplyClicked(object sender, EventArgs e)
         {
-            var historyPage = new HistoryPage(_authService, selectionMode: true);
-            historyPage.ItemSelected += (s, item) =>
+            try
             {
-                if (item.IsEvent) SetLinkedEvent(item.Id);
-                else SetLinkedCourse(item.Id);
-                DisplayAlert("Link Added", $"Added link to {item.Title}", "OK");
-            };
-            await Navigation.PushAsync(historyPage);
+                // 1️⃣ 预加载页面
+                var historyPage = new HistoryPage(_authService, selectionMode: true);
+
+                historyPage.ItemSelected += (s, item) =>
+                {
+                    if (item.IsEvent) SetLinkedEvent(item.Id);
+                    else SetLinkedCourse(item.Id);
+                    DisplayAlert("Link Added", $"Added link to {item.Title}", "OK");
+                };
+
+                // 2️⃣ 创建遮罩层
+                var overlay = new Grid
+                {
+                    BackgroundColor = Color.FromRgba(0, 0, 0, 0.3),
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    VerticalOptions = LayoutOptions.FillAndExpand
+                };
+
+                // 3️⃣ 创建转圈加载器
+                var activityIndicator = new ActivityIndicator
+                {
+                    IsRunning = true,
+                    Color = Colors.White,
+                    WidthRequest = 60,
+                    HeightRequest = 60,
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center
+                };
+
+                overlay.Children.Add(activityIndicator);
+
+                // 4️⃣ 加到页面顶层
+                (this.Content as Layout).Children.Add(overlay);
+
+                // 5️⃣ 等待动画展示一段时间（可选）
+                await Task.Delay(2000); // 让加载动画先显示
+
+                // 6️⃣ 进入新页面
+                await Navigation.PushAsync(historyPage);
+
+                // 7️⃣ 移除遮罩层
+                (this.Content as Layout).Children.Remove(overlay);
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to open history page: {ex.Message}", "OK");
+            }
         }
+
+
+
 
         public void SetLinkedCourse(string courseId)
         {
