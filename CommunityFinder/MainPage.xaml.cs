@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityFinder.ViewModels;
 using CommunityFinder.Views;
@@ -14,6 +15,10 @@ namespace CommunityFinder
         readonly AuthService _authService;
         private Grid _loadingOverlay;
 
+        // 订阅语言变更事件
+        public static event Action LanguageChanged;
+
+
         private const string BaseUrl =
             "https://www.onepa.gov.sg/pacesapi/coursessearch/searchjson?course=&outlet=&days=&time=&vacancy=false&sort=&page=1&aoilname=Abacus%20%26%20Mental&aoil2=enrichment&aoil3=abacus-mental";
 
@@ -23,8 +28,34 @@ namespace CommunityFinder
             BindingContext = _vm;
             _authService = authService;
 
+            // 设置顶部导航栏文本
+            RefreshNavTexts();
+
+            // 订阅语言变更事件
+            LangManager.LanguageChanged += RefreshNavTexts;
+
             // 页面 Loaded 事件（用于整体动画）
             this.Loaded += OnPageLoaded;
+
+        }
+
+        /// <summary>
+        /// 外部调用刷新语言的方法
+        /// </summary>
+        public void RefreshLanguage()
+        {
+            RefreshNavTexts();
+        }
+
+        /// <summary>
+        /// 刷新顶部导航栏文本（支持多语言）
+        /// </summary>
+        private void RefreshNavTexts()
+        {
+            AboutUsLabel.Text = LangManager.Get("AboutUs");
+            EventsLabel.Text = LangManager.Get("Events");
+            CoursesLabel.Text = LangManager.Get("Courses");
+            ForumLabel.Text = LangManager.Get("Forum");
         }
 
         private async void OnPageLoaded(object sender, EventArgs e)
@@ -203,18 +234,10 @@ namespace CommunityFinder
             }
         }
 
-
         private async void OnAboutUsClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new AboutusPage());
         }
-
-
-
-
-
-
-
 
         private async void OnEventsClicked(object sender, EventArgs e)
         {
@@ -253,15 +276,14 @@ namespace CommunityFinder
             }
         }
 
-
-
         private void ShowLoadingOverlay()
         {
             if (_loadingOverlay != null) return; // 已显示则跳过
 
             _loadingOverlay = new Grid
             {
-                BackgroundColor = Color.FromArgb("#88000000"), // 半透明黑
+                BackgroundColor = Microsoft.Maui.Graphics.Color.FromArgb("#88000000"),
+                // 半透明黑
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 InputTransparent = false
@@ -278,7 +300,7 @@ namespace CommunityFinder
             var indicator = new ActivityIndicator
             {
                 IsRunning = true,
-                Color = Colors.White, // MAUI 正确写法
+                Color = Microsoft.Maui.Graphics.Colors.White, // MAUI 正确写法
                 WidthRequest = 60,
                 HeightRequest = 60
             };
@@ -287,7 +309,7 @@ namespace CommunityFinder
             stack.Children.Add(new Label
             {
                 Text = "Loading...",
-                TextColor = Colors.White,
+                TextColor = Microsoft.Maui.Graphics.Colors.White,
                 FontAttributes = FontAttributes.Bold,
                 HorizontalTextAlignment = TextAlignment.Center
             });
@@ -312,7 +334,5 @@ namespace CommunityFinder
 
             _loadingOverlay = null;
         }
-
-
     }
 }

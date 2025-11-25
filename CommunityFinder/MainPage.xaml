@@ -91,8 +91,9 @@
 
                 <!-- About Us -->
                 <!-- About Us -->
-                <Label Grid.Column="0"
-       Text="About Us"
+                <!-- About Us -->
+                <Label x:Name="AboutUsLabel"
+       Grid.Column="0"
        FontSize="13"
        Style="{StaticResource TopTab}"
        HorizontalOptions="Center"
@@ -103,40 +104,39 @@
                     </Label.GestureRecognizers>
                 </Label>
 
-                <!-- 略往右移 -->
-
                 <!-- Events -->
-                <Label Grid.Column="1"
-               Text="Events"
-               FontSize="13"
-               Style="{StaticResource TopTab}"
-               HorizontalOptions="Center"
-               VerticalOptions="Center">
+                <Label x:Name="EventsLabel"
+       Grid.Column="1"
+       FontSize="13"
+       Style="{StaticResource TopTab}"
+       HorizontalOptions="Center"
+       VerticalOptions="Center">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnEventsClicked"/>
                     </Label.GestureRecognizers>
                 </Label>
 
                 <!-- Courses (active tab) -->
-                <Label Grid.Column="2"
-               Text="Courses"
-               FontSize="13"
-               Style="{StaticResource TopTabActive}"
-               HorizontalOptions="Center"
-               VerticalOptions="Center"/>
+                <Label x:Name="CoursesLabel"
+       Grid.Column="2"
+       FontSize="13"
+       Style="{StaticResource TopTabActive}"
+       HorizontalOptions="Center"
+       VerticalOptions="Center"/>
 
                 <!-- Forum -->
-                <Label Grid.Column="3"
-               Text="Forum"
-               FontSize="13"
-               Style="{StaticResource TopTab}"
-               HorizontalOptions="Center"
-               VerticalOptions="Center"
-               Margin="0,0,6,0">
+                <Label x:Name="ForumLabel"
+       Grid.Column="3"
+       FontSize="13"
+       Style="{StaticResource TopTab}"
+       HorizontalOptions="Center"
+       VerticalOptions="Center"
+       Margin="0,0,6,0">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnForumClicked"/>
                     </Label.GestureRecognizers>
                 </Label>
+
                 <!-- 略往左移 -->
             </Grid>
 

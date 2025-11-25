@@ -71,7 +71,12 @@ namespace CommunityFinder.Services
                 ["AccessDenied"] = "Access denied. Admin only.",
                 ["ErrorTitle"] = "Error",
                 ["SuccessTitle"] = "Success",
-                ["ReportResolved"] = "Report marked as resolved"
+                ["ReportResolved"] = "Report marked as resolved",
+                ["AboutUs"] = "About Us", // 英文
+                ["Events"] = "Events",
+                ["Courses"] = "Courses",
+                ["Forum"] = "Forum",
+
             },
             ["zh"] = new Dictionary<string, string>
             {
@@ -133,7 +138,11 @@ namespace CommunityFinder.Services
                 ["AccessDenied"] = "访问被拒。仅限管理员。",
                 ["ErrorTitle"] = "错误",
                 ["SuccessTitle"] = "成功",
-                ["ReportResolved"] = "举报已标记为已处理"
+                ["ReportResolved"] = "举报已标记为已处理",
+                ["AboutUs"] = "关于我们", // 中文
+                ["Events"] = "活动",
+                ["Courses"] = "课程",
+                ["Forum"] = "论坛",
             },
             ["ms"] = new Dictionary<string, string>
             {
@@ -195,16 +204,28 @@ namespace CommunityFinder.Services
                 ["AccessDenied"] = "Akses ditolak. Hanya untuk admin.",
                 ["ErrorTitle"] = "Ralat",
                 ["SuccessTitle"] = "Berjaya",
-                ["ReportResolved"] = "Laporan ditandakan selesai"
+                ["ReportResolved"] = "Laporan ditandakan selesai",
+                ["AboutUs"] = "Tentang Kami", // 马来文
+                ["Events"] = "Acara",
+                ["Courses"] = "Kursus",
+                ["Forum"] = "Forum",
             }
         };
 
         // 切换语言
+        public static event Action LanguageChanged;
+        // 切换语言
         public static void SetLanguage(string lang)
         {
             if (_dict.ContainsKey(lang))
+            {
                 CurrentLang = lang;
+                // ✅ 触发事件，通知订阅者语言已变更
+                LanguageChanged?.Invoke();
+            }
         }
+
+
 
         // 获取文本
         public static string Get(string key)
@@ -216,6 +237,9 @@ namespace CommunityFinder.Services
             }
             return key;
         }
+
+       
+
     }
 }
 
