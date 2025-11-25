@@ -1,6 +1,7 @@
 using CommunityFinder.Models;
 using CommunityFinder.Services;
 using Microsoft.Maui.Storage;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.Json;
@@ -15,6 +16,7 @@ namespace CommunityFinder.Views
         private ObservableCollection<ForumPost> _posts;
         private List<ForumPost> _allPosts;
         private string _selectedPostType = "All";
+        private string _searchTerm = string.Empty;
         private const string CategoryViewKey = "ForumCategoryViews";
 
         public ForumCategoryDetailPage(ForumCategory category, ForumService forumService, AuthService authService)
@@ -101,9 +103,16 @@ namespace CommunityFinder.Views
             }
             var filtered = _allPosts;
 
+            if (!string.IsNullOrWhiteSpace(_searchTerm))
+            {
+                filtered = filtered
+                    .Where(p => p.Topic?.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) == true)
+                    .ToList();
+            }
+
             if (_selectedPostType != "All")
             {
-                filtered = _allPosts.Where(p => p.PostType == _selectedPostType).ToList();
+                filtered = filtered.Where(p => p.PostType == _selectedPostType).ToList();
             }
 
             foreach (var post in filtered)
@@ -115,6 +124,18 @@ namespace CommunityFinder.Views
         private void OnPostTypeChanged(object sender, EventArgs e)
         {
             _selectedPostType = PostTypePicker.SelectedItem?.ToString() ?? "All";
+            ApplyFilter();
+        }
+
+        private void OnCategorySearchCompleted(object sender, EventArgs e)
+        {
+            _searchTerm = CategorySearchEntry.Text?.Trim() ?? string.Empty;
+            ApplyFilter();
+        }
+
+        private void OnCategorySearchButtonClicked(object sender, EventArgs e)
+        {
+            _searchTerm = CategorySearchEntry.Text?.Trim() ?? string.Empty;
             ApplyFilter();
         }
 
