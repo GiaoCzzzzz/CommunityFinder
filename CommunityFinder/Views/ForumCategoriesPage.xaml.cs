@@ -16,6 +16,8 @@ namespace CommunityFinder.Views
         private List<ForumCategory> _allCategories;
         private const string CategoryViewKey = "ForumCategoryViews";
 
+        public bool IsAdmin => _forumService?.IsAdmin() == true;
+
         public ForumCategoriesPage(ForumService forumService, AuthService authService)
         {
             InitializeComponent();
@@ -263,6 +265,29 @@ namespace CommunityFinder.Views
             catch (Exception ex)
             {
                 await DisplayAlert("Error", $"Failed to create category: {ex.Message}", "OK");
+            }
+        }
+
+        private async void OnDeleteCategoryClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is Guid categoryId)
+            {
+                var confirm = await DisplayAlert("Delete Category",
+                    "Deleting a category will remove all posts, replies, announcements, and reports under it. Continue?",
+                    "Yes", "No");
+
+                if (!confirm) return;
+
+                try
+                {
+                    await _forumService.DeleteCategoryAsync(categoryId);
+                    await DisplayAlert("Success", "Category deleted", "OK");
+                    await LoadCategoriesAsync();
+                }
+                catch (Exception ex)
+                {
+                    await DisplayAlert("Error", $"Failed to delete category: {ex.Message}", "OK");
+                }
             }
         }
     }

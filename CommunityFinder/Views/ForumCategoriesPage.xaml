@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CommunityFinder.Views.ForumCategoriesPage"
+             x:Name="PageRoot"
              Title="Forum"
              BackgroundColor="#F9FFE3">
 
@@ -85,13 +86,20 @@
                                            LineBreakMode="WordWrap" />
 
                                     <!-- 管理员专用：打开 Admin Alerts 页面 -->
-                                    <Button x:Name="ReportsButton"
-                                            Text="Reports"
-                                            IsVisible="False"          
+                                    <Button Text="Reports"
+                                            IsVisible="{Binding Source={x:Reference PageRoot}, Path=IsAdmin}"
                                             BackgroundColor="#DC3545"
                                             TextColor="White"
                                             Padding="10,6"
                                             Clicked="OnReportsClicked" />
+
+                                    <Button Text="Delete"
+                                            IsVisible="{Binding Source={x:Reference PageRoot}, Path=IsAdmin}"
+                                            BackgroundColor="#6C757D"
+                                            TextColor="White"
+                                            Padding="10,6"
+                                            Clicked="OnDeleteCategoryClicked"
+                                            CommandParameter="{Binding Id}" />
                                 </VerticalStackLayout>
                             </Frame>
                         </DataTemplate>
