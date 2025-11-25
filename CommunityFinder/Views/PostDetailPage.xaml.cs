@@ -270,9 +270,9 @@ namespace CommunityFinder.Views
         {
             var frame = new Frame
             {
-                BackgroundColor = level == 0 ? Color.FromArgb("#F9F9F9") : Color.FromArgb("#EFEFEF"),
+                BackgroundColor = Color.FromArgb("#F9F9F9"),
                 Padding = 15,
-                Margin = new Thickness(Math.Min(level * 20, 80), 0, 0, 10),
+                Margin = new Thickness(0, 0, 0, 10),
                 CornerRadius = 8,
                 HasShadow = false,
                 BorderColor = Colors.LightGray
