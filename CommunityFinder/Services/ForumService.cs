@@ -306,14 +306,14 @@ namespace CommunityFinder.Services
 
             if (reply == null) return false;
 
-            var post = await GetPostByIdAsync(reply.PostId);
+            var parentPost = await GetPostByIdAsync(reply.PostId);
             var parentReply = reply.ParentReplyId.HasValue
                 ? await GetReplyByIdAsync(reply.ParentReplyId.Value)
                 : null;
 
             // Allow deletion by reply owner, post owner, parent reply owner, or admin
             var isReplyOwner = reply.UserId == userId;
-            var isPostOwner = post?.UserId == userId;
+            var isPostOwner = parentPost?.UserId == userId;
             var isParentReplyOwner = parentReply?.UserId == userId;
             var isAdmin = IsAdmin();
 
@@ -324,7 +324,7 @@ namespace CommunityFinder.Services
             var childReplies = await _client.From<ForumReply>()
                 .Where(x => x.ParentReplyId == replyId)
                 .Get();
-            
+
             foreach (var child in childReplies.Models)
             {
                 await _client.From<ForumReply>().Where(x => x.Id == child.Id).Delete();
@@ -334,12 +334,12 @@ namespace CommunityFinder.Services
             await _client.From<ForumReply>().Where(x => x.Id == replyId).Delete();
 
             // Update post reply count
-            var post = await GetPostByIdAsync(reply.PostId);
-            if (post != null)
+            var updatedPost = await GetPostByIdAsync(reply.PostId);
+            if (updatedPost != null)
             {
                 var remainingReplies = await GetRepliesByPostIdAsync(reply.PostId);
-                post.ReplyCount = remainingReplies.Count;
-                await post.Update<ForumPost>();
+                updatedPost.ReplyCount = remainingReplies.Count;
+                await updatedPost.Update<ForumPost>();
             }
 
             return true;
