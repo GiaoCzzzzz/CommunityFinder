@@ -23,6 +23,7 @@ namespace CommunityFinder.Views
         private Dictionary<Guid, Frame> _replyFrames = new();
         private Guid? _currentUserId => _forumService.GetCurrentUserId();
 
+
         public PostDetailPage(ForumPost post, ForumService forumService, AuthService authService, Guid? targetReplyId = null)
         {
             InitializeComponent();
@@ -489,6 +490,16 @@ namespace CommunityFinder.Views
         {
             _linkedEventId = eventId;
             _linkedCourseId = null;
+        }
+
+        private Guid? GetCurrentUserId()
+        {
+            var userId = _authService.Client?.Auth?.CurrentSession?.User?.Id;
+            if (Guid.TryParse(userId, out var parsed))
+            {
+                return parsed;
+            }
+            return null;
         }
 
         private bool UserCanDeletePost()
