@@ -22,6 +22,16 @@ namespace CommunityFinder.Services
             return userEmail?.ToLower() == AdminEmail.ToLower();
         }
 
+        public Guid? GetCurrentUserId()
+        {
+            var rawId = _client.Auth.CurrentSession?.User?.Id;
+            if (Guid.TryParse(rawId, out var parsed))
+            {
+                return parsed;
+            }
+            return null;
+        }
+
         public async Task<string> GetCurrentUsername()
         {
             var userId = Guid.Parse(_client.Auth.CurrentSession.User.Id);

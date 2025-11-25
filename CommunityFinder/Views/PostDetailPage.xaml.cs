@@ -21,7 +21,8 @@ namespace CommunityFinder.Views
         private string _linkedCourseId;
         private string _linkedEventId;
         private Dictionary<Guid, Frame> _replyFrames = new();
-        private Guid? _currentUserId => GetCurrentUserId();
+        private Guid? _currentUserId => _forumService.GetCurrentUserId();
+
 
         public PostDetailPage(ForumPost post, ForumService forumService, AuthService authService, Guid? targetReplyId = null)
         {
