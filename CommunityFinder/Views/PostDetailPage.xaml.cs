@@ -2,7 +2,9 @@ using CommunityFinder.Models;
 using CommunityFinder.Services;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Platform;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Maui.Graphics;
 
 
@@ -19,6 +21,7 @@ namespace CommunityFinder.Views
         private string _linkedCourseId;
         private string _linkedEventId;
         private Dictionary<Guid, Frame> _replyFrames = new();
+        private Guid? _currentUserId => _forumService.GetCurrentUserId();
 
         public PostDetailPage(ForumPost post, ForumService forumService, AuthService authService, Guid? targetReplyId = null)
         {
@@ -127,6 +130,7 @@ namespace CommunityFinder.Views
                     new RowDefinition { Height = GridLength.Auto },
                     new RowDefinition { Height = GridLength.Auto },
                     new RowDefinition { Height = GridLength.Auto },
+                    new RowDefinition { Height = GridLength.Auto },
                     new RowDefinition { Height = GridLength.Auto }
                 },
                 ColumnDefinitions =
@@ -185,6 +189,29 @@ namespace CommunityFinder.Views
                 Grid.SetRow(linkFrame, 3);
                 Grid.SetColumnSpan(linkFrame, 2);
                 grid.Add(linkFrame);
+            }
+
+            var actionStack = new HorizontalStackLayout { Spacing = 10 };
+
+            if (UserCanDeletePost())
+            {
+                var deleteButton = new Button
+                {
+                    Text = "Delete",
+                    BackgroundColor = Color.FromArgb("#6C757D"),
+                    TextColor = Colors.White,
+                    Padding = new Thickness(10, 5),
+                    FontSize = 12
+                };
+                deleteButton.Clicked += async (s, e) => await OnDeletePostClicked();
+                actionStack.Add(deleteButton);
+            }
+
+            if (actionStack.Children.Count > 0)
+            {
+                Grid.SetRow(actionStack, 4);
+                Grid.SetColumnSpan(actionStack, 2);
+                grid.Add(actionStack);
             }
 
             frame.Content = grid;
@@ -292,7 +319,7 @@ namespace CommunityFinder.Views
             reportButton.Clicked += async (s, e) => await OnReportReplyClicked(reply.Id);
             actionStack.Add(reportButton);
 
-            if (_forumService.IsAdmin())
+            if (UserCanDeleteReply(reply))
             {
                 var deleteButton = new Button
                 {
@@ -462,6 +489,53 @@ namespace CommunityFinder.Views
         {
             _linkedEventId = eventId;
             _linkedCourseId = null;
+        }
+
+        private bool UserCanDeletePost()
+        {
+            var userId = _currentUserId;
+            if (!userId.HasValue) return false;
+
+            return _post.UserId == userId || _forumService.IsAdmin();
+        }
+
+        private bool UserCanDeleteReply(ForumReply reply)
+        {
+            var userId = _currentUserId;
+            if (!userId.HasValue) return false;
+
+            var isReplyOwner = reply.UserId == userId.Value;
+            var isPostOwner = _post.UserId == userId.Value;
+            var isAdmin = _forumService.IsAdmin();
+            var parentOwner = false;
+
+            if (reply.ParentReplyId.HasValue && _replies != null)
+            {
+                var parent = _replies.FirstOrDefault(r => r.Id == reply.ParentReplyId.Value);
+                if (parent != null)
+                {
+                    parentOwner = parent.UserId == userId.Value;
+                }
+            }
+
+            return isReplyOwner || isPostOwner || parentOwner || isAdmin;
+        }
+
+        private async Task OnDeletePostClicked()
+        {
+            var confirm = await DisplayAlert("Delete Post", "Are you sure you want to delete this post and all replies?", "Yes", "No");
+            if (!confirm) return;
+
+            try
+            {
+                await _forumService.DeletePostAsync(_post.Id);
+                await DisplayAlert("Success", "Post deleted", "OK");
+                await Navigation.PopAsync();
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to delete post: {ex.Message}", "OK");
+            }
         }
 
         private async Task OnReportReplyClicked(Guid replyId)

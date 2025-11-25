@@ -22,6 +22,16 @@ namespace CommunityFinder.Services
             return userEmail?.ToLower() == AdminEmail.ToLower();
         }
 
+        public Guid? GetCurrentUserId()
+        {
+            var rawId = _client.Auth.CurrentSession?.User?.Id;
+            if (Guid.TryParse(rawId, out var parsed))
+            {
+                return parsed;
+            }
+            return null;
+        }
+
         public async Task<string> GetCurrentUsername()
         {
             var userId = Guid.Parse(_client.Auth.CurrentSession.User.Id);
@@ -100,7 +110,7 @@ namespace CommunityFinder.Services
         }
 
         // ========== Post Operations ==========
-        public async Task<List<ForumPost>> GetPostsByCategoryAsync(Guid categoryId, string postType = null)
+        public async Task<List<ForumPost>> GetPostsByCategoryAsync(Guid categoryId, string postType = null, string searchTerm = null)
         {
             var query = _client.From<ForumPost>()
                 .Where(x => x.CategoryId == categoryId);
@@ -113,7 +123,17 @@ namespace CommunityFinder.Services
             var response = await query
                 .Order(x => x.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
                 .Get();
-            return response.Models;
+
+            var posts = response.Models;
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                posts = posts
+                    .Where(p => p.Topic?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true)
+                    .ToList();
+            }
+
+            return posts;
         }
 
         public async Task<ForumPost> GetPostByIdAsync(Guid postId)
@@ -286,8 +306,18 @@ namespace CommunityFinder.Services
 
             if (reply == null) return false;
 
-            // Only allow deletion by reply owner or admin
-            if (reply.UserId != userId && !IsAdmin())
+            var post = await GetPostByIdAsync(reply.PostId);
+            var parentReply = reply.ParentReplyId.HasValue
+                ? await GetReplyByIdAsync(reply.ParentReplyId.Value)
+                : null;
+
+            // Allow deletion by reply owner, post owner, parent reply owner, or admin
+            var isReplyOwner = reply.UserId == userId;
+            var isPostOwner = post?.UserId == userId;
+            var isParentReplyOwner = parentReply?.UserId == userId;
+            var isAdmin = IsAdmin();
+
+            if (!isReplyOwner && !isPostOwner && !isParentReplyOwner && !isAdmin)
                 throw new UnauthorizedAccessException("You don't have permission to delete this reply");
 
             // Delete child replies if any (replies to this reply)
