@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CommunityFinder.Views.ForumCategoriesPage"
+             x:Name="PageRoot"
              Title="Forum"
              BackgroundColor="#F9FFE3">
 
@@ -61,38 +62,49 @@
                                    CornerRadius="18"
                                    HasShadow="True"
                                    Padding="10"
-                                   HeightRequest="160">
+                                   HeightRequest="200">
 
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnCategoryTapped" />
                                 </Frame.GestureRecognizers>
 
-                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
 
                                     <!-- 图片 -->
-                                    <Image Source="{Binding ImagePath}"
+                                    <Image Grid.Row="0"
+                                           Source="{Binding ImagePath}"
                                            HeightRequest="90"
                                            WidthRequest="180"
-                                           Aspect="AspectFit" />
+                                           Aspect="AspectFit"
+                                           HorizontalOptions="Center" />
 
                                     <!-- 分类名称 -->
-                                    <Label Text="{Binding Name}"
+                                    <Label Grid.Row="1"
+                                           Text="{Binding Name}"
                                            TextColor="White"
                                            FontSize="16"
                                            FontAttributes="Bold"
-                                           HorizontalOptions="Center"
                                            HorizontalTextAlignment="Center"
+                                           HorizontalOptions="FillAndExpand"
                                            LineBreakMode="WordWrap" />
 
-                                    <!-- 管理员专用：打开 Admin Alerts 页面 -->
-                                    <Button x:Name="ReportsButton"
-                                            Text="Reports"
-                                            IsVisible="False"          
-                                            BackgroundColor="#DC3545"
-                                            TextColor="White"
-                                            Padding="10,6"
-                                            Clicked="OnReportsClicked" />
-                                </VerticalStackLayout>
+                                    <!-- 管理员专用：操作按钮 -->
+                                    <VerticalStackLayout Grid.Row="2"
+                                                         Spacing="6"
+                                                         IsVisible="{Binding Source={x:Reference PageRoot}, Path=IsAdmin}">
+                                        <Button Text="Delete Category"
+                                                BackgroundColor="#DC3545"
+                                                TextColor="White"
+                                                Padding="10,6"
+                                                Clicked="OnDeleteCategoryClicked"
+                                                CommandParameter="{Binding Id}" />
+                                    </VerticalStackLayout>
+
+                                    <!-- 为 admin 预留空间，非 admin 时保持布局 -->
+                                    <BoxView Grid.Row="3"
+                                             HeightRequest="1"
+                                             IsVisible="{Binding Source={x:Reference PageRoot}, Path=IsAdmin}" />
+                                </Grid>
                             </Frame>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

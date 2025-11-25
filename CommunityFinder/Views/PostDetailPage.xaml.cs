@@ -17,20 +17,23 @@ namespace CommunityFinder.Views
         private readonly AuthService _authService;
         private List<ForumReply> _replies;
         private readonly Guid? _targetReplyId;
+        private readonly bool _highlightPost;
         private Guid? _replyingToId = null;
         private string _linkedCourseId;
         private string _linkedEventId;
         private Dictionary<Guid, Frame> _replyFrames = new();
+        private Frame _mainPostFrame;
         private Guid? _currentUserId => _forumService.GetCurrentUserId();
 
 
-        public PostDetailPage(ForumPost post, ForumService forumService, AuthService authService, Guid? targetReplyId = null)
+        public PostDetailPage(ForumPost post, ForumService forumService, AuthService authService, Guid? targetReplyId = null, bool highlightPost = false)
         {
             InitializeComponent();
             _post = post;
             _forumService = forumService;
             _authService = authService;
             _targetReplyId = targetReplyId;
+            _highlightPost = highlightPost;
         }
 
         protected override async void OnAppearing()
@@ -50,6 +53,7 @@ namespace CommunityFinder.Views
             var mainPostFrame = CreatePostCard(_post);
             mainPostFrame.Opacity = 0;
             mainPostFrame.Scale = 0.8;
+            _mainPostFrame = mainPostFrame;
             PostContainer.Add(mainPostFrame);
             cards.Add(mainPostFrame);
 
@@ -58,25 +62,7 @@ namespace CommunityFinder.Views
             {
                 _replies = await _forumService.GetRepliesByPostIdAsync(_post.Id);
 
-                foreach (var reply in _replies.Where(r => r.ParentReplyId == null))
-                {
-                    var replyFrame = CreateReplyCard(reply, isMainReply: true);
-                    replyFrame.Opacity = 0;
-                    replyFrame.Scale = 0.8;
-                    PostContainer.Add(replyFrame);
-                    cards.Add(replyFrame);
-                    _replyFrames[reply.Id] = replyFrame;
-
-                    foreach (var subReply in _replies.Where(r => r.ParentReplyId == reply.Id))
-                    {
-                        var subReplyFrame = CreateReplyCard(subReply, isMainReply: false, parentUsername: reply.Username);
-                        subReplyFrame.Opacity = 0;
-                        subReplyFrame.Scale = 0.8;
-                        PostContainer.Add(subReplyFrame);
-                        cards.Add(subReplyFrame);
-                        _replyFrames[subReply.Id] = subReplyFrame;
-                    }
-                }
+                AddRepliesRecursive(parentId: null, level: 0, cards);
             }
             catch (Exception ex)
             {
@@ -96,11 +82,19 @@ namespace CommunityFinder.Views
                 delay = 100; // 每张卡片间隔 100ms
             }
 
-            await ScrollToTargetReplyAsync();
+            await ApplyHighlightsAsync();
         }
 
-        private async Task ScrollToTargetReplyAsync()
+        private async Task ApplyHighlightsAsync()
         {
+            if (_highlightPost && _mainPostFrame != null)
+            {
+                _mainPostFrame.BorderColor = Color.FromArgb("#FFC107");
+                _mainPostFrame.BackgroundColor = Color.FromArgb("#FFF8E1");
+                await Task.Delay(150);
+                await MainScrollView.ScrollToAsync(_mainPostFrame, ScrollToPosition.Start, true);
+            }
+
             if (!_targetReplyId.HasValue) return;
 
             if (_replyFrames.TryGetValue(_targetReplyId.Value, out var frame))
@@ -249,17 +243,40 @@ namespace CommunityFinder.Views
             }
         }
 
+        private void AddRepliesRecursive(Guid? parentId, int level, List<VisualElement> cards, string parentUsername = null)
+        {
+            if (_replies == null) return;
+
+            var children = _replies
+                .Where(r => r.ParentReplyId == parentId)
+                .OrderBy(r => r.CreatedAt)
+                .ToList();
+
+            foreach (var reply in children)
+            {
+                var replyFrame = CreateReplyCard(reply, level, parentUsername);
+                replyFrame.Opacity = 0;
+                replyFrame.Scale = 0.8;
+                PostContainer.Add(replyFrame);
+                cards.Add(replyFrame);
+                _replyFrames[reply.Id] = replyFrame;
+
+                AddRepliesRecursive(reply.Id, level + 1, cards, reply.Username);
+            }
+        }
+
         // --------------------- 创建回复卡片 ---------------------
-        private Frame CreateReplyCard(ForumReply reply, bool isMainReply, string parentUsername = null)
+        private Frame CreateReplyCard(ForumReply reply, int level, string parentUsername = null)
         {
             var frame = new Frame
             {
-                BackgroundColor = isMainReply ? Color.FromArgb("#F9F9F9") : Color.FromArgb("#EFEFEF"),
+                BackgroundColor = Color.FromArgb("#F9F9F9"),
                 Padding = 15,
-                Margin = new Thickness(isMainReply ? 0 : 20, 0, 0, 10),
+                Margin = new Thickness(0, 0, 0, 10),
                 CornerRadius = 8,
                 HasShadow = false,
-                BorderColor = Colors.LightGray
+                BorderColor = Colors.LightGray,
+                HorizontalOptions = LayoutOptions.FillAndExpand // keep nested reply cards the same full width as top-level replies
             };
 
             var grid = new Grid
@@ -279,7 +296,7 @@ namespace CommunityFinder.Views
             };
 
             var usernameText = $"👤 {reply.Username}";
-            if (!isMainReply && !string.IsNullOrEmpty(parentUsername))
+            if (level > 0 && !string.IsNullOrEmpty(parentUsername))
             {
                 usernameText = $"👤 {reply.Username} → {parentUsername}";
             }
@@ -325,19 +342,17 @@ namespace CommunityFinder.Views
             }
 
             var actionStack = new HorizontalStackLayout { Spacing = 10 };
-            if (isMainReply)
+
+            var replyButton = new Button
             {
-                var replyButton = new Button
-                {
-                    Text = "Reply",
-                    BackgroundColor = Color.FromArgb("#4A90E2"),
-                    TextColor = Colors.White,
-                    Padding = new Thickness(10, 5),
-                    FontSize = 12
-                };
-                replyButton.Clicked += (s, e) => OnReplyToFloorClicked(reply.Id);
-                actionStack.Add(replyButton);
-            }
+                Text = "Reply",
+                BackgroundColor = Color.FromArgb("#4A90E2"),
+                TextColor = Colors.White,
+                Padding = new Thickness(10, 5),
+                FontSize = 12
+            };
+            replyButton.Clicked += (s, e) => OnReplyToFloorClicked(reply.Id, reply.Username);
+            actionStack.Add(replyButton);
 
             var reportButton = new Button
             {
@@ -420,10 +435,12 @@ namespace CommunityFinder.Views
             }
         }
 
-        private void OnReplyToFloorClicked(Guid replyId)
+        private void OnReplyToFloorClicked(Guid replyId, string username)
         {
             _replyingToId = replyId;
-            ReplyEntry.Placeholder = "Replying to a comment...";
+            ReplyEntry.Placeholder = string.IsNullOrEmpty(username)
+                ? "Replying to a comment..."
+                : $"Replying to {username}...";
             ReplyEntry.Focus();
         }
 

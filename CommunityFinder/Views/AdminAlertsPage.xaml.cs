@@ -181,7 +181,7 @@ namespace CommunityFinder.Views
                     var post = await _forumService.GetPostByIdAsync(report.PostId.Value);
                     if (post != null)
                     {
-                        await Navigation.PushAsync(new PostDetailPage(post, _forumService, _authService));
+                        await Navigation.PushAsync(new PostDetailPage(post, _forumService, _authService, highlightPost: true));
                     }
                 }
                 else if (report.ReplyId.HasValue)
