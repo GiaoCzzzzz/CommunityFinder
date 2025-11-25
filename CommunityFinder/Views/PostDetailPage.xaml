@@ -6,35 +6,48 @@
              BackgroundColor="#F9FFE3">
 
     <Grid RowDefinitions="*,Auto">
+
         <!-- Posts and Replies List -->
         <ScrollView x:Name="MainScrollView" Grid.Row="0">
             <VerticalStackLayout x:Name="PostContainer" Padding="10" Spacing="10"/>
         </ScrollView>
 
-        <!-- Reply Input (Bottom) -->
-        <Frame Grid.Row="1" 
-               BackgroundColor="White" 
-               Padding="10" 
-               CornerRadius="0"
-               HasShadow="True">
-            <HorizontalStackLayout Spacing="10">
-                <Button Text="+"
-                        BackgroundColor="#4A90E2"
-                        TextColor="White"
-                        WidthRequest="40"
-                        Clicked="OnAddLinkToReplyClicked"/>
-                <Entry x:Name="ReplyEntry"
-                       Placeholder="Write a reply..."
-                       HorizontalOptions="FillAndExpand"
-                       VerticalOptions="Center"/>
-                <Button Text="Send"
-                        BackgroundColor="#28A745"
-                        TextColor="White"
-                        Clicked="OnSendReplyClicked"/>
-            </HorizontalStackLayout>
-        </Frame>
-    </Grid>
+        <!-- Fixed Bottom Reply Bar -->
+        <Grid Grid.Row="1"
+              BackgroundColor="White"
+              Padding="10"
+              HeightRequest="60">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="80"/>
+            </Grid.ColumnDefinitions>
 
-  
+            <Button Grid.Column="0"
+                    Text="+"
+                    BackgroundColor="#4A90E2"
+                    TextColor="White"
+                    CornerRadius="8"
+                    Clicked="OnAddLinkToReplyClicked"/>
+
+            <Entry Grid.Column="1"
+                   x:Name="ReplyEntry"
+                   Placeholder="Write a reply..."
+                   MaxLength="300"
+                   HeightRequest="40"
+                   VerticalTextAlignment="Center"
+                   HorizontalOptions="FillAndExpand"/>
+
+            <Button Grid.Column="2"
+                    Text="Send"
+                    BackgroundColor="#28A745"
+                    TextColor="White"
+                    CornerRadius="8"
+                    WidthRequest="70"
+                    HorizontalOptions="End"
+                    Clicked="OnSendReplyClicked"/>
+        </Grid>
+
+    </Grid>
 
 </ContentPage>
