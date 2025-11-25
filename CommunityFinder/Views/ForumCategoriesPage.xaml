@@ -92,14 +92,8 @@
                                     <VerticalStackLayout Grid.Row="2"
                                                          Spacing="6"
                                                          IsVisible="{Binding Source={x:Reference PageRoot}, Path=IsAdmin}">
-                                        <Button Text="Reports"
-                                                BackgroundColor="#DC3545"
-                                                TextColor="White"
-                                                Padding="10,6"
-                                                Clicked="OnReportsClicked" />
-
                                         <Button Text="Delete Category"
-                                                BackgroundColor="#6C757D"
+                                                BackgroundColor="#DC3545"
                                                 TextColor="White"
                                                 Padding="10,6"
                                                 Clicked="OnDeleteCategoryClicked"

@@ -275,7 +275,8 @@ namespace CommunityFinder.Views
                 Margin = new Thickness(0, 0, 0, 10),
                 CornerRadius = 8,
                 HasShadow = false,
-                BorderColor = Colors.LightGray
+                BorderColor = Colors.LightGray,
+                HorizontalOptions = LayoutOptions.FillAndExpand // keep nested reply cards the same full width as top-level replies
             };
 
             var grid = new Grid
