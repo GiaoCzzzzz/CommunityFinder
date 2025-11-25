@@ -39,12 +39,33 @@ namespace CommunityFinder
 
         }
 
+        // 搜索与筛选控件
+        public Label SearchByKeywordsLabel { get; set; }
+        public Entry KeywordEntry { get; set; }
+        public Label WhereLabelControl { get; set; }
+        public Label DayLabelControl { get; set; }
+        public Label TimeLabelControl { get; set; }
+        public Label NoCoursesLabel { get; set; }
+
+
+        private void RefreshSearchTexts()
+        {
+            SearchByKeywordsLabel.Text = LangManager.Get("SearchByKeywords");
+            KeywordEntry.Placeholder = LangManager.Get("EnterKeywordPlaceholder");
+            WhereLabelControl.Text = LangManager.Get("WhereLabel");
+            DayLabelControl.Text = LangManager.Get("DayLabel");
+            TimeLabelControl.Text = LangManager.Get("TimeLabel");
+            NoCoursesLabel.Text = LangManager.Get("NoCourses");
+        }
+
+
         /// <summary>
         /// 外部调用刷新语言的方法
         /// </summary>
         public void RefreshLanguage()
         {
             RefreshNavTexts();
+            RefreshSearchTexts();
         }
 
         /// <summary>
@@ -308,11 +329,12 @@ namespace CommunityFinder
             stack.Children.Add(indicator);
             stack.Children.Add(new Label
             {
-                Text = "Loading...",
+                Text = LangManager.Get("LoadingText"),
                 TextColor = Microsoft.Maui.Graphics.Colors.White,
                 FontAttributes = FontAttributes.Bold,
                 HorizontalTextAlignment = TextAlignment.Center
             });
+
 
             _loadingOverlay.Children.Add(stack);
 

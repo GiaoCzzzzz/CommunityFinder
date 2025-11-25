@@ -76,6 +76,22 @@ namespace CommunityFinder.Services
                 ["Events"] = "Events",
                 ["Courses"] = "Courses",
                 ["Forum"] = "Forum",
+                ["SearchByKeywords"] = "Search by Keywords",
+                ["EnterKeywordPlaceholder"] = "Enter keyword (e.g., dance, basketball)",
+                ["AddKeywordButton"] = "+",
+                ["SearchButton"] = "🔍",
+                ["WhereLabel"] = "Where",
+                ["DayLabel"] = "Day",
+                ["TimeLabel"] = "Time",
+                ["NoCourses"] = "No courses",
+                ["LoadingText"] = "Loading...",
+                ["Register"] = "Register", // 英文
+                ["WhereLabel"] = "Where",   // en
+                ["DayLabel"] = "Day",
+                ["TimeLabel"] = "Time",
+                ["CourseLabel"] = "Course",    // 英文
+                ["RefCodeByOrganizerFormat"] = "Ref {0} by {1}",
+                ["StartsOnFormat"] = "Starts on {0}",
 
             },
             ["zh"] = new Dictionary<string, string>
@@ -143,6 +159,22 @@ namespace CommunityFinder.Services
                 ["Events"] = "活动",
                 ["Courses"] = "课程",
                 ["Forum"] = "论坛",
+                ["SearchByKeywords"] = "按关键词搜索",
+                ["EnterKeywordPlaceholder"] = "输入关键词（如舞蹈、篮球）",
+                ["AddKeywordButton"] = "+",
+                ["SearchButton"] = "🔍",
+                ["WhereLabel"] = "地点",
+                ["DayLabel"] = "天",
+                ["TimeLabel"] = "时间",
+                ["NoCourses"] = "暂无课程",
+               ["LoadingText"] = "加载中...",
+                ["Register"] = "注册",     // 中文
+                ["WhereLabel"] = "地点",    // zh
+                ["DayLabel"] = "天",
+                ["TimeLabel"] = "时间",
+                ["CourseLabel"] = "课程",      // 中文
+                ["RefCodeByOrganizerFormat"] = "编号 {0} 由 {1} 提供",
+                ["StartsOnFormat"] = "开始于 {0}",
             },
             ["ms"] = new Dictionary<string, string>
             {
@@ -209,6 +241,23 @@ namespace CommunityFinder.Services
                 ["Events"] = "Acara",
                 ["Courses"] = "Kursus",
                 ["Forum"] = "Forum",
+                ["SearchByKeywords"] = "Carian Mengikut Kata Kunci",
+                ["EnterKeywordPlaceholder"] = "Masukkan kata kunci (cth: tarian, bola keranjang)",
+                ["AddKeywordButton"] = "+",
+                ["SearchButton"] = "🔍",
+                ["WhereLabel"] = "Tempat",
+                ["DayLabel"] = "Hari",
+                ["TimeLabel"] = "Masa",
+                ["NoCourses"] = "Tiada kursus",
+                ["LoadingText"] = "Sedang memuat...",
+                ["Register"] = "Daftar",   // 马来文
+                ["WhereLabel"] = "Tempat",  // ms
+                ["DayLabel"] = "Hari",
+                ["TimeLabel"] = "Masa",
+                ["CourseLabel"] = "Kursus",    // 马来文
+                ["RefCodeByOrganizerFormat"] = "Rujukan {0} oleh {1}",
+                ["StartsOnFormat"] = "Bermula pada {0}",
+
             }
         };
 
@@ -224,6 +273,32 @@ namespace CommunityFinder.Services
                 LanguageChanged?.Invoke();
             }
         }
+
+        public static string AboutUs => Get("AboutUs");
+        public static string Events => Get("Events");
+        public static string Courses => Get("Courses");
+        public static string Forum => Get("Forum");
+        public static string SearchByKeywords => Get("SearchByKeywords");
+        public static string EnterKeywordPlaceholder => Get("EnterKeywordPlaceholder");
+        public static string NoCourses => Get("NoCourses");
+        public static string Loading => Get("LoadingText");
+
+        public static string Register => Get("Register");
+
+        public static string Where => Get("WhereLabel");
+        public static string Day => Get("DayLabel");
+        public static string Time => Get("TimeLabel");
+
+        public static string CourseLabel => Get("CourseLabel");
+
+        public static string RefCodeByOrganizerFormat => Get("RefCodeByOrganizerFormat");
+
+        public static string StartsOnFormat => Get("StartsOnFormat");
+
+
+
+
+
 
 
 

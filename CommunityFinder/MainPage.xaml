@@ -1,9 +1,11 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             Title="onePA Courses"
+             xmlns:local="clr-namespace:CommunityFinder.Services"
              x:Class="CommunityFinder.MainPage"
+             Title="onePA Courses"
              BackgroundColor="#F9FFE3">
+
+
 
     <ContentPage.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -28,7 +30,7 @@
 
             <!-- Register 按钮样式 -->
             <Style x:Key="RegisterButtonStyle" TargetType="Button">
-                <Setter Property="Text" Value="Register"/>
+                <Setter Property="Text" Value="{x:Static local:LangManager.Register}"/>
                 <Setter Property="BackgroundColor" Value="#5DBB63"/>
                 <Setter Property="TextColor" Value="White"/>
                 <Setter Property="CornerRadius" Value="22"/>
@@ -54,137 +56,150 @@
 
         <!-- 顶部导航栏 -->
         <Grid Grid.Row="0"
-      ColumnDefinitions="Auto,*,Auto"
-      Padding="8,0"
-      BackgroundColor="#FFFFFF"
-      Margin="0,0,0,8"
-      HeightRequest="56"
-      VerticalOptions="Center"
-      HorizontalOptions="FillAndExpand">
+              ColumnDefinitions="Auto,*,Auto"
+              Padding="8,0"
+              BackgroundColor="#FFFFFF"
+              Margin="0,0,0,8"
+              HeightRequest="56"
+              VerticalOptions="Center"
+              HorizontalOptions="FillAndExpand">
 
             <!-- 左：Logo 图片 -->
             <Frame Grid.Column="0"
-           CornerRadius="20"
-           HasShadow="False"
-           BackgroundColor="Transparent"
-           HeightRequest="40"
-           WidthRequest="40"
-           Padding="0"
-           VerticalOptions="Center"
-           HorizontalOptions="Start"
-           Margin="4,0,0,0">
+                   CornerRadius="20"
+                   HasShadow="False"
+                   BackgroundColor="Transparent"
+                   HeightRequest="40"
+                   WidthRequest="40"
+                   Padding="0"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Start"
+                   Margin="4,0,0,0">
                 <Image Source="icon1.png"
-               Aspect="AspectFit"
-               HeightRequest="40"
-               WidthRequest="40"
-               VerticalOptions="Center"
-               HorizontalOptions="Center" />
+                       Aspect="AspectFit"
+                       HeightRequest="40"
+                       WidthRequest="40"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center" />
             </Frame>
 
             <!-- 中：Tabs -->
             <Grid Grid.Column="1"
-          ColumnDefinitions="Auto,Auto,Auto,Auto"
-          HorizontalOptions="Center"
-          VerticalOptions="Center"
-          ColumnSpacing="10">
-                <!-- 控制标签间距，让它们靠近一点 -->
+                  ColumnDefinitions="Auto,Auto,Auto,Auto"
+                  HorizontalOptions="Center"
+                  VerticalOptions="Center"
+                  ColumnSpacing="10">
 
-                <!-- About Us -->
-                <!-- About Us -->
-                <!-- About Us -->
                 <Label x:Name="AboutUsLabel"
-       Grid.Column="0"
-       FontSize="13"
-       Style="{StaticResource TopTab}"
-       HorizontalOptions="Center"
-       VerticalOptions="Center"
-       Margin="6,0,0,0">
+                       Grid.Column="0"
+                       FontSize="13"
+                       Style="{StaticResource TopTab}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Margin="6,0,0,0">
+                    <Label.Text>
+                        <OnPlatform x:TypeArguments="x:String">
+                            <On Platform="Android,iOS,MacCatalyst,Windows" Value="{x:Static local:LangManager.AboutUs}"/>
+                        </OnPlatform>
+                    </Label.Text>
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnAboutUsClicked"/>
                     </Label.GestureRecognizers>
                 </Label>
 
-                <!-- Events -->
                 <Label x:Name="EventsLabel"
-       Grid.Column="1"
-       FontSize="13"
-       Style="{StaticResource TopTab}"
-       HorizontalOptions="Center"
-       VerticalOptions="Center">
+                       Grid.Column="1"
+                       FontSize="13"
+                       Style="{StaticResource TopTab}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center">
+                    <Label.Text>
+                        <OnPlatform x:TypeArguments="x:String">
+                            <On Platform="Android,iOS,MacCatalyst,Windows" Value="{x:Static local:LangManager.Events}"/>
+                        </OnPlatform>
+                    </Label.Text>
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnEventsClicked"/>
                     </Label.GestureRecognizers>
                 </Label>
 
-                <!-- Courses (active tab) -->
                 <Label x:Name="CoursesLabel"
-       Grid.Column="2"
-       FontSize="13"
-       Style="{StaticResource TopTabActive}"
-       HorizontalOptions="Center"
-       VerticalOptions="Center"/>
+                       Grid.Column="2"
+                       FontSize="13"
+                       Style="{StaticResource TopTabActive}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center">
+                    <Label.Text>
+                        <OnPlatform x:TypeArguments="x:String">
+                            <On Platform="Android,iOS,MacCatalyst,Windows" Value="{x:Static local:LangManager.Courses}"/>
+                        </OnPlatform>
+                    </Label.Text>
+                </Label>
 
-                <!-- Forum -->
                 <Label x:Name="ForumLabel"
-       Grid.Column="3"
-       FontSize="13"
-       Style="{StaticResource TopTab}"
-       HorizontalOptions="Center"
-       VerticalOptions="Center"
-       Margin="0,0,6,0">
+                       Grid.Column="3"
+                       FontSize="13"
+                       Style="{StaticResource TopTab}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Margin="0,0,6,0">
+                    <Label.Text>
+                        <OnPlatform x:TypeArguments="x:String">
+                            <On Platform="Android,iOS,MacCatalyst,Windows" Value="{x:Static local:LangManager.Forum}"/>
+                        </OnPlatform>
+                    </Label.Text>
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnForumClicked"/>
                     </Label.GestureRecognizers>
                 </Label>
 
-                <!-- 略往左移 -->
             </Grid>
 
             <!-- 右：设置按钮 -->
             <Frame Grid.Column="2"
-           CornerRadius="18"
-           HasShadow="False"
-           BackgroundColor="Transparent"
-           HeightRequest="36"
-           WidthRequest="36"
-           Padding="0"
-           VerticalOptions="Center"
-           HorizontalOptions="End"
-           Margin="0,0,4,0">
+                   CornerRadius="18"
+                   HasShadow="False"
+                   BackgroundColor="Transparent"
+                   HeightRequest="36"
+                   WidthRequest="36"
+                   Padding="0"
+                   VerticalOptions="Center"
+                   HorizontalOptions="End"
+                   Margin="0,0,4,0">
                 <ImageButton Source="settings.png"
-                     BackgroundColor="Transparent"
-                     HeightRequest="32"
-                     WidthRequest="32"
-                     Aspect="AspectFit"
-                     Padding="0"
-                     Clicked="OnSettingClicked"/>
+                             BackgroundColor="Transparent"
+                             HeightRequest="32"
+                             WidthRequest="32"
+                             Aspect="AspectFit"
+                             Padding="0"
+                             Clicked="OnSettingClicked"/>
             </Frame>
 
         </Grid>
 
-
-
-
-
         <!-- 搜索与筛选 -->
         <Grid Grid.Row="1"
-      RowDefinitions="Auto,Auto,Auto,Auto"
-      ColumnDefinitions="*"
-      Margin="0,0,0,10"
-      HorizontalOptions="FillAndExpand"
-      RowSpacing="8">
+              RowDefinitions="Auto,Auto,Auto,Auto"
+              ColumnDefinitions="*"
+              Margin="0,0,0,10"
+              HorizontalOptions="FillAndExpand"
+              RowSpacing="8">
 
             <!-- 第1行：关键词搜索 -->
             <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
                 <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="FillAndExpand">
-                    <Label Text="Search by Keywords" FontAttributes="Bold" FontSize="14"/>
+                    <Label FontAttributes="Bold" FontSize="14">
+                        <Label.Text>
+                            <OnPlatform x:TypeArguments="x:String">
+                                <On Platform="Android,iOS,MacCatalyst,Windows" Value="{x:Static local:LangManager.SearchByKeywords}"/>
+                            </OnPlatform>
+                        </Label.Text>
+                    </Label>
                     <Entry Text="{Binding CurrentKeyword}" 
-                           Placeholder="Enter keyword (e.g., dance, basketball)"
+                           Placeholder="{x:Static local:LangManager.EnterKeywordPlaceholder}"
                            ReturnCommand="{Binding AddKeywordCommand}"/>
                 </VerticalStackLayout>
 
-
-                <!-- 添加关键词按钮 -->
                 <Button Grid.Column="1"
                         Text="+"
                         FontSize="20"
@@ -196,7 +211,6 @@
                         VerticalOptions="End"
                         Command="{Binding AddKeywordCommand}"/>
 
-                <!-- 搜索按钮 -->
                 <Button Grid.Column="2"
                         Text="🔍"
                         FontSize="18"
@@ -209,7 +223,6 @@
                         Clicked="OnSearchClicked"/>
             </Grid>
 
-            
             <!-- 第2行：显示已添加的关键词 -->
             <CollectionView Grid.Row="1" ItemsSource="{Binding Keywords}" IsVisible="{Binding Keywords.Count}">
                 <CollectionView.ItemsLayout>
@@ -235,47 +248,62 @@
             <!-- 第3行：Where + Day -->
             <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="6">
                 <VerticalStackLayout Grid.Column="0" Spacing="2">
-                    <Label Text="Where" FontAttributes="Bold" FontSize="14"/>
+                    <Label FontAttributes="Bold" FontSize="14">
+                        <Label.Text>
+                            <OnPlatform x:TypeArguments="x:String">
+                                <On Platform="Android,iOS,MacCatalyst,Windows" Value="{x:Static local:LangManager.Where}"/>
+                            </OnPlatform>
+                        </Label.Text>
+                    </Label>
                     <Picker ItemsSource="{Binding WhereOptions}" SelectedItem="{Binding SelectedWhere}"/>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Grid.Column="1" Spacing="2">
-                    <Label Text="Day" FontAttributes="Bold" FontSize="14"/>
+                    <Label FontAttributes="Bold" FontSize="14">
+                        <Label.Text>
+                            <OnPlatform x:TypeArguments="x:String">
+                                <On Platform="Android,iOS,MacCatalyst,Windows" Value="{x:Static local:LangManager.Day}"/>
+                            </OnPlatform>
+                        </Label.Text>
+                    </Label>
                     <Picker ItemsSource="{Binding DayOptions}" SelectedItem="{Binding SelectedDay}"/>
                 </VerticalStackLayout>
             </Grid>
 
-            
-
             <!-- 第4行：Time -->
             <VerticalStackLayout Grid.Row="3" Spacing="2" HorizontalOptions="FillAndExpand">
-                <Label Text="Time" FontAttributes="Bold" FontSize="14"/>
+                <Label FontAttributes="Bold" FontSize="14">
+                    <Label.Text>
+                        <OnPlatform x:TypeArguments="x:String">
+                            <On Platform="Android,iOS,MacCatalyst,Windows" Value="{x:Static local:LangManager.Time}"/>
+                        </OnPlatform>
+                    </Label.Text>
+                </Label>
                 <Picker ItemsSource="{Binding TimeOptions}" SelectedItem="{Binding SelectedTime}"/>
             </VerticalStackLayout>
 
         </Grid>
 
-
-
-
-
         <!-- 列表卡片 -->
         <Grid Grid.Row="2" x:Name="ListRegion">
             <Label 
-Text="{Binding MatchInfo}"
-IsVisible="{Binding HasMatchInfo}"
-FontSize="12"
-TextColor="Gray"
-Margin="10,5"
-LineBreakMode="WordWrap"/>
+                Text="{Binding MatchInfo}"
+                IsVisible="{Binding HasMatchInfo}"
+                FontSize="12"
+                TextColor="Gray"
+                Margin="10,5"
+                LineBreakMode="WordWrap"/>
 
             <CollectionView Grid.Row="2" ItemsSource="{Binding Courses}" SelectionMode="Single" SelectionChanged="OnItemTapped">
                 <CollectionView.EmptyView>
                     <Grid Padding="20">
-                        <Label Text="No courses" HorizontalOptions="Center" VerticalOptions="Center" FontSize="16" TextColor="#666"/>
+                        <Label Text="{x:Static local:LangManager.NoCourses}" 
+                               HorizontalOptions="Center" VerticalOptions="Center" 
+                               FontSize="16" TextColor="#666"/>
                     </Grid>
                 </CollectionView.EmptyView>
 
+                <!-- ItemTemplate 保留原样（Title/Outlet/Date等都是动态绑定） -->
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Grid Padding="12" Margin="0,6" RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" Loaded="OnCourseItemLoaded" BackgroundColor="White">
@@ -294,7 +322,7 @@ LineBreakMode="WordWrap"/>
                                     </Border.Background>
                                     <HorizontalStackLayout Spacing="6">
                                         <Label Text="🎓" FontSize="12"/>
-                                        <Label Text="COURSE" FontSize="12" FontAttributes="Bold" TextColor="White"/>
+                                        <Label Text="{x:Static local:LangManager.CourseLabel}" FontSize="12" FontAttributes="Bold" TextColor="White"/>
                                     </HorizontalStackLayout>
                                 </Border>
 
@@ -303,7 +331,7 @@ LineBreakMode="WordWrap"/>
 
                                 <Label>
                                     <Label.Text>
-                                        <MultiBinding StringFormat="{}Ref Code: {0}    By {1}">
+                                        <MultiBinding StringFormat="{x:Static local:LangManager.RefCodeByOrganizerFormat}">
                                             <Binding Path="ClassId"/>
                                             <Binding Path="OrganizerDisplay"/>
                                         </MultiBinding>
@@ -317,7 +345,7 @@ LineBreakMode="WordWrap"/>
                                         <Label Text="📅"/>
                                         <Label>
                                             <Label.Text>
-                                                <MultiBinding StringFormat="{}Starts {0:ddd, dd MMM yyyy}">
+                                                <MultiBinding StringFormat="{x:Static local:LangManager.StartsOnFormat}">
                                                     <Binding Path="StartDate"/>
                                                 </MultiBinding>
                                             </Label.Text>
@@ -345,7 +373,7 @@ LineBreakMode="WordWrap"/>
             <Grid BackgroundColor="#80000000" IsVisible="{Binding IsBusy}" InputTransparent="False">
                 <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
                     <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="True" WidthRequest="48" HeightRequest="48"/>
-                    <Label Text="Loading..." TextColor="White" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                    <Label Text="{x:Static local:LangManager.Loading}" TextColor="White" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
                 </StackLayout>
             </Grid>
         </Grid>
