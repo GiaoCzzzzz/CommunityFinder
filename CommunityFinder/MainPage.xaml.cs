@@ -40,23 +40,23 @@ namespace CommunityFinder
         }
 
         // 搜索与筛选控件
-        public Label SearchByKeywordsLabel { get; set; }
-        public Entry KeywordEntry { get; set; }
-        public Label WhereLabelControl { get; set; }
-        public Label DayLabelControl { get; set; }
-        public Label TimeLabelControl { get; set; }
-        public Label NoCoursesLabel { get; set; }
+
 
 
         private void RefreshSearchTexts()
         {
             SearchByKeywordsLabel.Text = LangManager.Get("SearchByKeywords");
             KeywordEntry.Placeholder = LangManager.Get("EnterKeywordPlaceholder");
-            WhereLabelControl.Text = LangManager.Get("WhereLabel");
-            DayLabelControl.Text = LangManager.Get("DayLabel");
-            TimeLabelControl.Text = LangManager.Get("TimeLabel");
-            NoCoursesLabel.Text = LangManager.Get("NoCourses");
+
+            WhereLabel.Text = LangManager.Get("Where");
+            DayLabel.Text = LangManager.Get("Day");
+            TimeLabel.Text = LangManager.Get("Time");
+
+            
         }
+
+
+
 
 
         /// <summary>

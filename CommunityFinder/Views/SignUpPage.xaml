@@ -80,8 +80,20 @@
                     <Label x:Name="ConfirmMismatchLabel" FontSize="12" TextColor="Red" />
                 </StackLayout>
 
+                <!-- 隐私政策勾选 -->
+                <StackLayout Orientation="Horizontal" Spacing="10" VerticalOptions="Center">
+                    <CheckBox x:Name="PrivacyCheckBox" VerticalOptions="Center"/>
+                    <Label Text="User Privacy Policy of CommunityFinder"
+                           TextColor="#2196F3"
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnPrivacyTapped"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </StackLayout>
+
                 <!-- 提交按钮 -->
-                <Button Text="Submit" BackgroundColor="#4CAF50"
+                <Button x:Name="SubmitButton" Text="Submit" BackgroundColor="#4CAF50"
                         TextColor="White" FontAttributes="Bold"
                         CornerRadius="8" HeightRequest="50"
                         Clicked="OnSignUpClicked" />
@@ -99,4 +111,3 @@
         </ScrollView>
     </Grid>
 </ContentPage>
-

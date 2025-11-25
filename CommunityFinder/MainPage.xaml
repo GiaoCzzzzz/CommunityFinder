@@ -179,48 +179,58 @@
 
         <!-- 搜索与筛选 -->
         <Grid Grid.Row="1"
-              RowDefinitions="Auto,Auto,Auto,Auto"
-              ColumnDefinitions="*"
-              Margin="0,0,0,10"
-              HorizontalOptions="FillAndExpand"
-              RowSpacing="8">
+      RowDefinitions="Auto,Auto,Auto,Auto"
+      ColumnDefinitions="*"
+      Margin="0,0,0,10"
+      HorizontalOptions="FillAndExpand"
+      RowSpacing="8">
 
             <!-- 第1行：关键词搜索 -->
             <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+
                 <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="FillAndExpand">
-                    <Label FontAttributes="Bold" FontSize="14">
+
+                    <!-- Search By Keyword 标签 -->
+                    <Label x:Name="SearchByKeywordsLabel"
+       FontAttributes="Bold"
+       FontSize="14">
                         <Label.Text>
                             <OnPlatform x:TypeArguments="x:String">
-                                <On Platform="Android,iOS,MacCatalyst,Windows" Value="{x:Static local:LangManager.SearchByKeywords}"/>
+                                <On Platform="Android,iOS,MacCatalyst,Windows" 
+                Value="{x:Static local:LangManager.SearchByKeywords}" />
                             </OnPlatform>
                         </Label.Text>
                     </Label>
-                    <Entry Text="{Binding CurrentKeyword}" 
-                           Placeholder="{x:Static local:LangManager.EnterKeywordPlaceholder}"
-                           ReturnCommand="{Binding AddKeywordCommand}"/>
+
+
+                    <!-- 关键词输入框 -->
+                    <Entry x:Name="KeywordEntry"
+                   Text="{Binding CurrentKeyword}"
+                   Placeholder=""
+                   ReturnCommand="{Binding AddKeywordCommand}"/>
                 </VerticalStackLayout>
 
                 <Button Grid.Column="1"
-                        Text="+"
-                        FontSize="20"
-                        WidthRequest="44"
-                        HeightRequest="40"
-                        CornerRadius="20"
-                        BackgroundColor="#5DBB63"
-                        TextColor="White"
-                        VerticalOptions="End"
-                        Command="{Binding AddKeywordCommand}"/>
+                Text="+"
+                FontSize="20"
+                WidthRequest="44"
+                HeightRequest="40"
+                CornerRadius="20"
+                BackgroundColor="#5DBB63"
+                TextColor="White"
+                VerticalOptions="End"
+                Command="{Binding AddKeywordCommand}"/>
 
                 <Button Grid.Column="2"
-                        Text="🔍"
-                        FontSize="18"
-                        WidthRequest="44"
-                        HeightRequest="40"
-                        CornerRadius="20"
-                        BackgroundColor="#0078D7"
-                        TextColor="White"
-                        VerticalOptions="End"
-                        Clicked="OnSearchClicked"/>
+                Text="🔍"
+                FontSize="18"
+                WidthRequest="44"
+                HeightRequest="40"
+                CornerRadius="20"
+                BackgroundColor="#0078D7"
+                TextColor="White"
+                VerticalOptions="End"
+                Clicked="OnSearchClicked"/>
             </Grid>
 
             <!-- 第2行：显示已添加的关键词 -->
@@ -235,8 +245,8 @@
                                 <Label Text="{Binding .}" TextColor="#1976D2" FontSize="14"/>
                                 <Label Text="✕" TextColor="#666" FontSize="14">
                                     <Label.GestureRecognizers>
-                                        <TapGestureRecognizer CommandParameter="{Binding .}" 
-                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveKeywordCommand}"/>
+                                        <TapGestureRecognizer CommandParameter="{Binding .}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveKeywordCommand}"/>
                                     </Label.GestureRecognizers>
                                 </Label>
                             </HorizontalStackLayout>
@@ -247,42 +257,64 @@
 
             <!-- 第3行：Where + Day -->
             <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="6">
+
+                <!-- Where -->
                 <VerticalStackLayout Grid.Column="0" Spacing="2">
-                    <Label FontAttributes="Bold" FontSize="14">
+                    <Label x:Name="WhereLabel"
+       FontAttributes="Bold"
+       FontSize="14">
                         <Label.Text>
                             <OnPlatform x:TypeArguments="x:String">
-                                <On Platform="Android,iOS,MacCatalyst,Windows" Value="{x:Static local:LangManager.Where}"/>
+                                <On Platform="Android,iOS,MacCatalyst,Windows" 
+                Value="{x:Static local:LangManager.Where}" />
                             </OnPlatform>
                         </Label.Text>
                     </Label>
-                    <Picker ItemsSource="{Binding WhereOptions}" SelectedItem="{Binding SelectedWhere}"/>
+
+                    <Picker x:Name="WherePicker"
+                    ItemsSource="{Binding WhereOptions}"
+                    SelectedItem="{Binding SelectedWhere}"/>
                 </VerticalStackLayout>
 
+                <!-- Day -->
                 <VerticalStackLayout Grid.Column="1" Spacing="2">
-                    <Label FontAttributes="Bold" FontSize="14">
+                    <Label x:Name="DayLabel"
+       FontAttributes="Bold"
+       FontSize="14">
                         <Label.Text>
                             <OnPlatform x:TypeArguments="x:String">
-                                <On Platform="Android,iOS,MacCatalyst,Windows" Value="{x:Static local:LangManager.Day}"/>
+                                <On Platform="Android,iOS,MacCatalyst,Windows" 
+                Value="{x:Static local:LangManager.Day}" />
                             </OnPlatform>
                         </Label.Text>
                     </Label>
-                    <Picker ItemsSource="{Binding DayOptions}" SelectedItem="{Binding SelectedDay}"/>
+
+                    <Picker x:Name="DayPicker"
+                    ItemsSource="{Binding DayOptions}"
+                    SelectedItem="{Binding SelectedDay}"/>
                 </VerticalStackLayout>
             </Grid>
 
             <!-- 第4行：Time -->
             <VerticalStackLayout Grid.Row="3" Spacing="2" HorizontalOptions="FillAndExpand">
-                <Label FontAttributes="Bold" FontSize="14">
+                <Label x:Name="TimeLabel"
+       FontAttributes="Bold"
+       FontSize="14">
                     <Label.Text>
                         <OnPlatform x:TypeArguments="x:String">
-                            <On Platform="Android,iOS,MacCatalyst,Windows" Value="{x:Static local:LangManager.Time}"/>
+                            <On Platform="Android,iOS,MacCatalyst,Windows" 
+                Value="{x:Static local:LangManager.Time}" />
                         </OnPlatform>
                     </Label.Text>
                 </Label>
-                <Picker ItemsSource="{Binding TimeOptions}" SelectedItem="{Binding SelectedTime}"/>
+
+                <Picker x:Name="TimePicker"
+                ItemsSource="{Binding TimeOptions}"
+                SelectedItem="{Binding SelectedTime}"/>
             </VerticalStackLayout>
 
         </Grid>
+
 
         <!-- 列表卡片 -->
         <Grid Grid.Row="2" x:Name="ListRegion">

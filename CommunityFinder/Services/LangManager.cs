@@ -92,6 +92,10 @@ namespace CommunityFinder.Services
                 ["CourseLabel"] = "Course",    // 英文
                 ["RefCodeByOrganizerFormat"] = "Ref {0} by {1}",
                 ["StartsOnFormat"] = "Starts on {0}",
+                ["Where"] = "Where",
+                ["Day"] = "Day",
+                ["Time"] = "Time",
+
 
             },
             ["zh"] = new Dictionary<string, string>
@@ -175,6 +179,10 @@ namespace CommunityFinder.Services
                 ["CourseLabel"] = "课程",      // 中文
                 ["RefCodeByOrganizerFormat"] = "编号 {0} 由 {1} 提供",
                 ["StartsOnFormat"] = "开始于 {0}",
+                ["Where"] = "地点",
+                ["Day"] = "天",
+                ["Time"] = "时间",
+
             },
             ["ms"] = new Dictionary<string, string>
             {
@@ -257,6 +265,10 @@ namespace CommunityFinder.Services
                 ["CourseLabel"] = "Kursus",    // 马来文
                 ["RefCodeByOrganizerFormat"] = "Rujukan {0} oleh {1}",
                 ["StartsOnFormat"] = "Bermula pada {0}",
+                ["Where"] = "Tempat",
+                ["Day"] = "Hari",
+                ["Time"] = "Masa",
+
 
             }
         };
@@ -278,16 +290,20 @@ namespace CommunityFinder.Services
         public static string Events => Get("Events");
         public static string Courses => Get("Courses");
         public static string Forum => Get("Forum");
-        public static string SearchByKeywords => Get("SearchByKeywords");
         public static string EnterKeywordPlaceholder => Get("EnterKeywordPlaceholder");
         public static string NoCourses => Get("NoCourses");
         public static string Loading => Get("LoadingText");
 
+        public static string SearchByKeywords => Get("SearchByKeywords");
+
+
+        public static string Where => Get("Where");
+
+        public static string Day => Get("Day");
+
+        public static string Time => Get("Time");
         public static string Register => Get("Register");
 
-        public static string Where => Get("WhereLabel");
-        public static string Day => Get("DayLabel");
-        public static string Time => Get("TimeLabel");
 
         public static string CourseLabel => Get("CourseLabel");
 

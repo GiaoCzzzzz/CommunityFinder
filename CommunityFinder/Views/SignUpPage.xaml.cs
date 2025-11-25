@@ -26,6 +26,15 @@ namespace CommunityFinder.Views
 
         async void OnSignUpClicked(object sender, EventArgs e)
         {
+            // 🔹 新增：检查用户是否勾选隐私条款
+            if (PrivacyCheckBox.IsChecked == false)
+            {
+                await DisplayAlert("Instruction", "Please check the box and read the User Privacy Terms.", "Confirm");
+                return;
+            }
+
+
+
             var email = EmailEntry.Text?.Trim();
             var pwd = PasswordEntry.Text ?? string.Empty;
             var confirmPwd = ConfirmPasswordEntry.Text ?? string.Empty;
@@ -204,5 +213,13 @@ namespace CommunityFinder.Views
                    password.Any(char.IsDigit) &&
                    password.Any(ch => !char.IsLetterOrDigit(ch));
         }
+
+
+        // 点击 Privacy 文本跳转 PrivacyPage
+        private async void OnPrivacyTapped(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new PrivacyPage());
+        }
+
     }
 }
