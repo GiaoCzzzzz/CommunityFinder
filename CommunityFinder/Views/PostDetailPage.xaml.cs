@@ -194,6 +194,19 @@ namespace CommunityFinder.Views
 
             var actionStack = new HorizontalStackLayout { Spacing = 10 };
 
+            var reportButton = new Button
+            {
+                Text = "Report",
+                BackgroundColor = Color.FromArgb("#DC3545"),
+                TextColor = Colors.White,
+                Padding = new Thickness(10, 5),
+                FontSize = 12
+            };
+            reportButton.Clicked += async (s, e) => await OnReportPostClicked();
+            actionStack.Add(reportButton);
+
+
+
             if (UserCanDeletePost())
             {
                 var deleteButton = new Button
@@ -217,6 +230,23 @@ namespace CommunityFinder.Views
 
             frame.Content = grid;
             return frame;
+        }
+
+        private async Task OnReportPostClicked()
+        {
+            var confirm = await DisplayAlert("Report Post", "Are you sure you want to report this post?", "Yes", "No");
+            if (confirm)
+            {
+                try
+                {
+                    await _forumService.CreateReportAsync(postId: _post.Id);
+                    await DisplayAlert("Success", "Post reported to admin", "OK");
+                }
+                catch (Exception ex)
+                {
+                    await DisplayAlert("Error", $"Failed to report: {ex.Message}", "OK");
+                }
+            }
         }
 
         // --------------------- 创建回复卡片 ---------------------
