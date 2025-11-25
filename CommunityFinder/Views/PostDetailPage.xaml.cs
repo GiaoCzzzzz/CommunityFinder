@@ -268,31 +268,40 @@ namespace CommunityFinder.Views
         // --------------------- 创建回复卡片 ---------------------
         private Frame CreateReplyCard(ForumReply reply, int level, string parentUsername = null)
         {
+            // 根据层级调整大小
+            // level 0 = 评论（较大）
+            // level 1+ = 回复（最小）
+            bool isTopLevelComment = (level == 0);
+
+            // 设置不同层级的左右边距，让卡片实际宽度变小
+            double leftMargin = isTopLevelComment ? 10 : 30;   // 评论左边距10，回复左边距30
+            double rightMargin = isTopLevelComment ? 10 : 30;  // 评论右边距10，回复右边距30
+
             var frame = new Frame
             {
-                BackgroundColor = Color.FromArgb("#F9F9F9"),
-                Padding = 15,
-                Margin = new Thickness(0, 0, 0, 10),
+                BackgroundColor = isTopLevelComment ? Color.FromArgb("#F9F9F9") : Color.FromArgb("#EFEFEF"),
+                Padding = isTopLevelComment ? 15 : 10,  // 评论padding较大，回复更小
+                Margin = new Thickness(leftMargin, 0, rightMargin, 10),  // 左右边距让卡片变窄
                 CornerRadius = 8,
                 HasShadow = false,
                 BorderColor = Colors.LightGray,
-                HorizontalOptions = LayoutOptions.FillAndExpand // keep nested reply cards the same full width as top-level replies
+                HorizontalOptions = LayoutOptions.FillAndExpand
             };
 
             var grid = new Grid
             {
                 RowDefinitions =
-                {
-                    new RowDefinition { Height = GridLength.Auto },
-                    new RowDefinition { Height = GridLength.Auto },
-                    new RowDefinition { Height = GridLength.Auto },
-                    new RowDefinition { Height = GridLength.Auto }
-                },
+        {
+            new RowDefinition { Height = GridLength.Auto },
+            new RowDefinition { Height = GridLength.Auto },
+            new RowDefinition { Height = GridLength.Auto },
+            new RowDefinition { Height = GridLength.Auto }
+        },
                 ColumnDefinitions =
-                {
-                    new ColumnDefinition { Width = GridLength.Star },
-                    new ColumnDefinition { Width = GridLength.Auto }
-                }
+        {
+            new ColumnDefinition { Width = GridLength.Star },
+            new ColumnDefinition { Width = GridLength.Auto }
+        }
             };
 
             var usernameText = $"👤 {reply.Username}";
@@ -304,7 +313,7 @@ namespace CommunityFinder.Views
             var usernameLabel = new Label
             {
                 Text = usernameText,
-                FontSize = 14,
+                FontSize = isTopLevelComment ? 14 : 12,  // 评论字体较大，回复更小
                 FontAttributes = FontAttributes.Bold,
                 TextColor = Colors.DarkSlateGray
             };
@@ -315,7 +324,7 @@ namespace CommunityFinder.Views
             var dateLabel = new Label
             {
                 Text = reply.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
-                FontSize = 12,
+                FontSize = isTopLevelComment ? 12 : 10,  // 评论字体较大，回复更小
                 TextColor = Colors.Gray,
                 HorizontalOptions = LayoutOptions.End
             };
@@ -326,7 +335,7 @@ namespace CommunityFinder.Views
             var contentLabel = new Label
             {
                 Text = reply.Content,
-                FontSize = 15,
+                FontSize = isTopLevelComment ? 15 : 13,  // 评论字体较大，回复更小
                 Margin = new Thickness(0, 10, 0, 10)
             };
             Grid.SetRow(contentLabel, 1);
@@ -341,15 +350,15 @@ namespace CommunityFinder.Views
                 grid.Add(linkFrame);
             }
 
-            var actionStack = new HorizontalStackLayout { Spacing = 10 };
+            var actionStack = new HorizontalStackLayout { Spacing = 8 };
 
             var replyButton = new Button
             {
                 Text = "Reply",
                 BackgroundColor = Color.FromArgb("#4A90E2"),
                 TextColor = Colors.White,
-                Padding = new Thickness(10, 5),
-                FontSize = 12
+                Padding = new Thickness(isTopLevelComment ? 10 : 7, isTopLevelComment ? 5 : 3),  // 评论按钮较大，回复更小
+                FontSize = isTopLevelComment ? 12 : 10  // 评论按钮字体较大，回复更小
             };
             replyButton.Clicked += (s, e) => OnReplyToFloorClicked(reply.Id, reply.Username);
             actionStack.Add(replyButton);
@@ -359,8 +368,8 @@ namespace CommunityFinder.Views
                 Text = "Report",
                 BackgroundColor = Color.FromArgb("#DC3545"),
                 TextColor = Colors.White,
-                Padding = new Thickness(10, 5),
-                FontSize = 12
+                Padding = new Thickness(isTopLevelComment ? 10 : 7, isTopLevelComment ? 5 : 3),
+                FontSize = isTopLevelComment ? 12 : 10
             };
             reportButton.Clicked += async (s, e) => await OnReportReplyClicked(reply.Id);
             actionStack.Add(reportButton);
@@ -372,8 +381,8 @@ namespace CommunityFinder.Views
                     Text = "Delete",
                     BackgroundColor = Color.FromArgb("#6C757D"),
                     TextColor = Colors.White,
-                    Padding = new Thickness(10, 5),
-                    FontSize = 12
+                    Padding = new Thickness(isTopLevelComment ? 10 : 7, isTopLevelComment ? 5 : 3),
+                    FontSize = isTopLevelComment ? 12 : 10
                 };
                 deleteButton.Clicked += async (s, e) => await OnDeleteReplyClicked(reply.Id);
                 actionStack.Add(deleteButton);
