@@ -76,6 +76,57 @@ namespace CommunityFinder.Services
             return category;
         }
 
+        public async Task DeleteCategoryAsync(Guid categoryId)
+        {
+            if (!IsAdmin()) throw new UnauthorizedAccessException("Only admins can delete categories");
+
+            var category = await _client.From<ForumCategory>()
+                .Where(x => x.Id == categoryId)
+                .Single();
+
+            if (category == null) return;
+
+            var postsResponse = await _client.From<ForumPost>()
+                .Where(x => x.CategoryId == categoryId)
+                .Get();
+            var posts = postsResponse.Models;
+
+            foreach (var post in posts)
+            {
+                var replies = await GetRepliesByPostIdAsync(post.Id);
+                if (replies != null && replies.Any())
+                {
+                    var replyIds = replies.Select(r => r.Id).ToList();
+                    foreach (var replyId in replyIds)
+                    {
+                        await _client.From<ForumReport>()
+                            .Where(x => x.ReplyId == replyId)
+                            .Delete();
+                    }
+
+                    await _client.From<ForumReply>()
+                        .Where(x => x.PostId == post.Id)
+                        .Delete();
+                }
+
+                await _client.From<ForumReport>()
+                    .Where(x => x.PostId == post.Id)
+                    .Delete();
+
+                await _client.From<ForumPost>()
+                    .Where(x => x.Id == post.Id)
+                    .Delete();
+            }
+
+            await _client.From<ForumAnnouncement>()
+                .Where(x => x.CategoryId == categoryId)
+                .Delete();
+
+            await _client.From<ForumCategory>()
+                .Where(x => x.Id == categoryId)
+                .Delete();
+        }
+
         // ========== Announcement Operations ==========
         public async Task<ForumAnnouncement> GetAnnouncementAsync(Guid categoryId)
         {
