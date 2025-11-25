@@ -1,0 +1,221 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace CommunityFinder.Services
+{
+    public static class LangManager
+    {
+        // 当前语言，默认英文
+        public static string CurrentLang { get; private set; } = "en";
+
+        // 多语言字典
+        private static readonly Dictionary<string, Dictionary<string, string>> _dict = new()
+        {
+            ["en"] = new Dictionary<string, string>
+            {
+                ["PageTitle"] = "About Us",
+                ["WelcomeTitle"] = "Welcome to Community Finder",
+                ["AboutCardTitle"] = "About the App",
+                ["AboutCardText"] = "Community Finder is a modern platform designed to help users discover courses, events, and communities that match their personal interests. Our smart recommendation system leverages AI to suggest content based on your browsing habits, favorites, and engagement, while fully respecting your privacy.",
+                ["CoreFeaturesTitle"] = "Core Features",
+                ["Feature1"] = "Browse a wide variety of courses and events tailored to your interests",
+                ["Feature2"] = "Join chat groups to connect with like-minded users",
+                ["Feature3"] = "Register for events easily and securely",
+                ["Feature4"] = "Track your participation and rewards for completed tasks",
+                ["Feature5"] = "Access a detailed history of your activities",
+                ["Feature6"] = "AI-powered personalized recommendations based on interaction data",
+                ["Feature7"] = "Admins can manage events, review statistics, and generate reports",
+                ["PrivacyTitle"] = "Privacy & Data Protection",
+                ["PrivacyText"] = "At Community Finder, protecting your personal information is our top priority. This privacy policy explains how we collect, use, and safeguard your data.",
+                ["DataCollection"] = "Data Collection",
+                ["DataCollection1"] = "We collect information you provide during registration, such as email and password.",
+                ["DataCollection2"] = "We also track your course browsing, favorites, and event participation to provide personalized recommendations.",
+                ["DataCollection3"] = "Data collection is limited to what is necessary for the core functionalities of the app.",
+                ["DataUsage"] = "Data Usage",
+                ["DataUsage1"] = "Personal data is used to authenticate your account, provide services, and deliver personalized content.",
+                ["DataUsage2"] = "Anonymized data may be used for improving AI recommendation algorithms.",
+                ["DataUsage3"] = "We do not sell or share your personal information with third parties without your consent.",
+                ["DataSecurity"] = "Data Security",
+                ["DataSecurity1"] = "All personal data is encrypted in transit and at rest.",
+                ["DataSecurity2"] = "Access to user data is strictly controlled and monitored.",
+                ["DataSecurity3"] = "We implement industry-standard measures to protect against unauthorized access, alteration, or deletion.",
+                ["UserRights"] = "User Rights",
+                ["UserRights1"] = "Users can request access, correction, or deletion of their personal information.",
+                ["UserRights2"] = "You can opt out of AI-based personalized recommendations at any time.",
+                ["UserRights3"] = "Users are informed about all data collection practices and changes to privacy policies.",
+                ["Compliance"] = "Compliance",
+                ["Compliance1"] = "We comply with GDPR and relevant local privacy regulations.",
+                ["Compliance2"] = "Any breach of data privacy will be promptly reported and addressed according to legal requirements.",
+                ["TermsTitle"] = "Terms of Use",
+                ["TermsText"] = "By using Community Finder, you agree to abide by the following rules:",
+                ["Terms1"] = "Keep your account secure & do not share login credentials.",
+                ["Terms2"] = "Respect other users and their contributions in chats and events.",
+                ["Terms3"] = "Ensure any content you submit complies with laws & does not infringe on third-party rights.",
+                ["Terms4"] = "The app is provided as-is, and we are not liable for external content or user-generated data.",
+                ["Terms5"] = "Violations may result in account suspension or termination.",
+                ["LanguagePageTitle"] = "Language Settings",
+                ["English"] = "English",
+                ["Chinese"] = "Chinese",
+                ["Malay"] = "Malay",
+                ["CurrentLanguageEnglish"] = "Current Language: English",
+                ["CurrentLanguageChinese"] = "Current Language: Chinese",
+                ["CurrentLanguageMalay"] = "Current Language: Malay",
+                ["CurrentLanguageUnknown"] = "Current Language: Unknown",
+                ["AdminAlertsPageTitle"] = "Reports and Alerts (Admin)",
+                ["AllReportsLabel"] = "All Reports",
+                ["PostReport"] = "📝 Post Report",
+                ["ReplyReport"] = "💬 Reply Report",
+                ["ViewButton"] = "View",
+                ["MarkResolvedButton"] = "Mark Resolved",
+                ["NoPendingReports"] = "No pending reports",
+                ["AccessDenied"] = "Access denied. Admin only.",
+                ["ErrorTitle"] = "Error",
+                ["SuccessTitle"] = "Success",
+                ["ReportResolved"] = "Report marked as resolved"
+            },
+            ["zh"] = new Dictionary<string, string>
+            {
+                ["PageTitle"] = "关于我们",
+                ["WelcomeTitle"] = "欢迎来到 Community Finder",
+                ["AboutCardTitle"] = "关于应用",
+                ["AboutCardText"] = "Community Finder 是一个现代化平台，旨在帮助用户发现符合其兴趣的课程、活动和社区。我们的智能推荐系统利用 AI 根据您的浏览习惯、收藏和参与情况推荐内容，同时充分尊重您的隐私。",
+                ["CoreFeaturesTitle"] = "核心功能",
+                ["Feature1"] = "浏览各种根据您兴趣定制的课程和活动",
+                ["Feature2"] = "加入聊天群组，与志同道合的用户交流",
+                ["Feature3"] = "轻松安全地注册活动",
+                ["Feature4"] = "跟踪参与情况和已完成任务的奖励",
+                ["Feature5"] = "访问详细的活动历史记录",
+                ["Feature6"] = "基于交互数据的 AI 个性化推荐",
+                ["Feature7"] = "管理员可以管理活动、查看统计数据并生成报告",
+                ["PrivacyTitle"] = "隐私与数据保护",
+                ["PrivacyText"] = "在 Community Finder，保护您的个人信息是我们的首要任务。本隐私政策说明我们如何收集、使用和保护您的数据。",
+                ["DataCollection"] = "数据收集",
+                ["DataCollection1"] = "我们收集您在注册时提供的信息，如邮箱和密码。",
+                ["DataCollection2"] = "我们还会跟踪您浏览的课程、收藏和活动参与情况，以提供个性化推荐。",
+                ["DataCollection3"] = "数据收集仅限于应用核心功能所必需的内容。",
+                ["DataUsage"] = "数据使用",
+                ["DataUsage1"] = "个人数据用于验证您的账户、提供服务以及个性化内容。",
+                ["DataUsage2"] = "匿名数据可能用于改进 AI 推荐算法。",
+                ["DataUsage3"] = "未经您的同意，我们不会将您的个人信息出售或分享给第三方。",
+                ["DataSecurity"] = "数据安全",
+                ["DataSecurity1"] = "所有个人数据在传输和存储过程中均加密。",
+                ["DataSecurity2"] = "对用户数据的访问严格控制和监控。",
+                ["DataSecurity3"] = "我们实施行业标准措施，防止未经授权的访问、篡改或删除。",
+                ["UserRights"] = "用户权利",
+                ["UserRights1"] = "用户可以请求访问、修改或删除其个人信息。",
+                ["UserRights2"] = "您可以随时选择退出基于 AI 的个性化推荐。",
+                ["UserRights3"] = "用户会被告知所有数据收集行为及隐私政策的变更。",
+                ["Compliance"] = "合规性",
+                ["Compliance1"] = "我们遵守 GDPR 及相关本地隐私法规。",
+                ["Compliance2"] = "任何数据隐私违规将根据法律要求及时报告并处理。",
+                ["TermsTitle"] = "使用条款",
+                ["TermsText"] = "使用 Community Finder 即表示您同意遵守以下规则：",
+                ["Terms1"] = "保持账户安全，不共享登录凭证。",
+                ["Terms2"] = "尊重其他用户及其在聊天和活动中的贡献。",
+                ["Terms3"] = "确保您提交的内容符合法律规定，不侵犯第三方权利。",
+                ["Terms4"] = "本应用按原样提供，我们不对外部内容或用户生成的数据承担责任。",
+                ["Terms5"] = "违规行为可能导致账户暂停或终止。",
+                ["LanguagePageTitle"] = "语言设置",
+                ["English"] = "英语",
+                ["Chinese"] = "中文",
+                ["Malay"] = "马来文",
+                ["CurrentLanguageEnglish"] = "当前语言：英语",
+                ["CurrentLanguageChinese"] = "当前语言：中文",
+                ["CurrentLanguageMalay"] = "当前语言：马来文",
+                ["CurrentLanguageUnknown"] = "当前语言：未知",
+                ["AdminAlertsPageTitle"] = "举报与提醒（管理员）",
+                ["AllReportsLabel"] = "所有举报",
+                ["PostReport"] = "📝 帖子举报",
+                ["ReplyReport"] = "💬 回复举报",
+                ["ViewButton"] = "查看",
+                ["MarkResolvedButton"] = "标记已处理",
+                ["NoPendingReports"] = "暂无待处理举报",
+                ["AccessDenied"] = "访问被拒。仅限管理员。",
+                ["ErrorTitle"] = "错误",
+                ["SuccessTitle"] = "成功",
+                ["ReportResolved"] = "举报已标记为已处理"
+            },
+            ["ms"] = new Dictionary<string, string>
+            {
+                ["PageTitle"] = "Tentang Kami",
+                ["WelcomeTitle"] = "Selamat datang di Community Finder",
+                ["AboutCardTitle"] = "Tentang Aplikasi",
+                ["AboutCardText"] = "Community Finder adalah platform moden yang direka untuk membantu pengguna menemui kursus, acara dan komuniti yang sesuai dengan minat mereka. Sistem cadangan pintar kami menggunakan AI untuk mencadangkan kandungan berdasarkan tabiat melayari, kegemaran dan penglibatan anda, sambil menghormati privasi anda sepenuhnya.",
+                ["CoreFeaturesTitle"] = "Ciri-ciri Utama",
+                ["Feature1"] = "Semak pelbagai kursus dan acara yang disesuaikan dengan minat anda",
+                ["Feature2"] = "Sertai kumpulan sembang untuk berhubung dengan pengguna sehaluan",
+                ["Feature3"] = "Daftar untuk acara dengan mudah dan selamat",
+                ["Feature4"] = "Jejaki penglibatan dan ganjaran untuk tugasan yang diselesaikan",
+                ["Feature5"] = "Akses sejarah terperinci aktiviti anda",
+                ["Feature6"] = "Cadangan peribadi berkuasa AI berdasarkan data interaksi",
+                ["Feature7"] = "Pentadbir boleh mengurus acara, menyemak statistik, dan menjana laporan",
+                ["PrivacyTitle"] = "Privasi & Perlindungan Data",
+                ["PrivacyText"] = "Di Community Finder, melindungi maklumat peribadi anda adalah keutamaan kami. Polisi privasi ini menerangkan bagaimana kami mengumpul, menggunakan, dan melindungi data anda.",
+                ["DataCollection"] = "Pengumpulan Data",
+                ["DataCollection1"] = "Kami mengumpul maklumat yang anda berikan semasa pendaftaran, seperti e-mel dan kata laluan.",
+                ["DataCollection2"] = "Kami juga menjejak pelayaran kursus, kegemaran, dan penglibatan acara anda untuk memberikan cadangan peribadi.",
+                ["DataCollection3"] = "Pengumpulan data terhad kepada apa yang diperlukan untuk fungsi teras aplikasi.",
+                ["DataUsage"] = "Penggunaan Data",
+                ["DataUsage1"] = "Data peribadi digunakan untuk mengesahkan akaun anda, menyediakan perkhidmatan, dan menyampaikan kandungan peribadi.",
+                ["DataUsage2"] = "Data tanpa nama mungkin digunakan untuk meningkatkan algoritma cadangan AI.",
+                ["DataUsage3"] = "Kami tidak menjual atau berkongsi maklumat peribadi anda dengan pihak ketiga tanpa persetujuan anda.",
+                ["DataSecurity"] = "Keselamatan Data",
+                ["DataSecurity1"] = "Semua data peribadi disulitkan semasa penghantaran dan penyimpanan.",
+                ["DataSecurity2"] = "Akses kepada data pengguna dikawal dan dipantau dengan ketat.",
+                ["DataSecurity3"] = "Kami melaksanakan langkah-langkah piawai industri untuk melindungi daripada akses, pengubahsuaian, atau pemadaman tanpa kebenaran.",
+                ["UserRights"] = "Hak Pengguna",
+                ["UserRights1"] = "Pengguna boleh meminta akses, pembetulan, atau pemadaman maklumat peribadi mereka.",
+                ["UserRights2"] = "Anda boleh memilih untuk keluar dari cadangan peribadi berasaskan AI pada bila-bila masa.",
+                ["UserRights3"] = "Pengguna dimaklumkan tentang semua amalan pengumpulan data dan perubahan polisi privasi.",
+                ["Compliance"] = "Pematuhan",
+                ["Compliance1"] = "Kami mematuhi GDPR dan peraturan privasi tempatan yang berkaitan.",
+                ["Compliance2"] = "Sebarang pelanggaran privasi data akan dilaporkan dan ditangani dengan segera mengikut keperluan undang-undang.",
+                ["TermsTitle"] = "Terma Penggunaan",
+                ["TermsText"] = "Dengan menggunakan Community Finder, anda bersetuju untuk mematuhi peraturan berikut:",
+                ["Terms1"] = "Pastikan akaun anda selamat & jangan kongsi kelayakan log masuk.",
+                ["Terms2"] = "Hormati pengguna lain dan sumbangan mereka dalam sembang dan acara.",
+                ["Terms3"] = "Pastikan sebarang kandungan yang anda hantar mematuhi undang-undang & tidak melanggar hak pihak ketiga.",
+                ["Terms4"] = "Aplikasi ini disediakan sebagaimana adanya, dan kami tidak bertanggungjawab terhadap kandungan luaran atau data yang dijana pengguna.",
+                ["Terms5"] = "Pelanggaran boleh mengakibatkan penggantungan atau penamatan akaun.",
+                ["LanguagePageTitle"] = "Tetapan Bahasa",
+                ["English"] = "Inggeris",
+                ["Chinese"] = "Cina",
+                ["Malay"] = "Melayu",
+                ["CurrentLanguageEnglish"] = "Bahasa Semasa: Inggeris",
+                ["CurrentLanguageChinese"] = "Bahasa Semasa: Cina",
+                ["CurrentLanguageMalay"] = "Bahasa Semasa: Melayu",
+                ["CurrentLanguageUnknown"] = "Bahasa Semasa: Tidak Diketahui",
+                ["AdminAlertsPageTitle"] = "Laporan dan Amaran (Admin)",
+                ["AllReportsLabel"] = "Semua Laporan",
+                ["PostReport"] = "📝 Laporan Pos",
+                ["ReplyReport"] = "💬 Laporan Balasan",
+                ["ViewButton"] = "Lihat",
+                ["MarkResolvedButton"] = "Tandakan Selesai",
+                ["NoPendingReports"] = "Tiada laporan tertunda",
+                ["AccessDenied"] = "Akses ditolak. Hanya untuk admin.",
+                ["ErrorTitle"] = "Ralat",
+                ["SuccessTitle"] = "Berjaya",
+                ["ReportResolved"] = "Laporan ditandakan selesai"
+            }
+        };
+
+        // 切换语言
+        public static void SetLanguage(string lang)
+        {
+            if (_dict.ContainsKey(lang))
+                CurrentLang = lang;
+        }
+
+        // 获取文本
+        public static string Get(string key)
+        {
+            if (_dict.TryGetValue(CurrentLang, out var langDict))
+            {
+                if (langDict.TryGetValue(key, out var value))
+                    return value;
+            }
+            return key;
+        }
+    }
+}
+

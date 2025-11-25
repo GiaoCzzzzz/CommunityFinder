@@ -7,7 +7,9 @@
 
     <ScrollView>
         <VerticalStackLayout x:Name="ReportsContainer" Padding="10" Spacing="10">
-            <Label Text="All Reports"
+            <!-- 固定标题 -->
+            <Label x:Name="AllReportsLabel"
+                   Text="All Reports"
                    FontSize="20"
                    FontAttributes="Bold"
                    Margin="0,10,0,10"/>
