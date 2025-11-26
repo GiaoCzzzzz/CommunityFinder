@@ -6,17 +6,33 @@
 
     <Application.Resources>
         <ResourceDictionary>
-            <!-- 全局导航栏样式 -->
+
+            <!-- Global Font Size for Elder Mode -->
+            <x:Double x:Key="GlobalFontSize">12</x:Double>
+
+            <!-- Global Label Style -->
+            <Style TargetType="Label">
+                <Setter Property="FontSize" Value="{DynamicResource GlobalFontSize}" />
+            </Style>
+
+            <!-- Global Button Style -->
+            <Style TargetType="Button">
+                <Setter Property="FontSize" Value="{DynamicResource GlobalFontSize}" />
+            </Style>
+
+            <!-- Global Shell Style (Navigation Bar) -->
             <Style TargetType="Shell">
                 <Setter Property="TitleColor" Value="Black" />
                 <Setter Property="BackgroundColor" Value="White" />
             </Style>
 
-            <!-- 保留原有颜色和样式资源 -->
+            <!-- Preserve existing color and style resources -->
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
         </ResourceDictionary>
     </Application.Resources>
+
 </Application>
