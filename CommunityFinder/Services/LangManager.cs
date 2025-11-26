@@ -135,7 +135,10 @@ namespace CommunityFinder.Services
                 ["HistoryPage_FavoriteCoursesTitle"] = "Favorite Courses",
                 ["HistoryPage_ClearFavorites"] = "Clear All Favorites",
                 ["HistoryPage_Delete"] = "Delete",
-                ["HistoryPage_Add"] = "+"
+                ["HistoryPage_Add"] = "+",
+                ["Events"] = "Events",
+                ["SelectEventCategory"] = "Select Event Category",
+
 
 
 
@@ -264,7 +267,10 @@ namespace CommunityFinder.Services
                 ["HistoryPage_FavoriteCoursesTitle"] = "收藏课程",
                 ["HistoryPage_ClearFavorites"] = "清空所有收藏",
                 ["HistoryPage_Delete"] = "删除",
-                ["HistoryPage_Add"] = "+"
+                ["HistoryPage_Add"] = "+",
+                ["Events"] = "活动",
+                ["SelectEventCategory"] = "选择活动类别",
+
 
 
             },
@@ -392,7 +398,10 @@ namespace CommunityFinder.Services
                 ["HistoryPage_FavoriteCoursesTitle"] = "Kursus Kegemaran",
                 ["HistoryPage_ClearFavorites"] = "Kosongkan Semua Kegemaran",
                 ["HistoryPage_Delete"] = "Padam",
-                ["HistoryPage_Add"] = "+"
+                ["HistoryPage_Add"] = "+",
+                ["Events"] = "Acara",
+                ["SelectEventCategory"] = "Pilih Kategori Acara",
+
 
 
 
@@ -481,6 +490,8 @@ namespace CommunityFinder.Services
         public static string HistoryPage_ClearFavorites => Get("HistoryPage_ClearFavorites");
         public static string HistoryPage_Delete => Get("HistoryPage_Delete");
         public static string HistoryPage_Add => Get("HistoryPage_Add");
+
+
 
 
 

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             Title="Events"
              x:Class="CommunityFinder.Views.EventPage"
+             x:Name="PageRoot"
              BackgroundColor="#F9FFE3">
 
+    <!-- 背景渐变 -->
     <ContentPage.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#E9FFD6" Offset="0.0"/>
@@ -14,15 +15,16 @@
 
     <ScrollView>
         <Grid RowDefinitions="Auto,Auto,*" Padding="12">
-            <!-- 页面标题 -->
-            <Label Grid.Row="0" 
-                   Text="Select Event Category" 
-                   FontSize="18" 
+
+            <!-- 页面顶部标题（固定UI，多语言，通过x:Name后台赋值） -->
+            <Label x:Name="LblSelectEventCategory"
+                   Grid.Row="0"
+                   FontSize="18"
                    FontAttributes="Bold"
                    TextColor="#333"
                    Margin="0,0,0,16"/>
 
-            <!-- 事件分类按钮（垂直滚动） -->
+            <!-- 分类列表 -->
             <ScrollView Grid.Row="1">
                 <VerticalStackLayout Spacing="10" Padding="0,0,0,20">
 
@@ -33,15 +35,21 @@
 
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Frame Padding="10" Margin="0,4" CornerRadius="8" BackgroundColor="#0078D7">
-                                    <Grid ColumnDefinitions="Auto,*" VerticalOptions="Center">
+                                <Frame Padding="10"
+                                       Margin="0,4"
+                                       CornerRadius="8"
+                                       BackgroundColor="#0078D7">
+
+                                    <Grid ColumnDefinitions="Auto,*"
+                                          VerticalOptions="Center">
+
                                         <!-- 图片 -->
-                                        <Image Source="{Binding ImagePath}" 
-                                               WidthRequest="40" 
-                                               HeightRequest="40" 
+                                        <Image Source="{Binding ImagePath}"
+                                               WidthRequest="40"
+                                               HeightRequest="40"
                                                Margin="0,0,10,0"/>
 
-                                        <!-- 文字 -->
+                                        <!-- 分类名称 -->
                                         <Label Grid.Column="1"
                                                Text="{Binding Name}"
                                                FontSize="16"
@@ -49,12 +57,13 @@
                                                TextColor="White"
                                                VerticalOptions="Center"/>
 
-                                        <!-- 点击整个 Grid 触发命令 -->
+                                        <!-- 点击事件 -->
                                         <Grid.GestureRecognizers>
-                                            <TapGestureRecognizer 
+                                            <TapGestureRecognizer
                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectCategoryCommand}"
                                                 CommandParameter="{Binding .}"/>
                                         </Grid.GestureRecognizers>
+
                                     </Grid>
                                 </Frame>
                             </DataTemplate>
@@ -67,5 +76,3 @@
         </Grid>
     </ScrollView>
 </ContentPage>
-
-
