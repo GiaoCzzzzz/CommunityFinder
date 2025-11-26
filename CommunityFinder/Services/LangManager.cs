@@ -95,6 +95,31 @@ namespace CommunityFinder.Services
                 ["Where"] = "Where",
                 ["Day"] = "Day",
                 ["Time"] = "Time",
+                ["Account"] = "Account",
+                ["Language"] = "Language",
+                ["Theme"] = "Theme",
+                ["History"] = "History",
+                ["AboutYou"] = "About You",
+                ["Email"] = "Email",
+                ["DisplayName"] = "Display Name",
+                ["Gender"] = "Gender",
+                ["SelectGender"] = "Select your gender",
+                ["Male"] = "Male",
+                ["Female"] = "Female",
+                ["Age"] = "Age",
+                ["Nationality"] = "Nationality",
+                ["SearchNationality"] = "Search Nationality",
+                ["ToggleNationalityList"] = "▼ Show/Hide Nationality List",
+                ["PhoneNumber"] = "Phone Number",
+                ["Occupation"] = "Occupation",
+                ["SearchOccupation"] = "Search Occupation",
+                ["ToggleOccupationList"] = "▼ Show/Hide Occupation List",
+                ["PostalCode"] = "Postal Code",
+                ["ChangePassword"] = "Change Password",
+                ["ChangeInterest"] = "Change Interest",
+                ["Save"] = "Save",
+                ["Loading"] = "Loading...",
+
 
 
             },
@@ -182,6 +207,31 @@ namespace CommunityFinder.Services
                 ["Where"] = "地点",
                 ["Day"] = "天",
                 ["Time"] = "时间",
+                ["Account"] = "账户",
+                ["Language"] = "语言",
+                ["Theme"] = "主题",
+                ["History"] = "历史记录",
+                ["AboutYou"] = "关于你",
+                ["Email"] = "邮箱",
+                ["DisplayName"] = "显示名称",
+                ["Gender"] = "性别",
+                ["SelectGender"] = "选择你的性别",
+                ["Male"] = "男",
+                ["Female"] = "女",
+                ["Age"] = "年龄",
+                ["Nationality"] = "国籍",
+                ["SearchNationality"] = "搜索国籍",
+                ["ToggleNationalityList"] = "▼ 显示/隐藏国籍列表",
+                ["PhoneNumber"] = "电话号码",
+                ["Occupation"] = "职业",
+                ["SearchOccupation"] = "搜索职业",
+                ["ToggleOccupationList"] = "▼ 显示/隐藏职业列表",
+                ["PostalCode"] = "邮编",
+                ["ChangePassword"] = "修改密码",
+                ["ChangeInterest"] = "修改兴趣",
+                ["Save"] = "保存",
+                ["Loading"] = "加载中...",
+
 
             },
             ["ms"] = new Dictionary<string, string>
@@ -268,6 +318,31 @@ namespace CommunityFinder.Services
                 ["Where"] = "Tempat",
                 ["Day"] = "Hari",
                 ["Time"] = "Masa",
+                ["Account"] = "Akaun",
+                ["Language"] = "Bahasa",
+                ["Theme"] = "Tema",
+                ["History"] = "Sejarah",
+                ["AboutYou"] = "Tentang Anda",
+                ["Email"] = "Emel",
+                ["DisplayName"] = "Nama Paparan",
+                ["Gender"] = "Jantina",
+                ["SelectGender"] = "Pilih jantina anda",
+                ["Male"] = "Lelaki",
+                ["Female"] = "Perempuan",
+                ["Age"] = "Umur",
+                ["Nationality"] = "Kewarganegaraan",
+                ["SearchNationality"] = "Cari Kewarganegaraan",
+                ["ToggleNationalityList"] = "▼ Papar/Sembunyi Senarai Kewarganegaraan",
+                ["PhoneNumber"] = "Nombor Telefon",
+                ["Occupation"] = "Pekerjaan",
+                ["SearchOccupation"] = "Cari Pekerjaan",
+                ["ToggleOccupationList"] = "▼ Papar/Sembunyi Senarai Pekerjaan",
+                ["PostalCode"] = "Poskod",
+                ["ChangePassword"] = "Tukar Kata Laluan",
+                ["ChangeInterest"] = "Tukar Minat",
+                ["Save"] = "Simpan",
+                ["Loading"] = "Sedang memuat...",
+
 
 
             }
@@ -311,6 +386,34 @@ namespace CommunityFinder.Services
 
         public static string StartsOnFormat => Get("StartsOnFormat");
 
+        public static string Account => Get("Account");
+        public static string Language => Get("Language");
+        public static string Theme => Get("Theme");
+        public static string History => Get("History");
+
+        public static string AboutYou => Get("AboutYou");
+        public static string Email => Get("Email");
+        public static string DisplayName => Get("DisplayName");
+        public static string Gender => Get("Gender");
+        public static string SelectGender => Get("SelectGender");
+        public static string Age => Get("Age");
+
+        public static string Nationality => Get("Nationality");
+        public static string SearchNationality => Get("SearchNationality");
+        public static string ToggleNationality => Get("ToggleNationalityList");
+
+        public static string Phone => Get("PhoneNumber");
+
+        public static string Occupation => Get("Occupation");
+        public static string SearchOccupation => Get("SearchOccupation");
+        public static string ToggleOccupation => Get("ToggleOccupationList");
+
+        public static string PostalCode => Get("PostalCode");
+        public static string ChangePassword => Get("ChangePassword");
+        public static string ChangeInterest => Get("ChangeInterest");
+        public static string Save => Get("Save");
+
+        
 
 
 

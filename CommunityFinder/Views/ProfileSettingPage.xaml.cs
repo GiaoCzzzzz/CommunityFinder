@@ -304,6 +304,9 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
     {
         base.OnAppearing();
 
+        // ⭐⭐⭐ 新增：进入页面时应用语言
+        ApplyLanguage();
+
         var session = _authService.Client.Auth.CurrentSession;
         _interest = await _authService.GetInterest();
 
@@ -316,26 +319,72 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
 
         _profile = await _authService.GetProfiles();
 
-        // 显示已保存的用户信息
         EmailEntry.Text = _email;
         DisplayNameEntry.Text = _profile.username;
         SexPicker.SelectedItem = _profile.gender;
         AgeEntry.Text = _profile.age.ToString();
         PostalCodeEntry.Text = _profile.postcode;
-        PhoneEntry.Text = _profile.phone; // ✅ 读取真实电话字段
+        PhoneEntry.Text = _profile.phone;
 
-        // 设置国籍搜索框和内部变量
         var fullNationality = _countries
             .Select(c => c.ToString())
             .FirstOrDefault(n => n.Contains(_profile.nationality));
         NationalitySearchEntry.Text = fullNationality;
         _selectedNationality = fullNationality ?? "";
 
-        // 设置职业搜索框和内部变量
         var matchedOccupation = _occupations.FirstOrDefault(o => o == _profile.occupation);
         OccupationSearchEntry.Text = matchedOccupation;
         _selectedOccupation = matchedOccupation ?? "";
     }
+
+
+
+    void ApplyLanguage()
+    {
+        BtnAccount.Text = LangManager.Account;
+        BtnLanguage.Text = LangManager.Language;
+        BtnTheme.Text = LangManager.Theme;
+        BtnHistory.Text = LangManager.History;
+
+        LabelAboutYou.Text = LangManager.AboutYou;
+        LabelEmail.Text = LangManager.Email;
+        LabelDisplayName.Text = LangManager.DisplayName;
+        LabelGender.Text = LangManager.Gender;
+        LabelAge.Text = LangManager.Age;
+
+        SexPicker.Title = LangManager.SelectGender;
+
+        LabelNationality.Text = LangManager.Nationality;
+        NationalitySearchEntry.Placeholder = LangManager.SearchNationality;
+        BtnToggleNationality.Text = LangManager.ToggleNationality;
+
+        LabelPhone.Text = LangManager.Phone;
+        LabelOccupation.Text = LangManager.Occupation;
+        OccupationSearchEntry.Placeholder = LangManager.SearchOccupation;
+        BtnToggleOccupation.Text = LangManager.ToggleOccupation;
+
+        LabelPostalCode.Text = LangManager.PostalCode;
+
+        BtnChangePassword.Text = LangManager.ChangePassword;
+        BtnChangeInterest.Text = LangManager.ChangeInterest;
+        BtnSave.Text = LangManager.Save;
+
+       
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     void OnAgeChanged(object sender, TextChangedEventArgs e)
@@ -424,7 +473,15 @@ new Country { Name = "Sierra Leone", Flag = "🇸🇱" },
 
     async void OnLanguageClicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new LanguagePage());
+        // ⭐⭐⭐ 修改：LanguagePage 返回时刷新语言
+        var page = new LanguagePage();
+        await Navigation.PushAsync(page);
+
+        page.Disappearing += (s, args) =>
+        {
+            // 页面关闭后刷新语言
+            ApplyLanguage();
+        };
     }
 
     async void OnThemeClicked(object sender, EventArgs e)

@@ -2,7 +2,6 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CommunityFinder.Views.ProfileSettingPage"
-             Title="About You"
              BackgroundColor="#F9FFE3">
 
     <ScrollView>
@@ -16,25 +15,29 @@
             <!-- 左侧纵向导航 -->
             <VerticalStackLayout Grid.Column="0" Padding="12" Spacing="8"
                                  BackgroundColor="#F2F4F7">
-                <Button Text="Account" FontAttributes="Bold" Padding="10,8"
+                <Button x:Name="BtnAccount" Text="Account" FontAttributes="Bold" Padding="10,8"
                         BackgroundColor="#E5E7EB" TextColor="Black"/>
-                <Button Text="Language"  Clicked="OnLanguageClicked"  />
-                <Button Text="Theme"     Clicked="OnThemeClicked"     />
-                <Button Text="History"   Clicked="OnHistoryClicked"   />
+
+                <Button x:Name="BtnLanguage" Text="Language" Clicked="OnLanguageClicked" />
+
+                <Button x:Name="BtnTheme" Text="Theme" Clicked="OnThemeClicked" />
+
+                <Button x:Name="BtnHistory" Text="History" Clicked="OnHistoryClicked" />
             </VerticalStackLayout>
 
             <!-- 右侧内容 -->
             <StackLayout Padding="30" Spacing="20" VerticalOptions="Center" Grid.Column="1">
 
-                <Label Text="About You" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#333" />
+                <Label x:Name="LabelAboutYou" Text="About You" FontSize="28" FontAttributes="Bold"
+                       HorizontalOptions="Center" TextColor="#333" />
 
-                <Label Text="Email" FontSize="14" TextColor="#333" />
+                <Label x:Name="LabelEmail" Text="Email" FontSize="14" TextColor="#333" />
                 <Entry x:Name="EmailEntry" IsReadOnly="True" BackgroundColor="#F9FFE3" HeightRequest="48" FontSize="16" />
 
-                <Label Text="Display Name" FontSize="14" TextColor="#333" />
+                <Label x:Name="LabelDisplayName" Text="Display Name" FontSize="14" TextColor="#333" />
                 <Entry x:Name="DisplayNameEntry" BackgroundColor="#F9FFE3" HeightRequest="48" FontSize="16" />
 
-                <Label Text="Gender" FontSize="14" TextColor="#333" />
+                <Label x:Name="LabelGender" Text="Gender" FontSize="14" TextColor="#333" />
                 <Picker x:Name="SexPicker" Title="Select your gender" BackgroundColor="#F9FFE3" HeightRequest="48" FontSize="16">
                     <Picker.Items>
                         <x:String>Male</x:String>
@@ -42,42 +45,67 @@
                     </Picker.Items>
                 </Picker>
 
-                <Label Text="Age" FontSize="14" TextColor="#333" />
-                <Entry x:Name="AgeEntry" Keyboard="Numeric" BackgroundColor="#F9FFE3" HeightRequest="48" FontSize="16" TextChanged="OnAgeChanged" />
+                <Label x:Name="LabelAge" Text="Age" FontSize="14" TextColor="#333" />
+                <Entry x:Name="AgeEntry" Keyboard="Numeric" BackgroundColor="#F9FFE3" HeightRequest="48"
+                       FontSize="16" TextChanged="OnAgeChanged" />
                 <Label x:Name="AgeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
                 <!-- Nationality -->
-                <Label Text="Nationality" FontSize="14" TextColor="#333" />
-                <Entry x:Name="NationalitySearchEntry" Placeholder="Search Nationality" TextChanged="OnNationalitySearchChanged" />
-                <Button Text="▼ Show/Hide Nationality List" Clicked="OnToggleNationalityListClicked" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="20" HeightRequest="40" />
-                <CollectionView x:Name="NationalityListView" IsVisible="False" SelectionMode="Single" SelectionChanged="OnNationalitySelected">
+                <Label x:Name="LabelNationality" Text="Nationality" FontSize="14" TextColor="#333" />
+                <Entry x:Name="NationalitySearchEntry" Placeholder="Search Nationality"
+                       TextChanged="OnNationalitySearchChanged" />
+
+                <Button x:Name="BtnToggleNationality"
+                        Text="▼ Show/Hide Nationality List"
+                        Clicked="OnToggleNationalityListClicked"
+                        BackgroundColor="#DEF685"
+                        TextColor="Black"
+                        CornerRadius="20"
+                        HeightRequest="40" />
+
+                <CollectionView x:Name="NationalityListView" IsVisible="False"
+                                SelectionMode="Single" SelectionChanged="OnNationalitySelected">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Label Text="{Binding}" Padding="10" BackgroundColor="#DEF685" />
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
                 <Label x:Name="NationalityErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-                <Label Text="Phone Number" FontSize="14" TextColor="#333" />
-                <Entry x:Name="PhoneEntry" Keyboard="Telephone" BackgroundColor="#F9FFE3" HeightRequest="48" FontSize="16" TextChanged="OnPhoneChanged" />
+                <Label x:Name="LabelPhone" Text="Phone Number" FontSize="14" TextColor="#333" />
+                <Entry x:Name="PhoneEntry" Keyboard="Telephone" BackgroundColor="#F9FFE3"
+                       HeightRequest="48" FontSize="16" TextChanged="OnPhoneChanged" />
                 <Label x:Name="PhoneErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
                 <!-- Occupation -->
-                <Label Text="Occupation" FontSize="14" TextColor="#333" />
-                <Entry x:Name="OccupationSearchEntry" Placeholder="Search Occupation" TextChanged="OnOccupationSearchChanged" />
-                <Button Text="▼ Show/Hide Occupation List" Clicked="OnToggleOccupationListClicked" BackgroundColor="#DEF685" TextColor="Black" CornerRadius="20" HeightRequest="40" />
-                <CollectionView x:Name="OccupationListView" IsVisible="False" SelectionMode="Single" SelectionChanged="OnOccupationSelected">
+                <Label x:Name="LabelOccupation" Text="Occupation" FontSize="14" TextColor="#333" />
+                <Entry x:Name="OccupationSearchEntry" Placeholder="Search Occupation"
+                       TextChanged="OnOccupationSearchChanged" />
+
+                <Button x:Name="BtnToggleOccupation"
+                        Text="▼ Show/Hide Occupation List"
+                        Clicked="OnToggleOccupationListClicked"
+                        BackgroundColor="#DEF685"
+                        TextColor="Black"
+                        CornerRadius="20"
+                        HeightRequest="40" />
+
+                <CollectionView x:Name="OccupationListView" IsVisible="False"
+                                SelectionMode="Single" SelectionChanged="OnOccupationSelected">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Label Text="{Binding}" Padding="10" BackgroundColor="#DEF685" />
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
                 <Label x:Name="OccupationErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
-                <Label Text="Postal Code" FontSize="14" TextColor="#333" />
-                <Entry x:Name="PostalCodeEntry" Keyboard="Numeric" BackgroundColor="#F9FFE3" HeightRequest="48" FontSize="16" TextChanged="OnPostalCodeChanged" />
+                <Label x:Name="LabelPostalCode" Text="Postal Code" FontSize="14" TextColor="#333" />
+                <Entry x:Name="PostalCodeEntry" Keyboard="Numeric" BackgroundColor="#F9FFE3"
+                       HeightRequest="48" FontSize="16" TextChanged="OnPostalCodeChanged" />
                 <Label x:Name="PostalCodeErrorLabel" TextColor="Red" FontSize="12" IsVisible="False" />
 
                 <Grid ColumnSpacing="10" RowSpacing="15" Margin="0,20,0,0">
@@ -85,12 +113,14 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Row="0" Grid.Column="0"
+                    <Button x:Name="BtnChangePassword"
+                            Grid.Row="0" Grid.Column="0"
                             Text="Change Password"
                             BackgroundColor="Transparent"
                             TextColor="#2196F3"
@@ -98,7 +128,8 @@
                             Clicked="OnChangePasswordClicked"
                             Padding="10,5"/>
 
-                    <Button Grid.Row="0" Grid.Column="1"
+                    <Button x:Name="BtnChangeInterest"
+                            Grid.Row="0" Grid.Column="1"
                             Text="Change Interest"
                             BackgroundColor="Transparent"
                             TextColor="#2196F3"
@@ -106,7 +137,8 @@
                             Clicked="OnChangeInterestClicked"
                             Padding="10,5"/>
 
-                    <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                    <Button x:Name="BtnSave"
+                            Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                             Text="Save"
                             BackgroundColor="#4CAF50"
                             TextColor="White"
@@ -120,46 +152,42 @@
 
             </StackLayout>
 
-
-            <!-- ⚡⚡⚡ 超级精美加载动画层 -->
+            <!-- 加载动画层 -->
             <Grid x:Name="LoadingOverlay"
-      BackgroundColor="#80000000"
-      IsVisible="False"
-      Opacity="0"
-      Grid.ColumnSpan="2"
-      VerticalOptions="Fill"
-      HorizontalOptions="Fill">
+                  BackgroundColor="#80000000"
+                  IsVisible="False"
+                  Opacity="0"
+                  Grid.ColumnSpan="2"
+                  VerticalOptions="Fill"
+                  HorizontalOptions="Fill">
 
                 <StackLayout VerticalOptions="Center"
-                 HorizontalOptions="Center"
-                 Spacing="18">
+                             HorizontalOptions="Center"
+                             Spacing="18">
 
-                    <!-- 白色圆角盒子 + 缩放动画 -->
                     <Frame x:Name="LoadingBox"
-               BackgroundColor="White"
-               WidthRequest="120"
-               HeightRequest="120"
-               CornerRadius="20"
-               Padding="25"
-               HasShadow="True"
-               Scale="0.5"
-               Opacity="0">
+                           BackgroundColor="White"
+                           WidthRequest="120"
+                           HeightRequest="120"
+                           CornerRadius="20"
+                           Padding="25"
+                           HasShadow="True"
+                           Scale="0.5"
+                           Opacity="0">
                         <ActivityIndicator IsRunning="True"
-                               WidthRequest="50"
-                               HeightRequest="50" />
+                                           WidthRequest="50"
+                                           HeightRequest="50" />
                     </Frame>
 
-                    <!-- Loading 文本 -->
                     <Label x:Name="LoadingLabel"
-               Text="Loading..."
-               TextColor="White"
-               FontSize="18"
-               Opacity="0"
-               HorizontalOptions="Center"/>
+                           Text="Loading..."
+                           TextColor="White"
+                           FontSize="18"
+                           Opacity="0"
+                           HorizontalOptions="Center"/>
                 </StackLayout>
 
             </Grid>
-
 
         </Grid>
     </ScrollView>
