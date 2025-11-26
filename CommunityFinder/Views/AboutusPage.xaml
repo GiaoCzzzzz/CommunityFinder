@@ -36,13 +36,15 @@
                            FontAttributes="Bold" 
                            TextColor="#5DBB63"
                            HorizontalTextAlignment="Start"/>
-
-                    <Label x:Name="AboutCardTextLabel" 
-                           Text="Community Finder is a modern platform designed to help users discover courses, events, and communities that match their personal interests. Our smart recommendation system leverages AI to suggest content based on your browsing habits, favorites, and engagement, while fully respecting your privacy."
-                           FontSize="14"
-                           TextColor="#2A2A2A"
-                           LineBreakMode="WordWrap"
-                           HorizontalTextAlignment="Start"/>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="✨" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="AboutCardTextLabel" 
+                               Text="Community Finder is a modern platform designed to help users discover courses, events, and communities that match their personal interests. Our smart recommendation system leverages AI to suggest content based on your browsing habits, favorites, and engagement, while fully respecting your privacy."
+                               FontSize="14"
+                               TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
                 </VerticalStackLayout>
             </Frame>
 
@@ -57,34 +59,62 @@
                            TextColor="#5DBB63"
                            HorizontalTextAlignment="Start"/>
 
-                    <Label x:Name="Feature1Label" 
-                           Text="• Browse a wide variety of courses and events tailored to your interests" 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="Feature2Label" 
-                           Text="• Join chat groups to connect with like-minded users" 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="Feature3Label" 
-                           Text="• Register for events easily and securely" 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="Feature4Label" 
-                           Text="• Track your participation and rewards for completed tasks" 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="Feature5Label" 
-                           Text="• Access a detailed history of your activities" 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="Feature6Label" 
-                           Text="• AI-powered personalized recommendations based on interaction data" 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="Feature7Label" 
-                           Text="• Admins can manage events, review statistics, and generate reports" 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="✅" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Feature1Label" 
+                               Text="Browse a wide variety of courses and events tailored to your interests" 
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="💬" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Feature2Label" 
+                               Text="Join chat groups to connect with like-minded users" 
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="📝" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Feature3Label" 
+                               Text="Register for events easily and securely" 
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="📊" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Feature4Label" 
+                               Text="Track your participation and rewards for completed tasks" 
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="📜" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Feature5Label" 
+                               Text="Access a detailed history of your activities" 
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🤖" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Feature6Label" 
+                               Text="AI-powered personalized recommendations based on interaction data" 
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🛠️" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Feature7Label" 
+                               Text="Admins can manage events, review statistics, and generate reports" 
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
 
                 </VerticalStackLayout>
             </Frame>
@@ -100,93 +130,109 @@
                            TextColor="#5DBB63"
                            HorizontalTextAlignment="Start"/>
 
-                    <Label x:Name="PrivacyTextLabel" 
-                           Text="At Community Finder, protecting your personal information is our top priority. This privacy policy explains how we collect, use, and safeguard your data." 
-                           FontSize="14"
-                           TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start"
-                           LineBreakMode="WordWrap"/>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="PrivacyTextLabel" 
+                               Text="At Community Finder, protecting your personal information is our top priority. This privacy policy explains how we collect, use, and safeguard your data." 
+                               FontSize="14"
+                               TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
 
-                    <Label x:Name="DataCollectionLabel" 
-                           Text="Data Collection" FontAttributes="Bold" FontSize="16"
-                           HorizontalTextAlignment="Start"/>
+                    <Label x:Name="DataCollectionLabel" Text="Data Collection" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="Start"/>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="DataCollection1Label" 
+                               Text="We collect information you provide during registration, such as email and password."
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="DataCollection2Label" 
+                               Text="We also track your course browsing, favorites, and event participation to provide personalized recommendations."
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="DataCollection3Label" 
+                               Text="Data collection is limited to what is necessary for the core functionalities of the app."
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
 
-                    <Label x:Name="DataCollection1Label" 
-                           Text="• We collect information you provide during registration, such as email and password."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="DataCollection2Label" 
-                           Text="• We also track your course browsing, favorites, and event participation to provide personalized recommendations."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="DataCollection3Label" 
-                           Text="• Data collection is limited to what is necessary for the core functionalities of the app."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
+                    <Label x:Name="DataUsageLabel" Text="Data Usage" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="Start"/>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="DataUsage1Label" 
+                               Text="Personal data is used to authenticate your account, provide services, and deliver personalized content."
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="DataUsage2Label" 
+                               Text="Anonymized data may be used for improving AI recommendation algorithms."
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="DataUsage3Label" 
+                               Text="We do not sell or share your personal information with third parties without your consent."
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
 
-                    <Label x:Name="DataUsageLabel" 
-                           Text="Data Usage" FontAttributes="Bold" FontSize="16"
-                           HorizontalTextAlignment="Start"/>
+                    <!-- 其余 DataSecurity, UserRights, Compliance 都类似，按同样方式改 -->
+                    <!-- DataSecurity -->
+                    <Label x:Name="DataSecurityLabel" Text="Data Security" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="Start"/>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="DataSecurity1Label" Text="All personal data is encrypted in transit and at rest." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="DataSecurity2Label" Text="Access to user data is strictly controlled and monitored." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="DataSecurity3Label" Text="We implement industry-standard measures to protect against unauthorized access, alteration, or deletion." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
 
-                    <Label x:Name="DataUsage1Label" 
-                           Text="• Personal data is used to authenticate your account, provide services, and deliver personalized content."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="DataUsage2Label" 
-                           Text="• Anonymized data may be used for improving AI recommendation algorithms."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="DataUsage3Label" 
-                           Text="• We do not sell or share your personal information with third parties without your consent."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
+                    <!-- User Rights -->
+                    <Label x:Name="UserRightsLabel" Text="User Rights" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="Start"/>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="UserRights1Label" Text="Users can request access, correction, or deletion of their personal information." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="UserRights2Label" Text="You can opt out of AI-based personalized recommendations at any time." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="UserRights3Label" Text="Users are informed about all data collection practices and changes to privacy policies." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
 
-                    <Label x:Name="DataSecurityLabel" 
-                           Text="Data Security" FontAttributes="Bold" FontSize="16"
-                           HorizontalTextAlignment="Start"/>
-
-                    <Label x:Name="DataSecurity1Label" 
-                           Text="• All personal data is encrypted in transit and at rest."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="DataSecurity2Label" 
-                           Text="• Access to user data is strictly controlled and monitored."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="DataSecurity3Label" 
-                           Text="• We implement industry-standard measures to protect against unauthorized access, alteration, or deletion."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-
-                    <Label x:Name="UserRightsLabel" 
-                           Text="User Rights" FontAttributes="Bold" FontSize="16"
-                           HorizontalTextAlignment="Start"/>
-
-                    <Label x:Name="UserRights1Label" 
-                           Text="• Users can request access, correction, or deletion of their personal information."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="UserRights2Label" 
-                           Text="• You can opt out of AI-based personalized recommendations at any time."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="UserRights3Label" 
-                           Text="• Users are informed about all data collection practices and changes to privacy policies."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-
-                    <Label x:Name="ComplianceLabel" 
-                           Text="Compliance" FontAttributes="Bold" FontSize="16"
-                           HorizontalTextAlignment="Start"/>
-
-                    <Label x:Name="Compliance1Label" 
-                           Text="• We comply with GDPR and relevant local privacy regulations."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-                    <Label x:Name="Compliance2Label" 
-                           Text="• Any breach of data privacy will be promptly reported and addressed according to legal requirements."
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
+                    <!-- Compliance -->
+                    <Label x:Name="ComplianceLabel" Text="Compliance" FontAttributes="Bold" FontSize="16" HorizontalTextAlignment="Start"/>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Compliance1Label" Text="We comply with GDPR and relevant local privacy regulations." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🌿" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Compliance2Label" Text="Any breach of data privacy will be promptly reported and addressed according to legal requirements." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
 
                 </VerticalStackLayout>
             </Frame>
@@ -202,35 +248,35 @@
                            TextColor="#5DBB63"
                            HorizontalTextAlignment="Start"/>
 
-                    <Label x:Name="TermsTextLabel" 
-                           Text="By using Community Finder, you agree to abide by the following rules:" 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="✨" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="TermsTextLabel" 
+                               Text="By using Community Finder, you agree to abide by the following rules:" 
+                               FontSize="14" TextColor="#2A2A2A"
+                               LineBreakMode="WordWrap"
+                               Grid.Column="1"/>
+                    </Grid>
 
-                    <Label x:Name="Terms1Label" 
-                           Text="• Keep your account secure &amp; do not share login credentials." 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-
-                    <Label x:Name="Terms2Label" 
-                           Text="• Respect other users and their contributions in chats and events." 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-
-                    <Label x:Name="Terms3Label" 
-                           Text="• Ensure any content you submit complies with laws &amp; does not infringe on third-party rights." 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-
-                    <Label x:Name="Terms4Label" 
-                           Text="• The app is provided as-is, and we are not liable for external content or user-generated data." 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
-
-                    <Label x:Name="Terms5Label" 
-                           Text="• Violations may result in account suspension or termination." 
-                           FontSize="14" TextColor="#2A2A2A"
-                           HorizontalTextAlignment="Start" LineBreakMode="WordWrap"/>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="✨" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Terms1Label" Text="Keep your account secure &amp; do not share login credentials." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="✨" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Terms2Label" Text="Respect other users and their contributions in chats and events." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="✨" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Terms3Label" Text="Ensure any content you submit complies with laws &amp; does not infringe on third-party rights." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="✨" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Terms4Label" Text="The app is provided as-is, and we are not liable for external content or user-generated data." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="✨" FontSize="14" VerticalOptions="Start"/>
+                        <Label x:Name="Terms5Label" Text="Violations may result in account suspension or termination." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap" Grid.Column="1"/>
+                    </Grid>
 
                 </VerticalStackLayout>
             </Frame>
