@@ -119,6 +119,23 @@ namespace CommunityFinder.Services
                 ["ChangeInterest"] = "Change Interest",
                 ["Save"] = "Save",
                 ["Loading"] = "Loading...",
+                ["HistoryPage_Title"] = "History",
+                ["HistoryPage_SearchPlaceholder"] = "Search by title or outlet...",
+                ["HistoryPage_SearchButton"] = "Search",
+                ["HistoryPage_ScopeTitle"] = "Search Scope",
+                ["HistoryPage_ScopeAll"] = "All",
+                ["HistoryPage_ScopeHistory"] = "Browsing History",
+                ["HistoryPage_ScopeFavorites"] = "Favorite Courses",
+                ["HistoryPage_TypeTitle"] = "Item Type",
+                ["HistoryPage_TypeAll"] = "All",
+                ["HistoryPage_TypeCourse"] = "Course",
+                ["HistoryPage_TypeEvent"] = "Event",
+                ["HistoryPage_BrowsingHistoryTitle"] = "Browsing History",
+                ["HistoryPage_ClearHistory"] = "Clear All History",
+                ["HistoryPage_FavoriteCoursesTitle"] = "Favorite Courses",
+                ["HistoryPage_ClearFavorites"] = "Clear All Favorites",
+                ["HistoryPage_Delete"] = "Delete",
+                ["HistoryPage_Add"] = "+"
 
 
 
@@ -231,6 +248,23 @@ namespace CommunityFinder.Services
                 ["ChangeInterest"] = "修改兴趣",
                 ["Save"] = "保存",
                 ["Loading"] = "加载中...",
+                ["HistoryPage_Title"] = "历史记录",
+                ["HistoryPage_SearchPlaceholder"] = "按标题或来源搜索…",
+                ["HistoryPage_SearchButton"] = "搜索",
+                ["HistoryPage_ScopeTitle"] = "搜索范围",
+                ["HistoryPage_ScopeAll"] = "全部",
+                ["HistoryPage_ScopeHistory"] = "浏览记录",
+                ["HistoryPage_ScopeFavorites"] = "收藏课程",
+                ["HistoryPage_TypeTitle"] = "类型",
+                ["HistoryPage_TypeAll"] = "全部",
+                ["HistoryPage_TypeCourse"] = "课程",
+                ["HistoryPage_TypeEvent"] = "活动",
+                ["HistoryPage_BrowsingHistoryTitle"] = "浏览记录",
+                ["HistoryPage_ClearHistory"] = "清空所有记录",
+                ["HistoryPage_FavoriteCoursesTitle"] = "收藏课程",
+                ["HistoryPage_ClearFavorites"] = "清空所有收藏",
+                ["HistoryPage_Delete"] = "删除",
+                ["HistoryPage_Add"] = "+"
 
 
             },
@@ -342,6 +376,23 @@ namespace CommunityFinder.Services
                 ["ChangeInterest"] = "Tukar Minat",
                 ["Save"] = "Simpan",
                 ["Loading"] = "Sedang memuat...",
+                ["HistoryPage_Title"] = "Sejarah",
+                ["HistoryPage_SearchPlaceholder"] = "Cari mengikut tajuk atau sumber...",
+                ["HistoryPage_SearchButton"] = "Cari",
+                ["HistoryPage_ScopeTitle"] = "Skop Carian",
+                ["HistoryPage_ScopeAll"] = "Semua",
+                ["HistoryPage_ScopeHistory"] = "Sejarah Penyemakan",
+                ["HistoryPage_ScopeFavorites"] = "Kursus Kegemaran",
+                ["HistoryPage_TypeTitle"] = "Jenis Item",
+                ["HistoryPage_TypeAll"] = "Semua",
+                ["HistoryPage_TypeCourse"] = "Kursus",
+                ["HistoryPage_TypeEvent"] = "Acara",
+                ["HistoryPage_BrowsingHistoryTitle"] = "Sejarah Penyemakan",
+                ["HistoryPage_ClearHistory"] = "Kosongkan Semua Sejarah",
+                ["HistoryPage_FavoriteCoursesTitle"] = "Kursus Kegemaran",
+                ["HistoryPage_ClearFavorites"] = "Kosongkan Semua Kegemaran",
+                ["HistoryPage_Delete"] = "Padam",
+                ["HistoryPage_Add"] = "+"
 
 
 
@@ -413,7 +464,26 @@ namespace CommunityFinder.Services
         public static string ChangeInterest => Get("ChangeInterest");
         public static string Save => Get("Save");
 
-        
+        public static string HistoryPage_Title => Get("HistoryPage_Title");
+        public static string HistoryPage_SearchPlaceholder => Get("HistoryPage_SearchPlaceholder");
+        public static string HistoryPage_SearchButton => Get("HistoryPage_SearchButton");
+        public static string HistoryPage_ScopeTitle => Get("HistoryPage_ScopeTitle");
+        public static string HistoryPage_ScopeAll => Get("HistoryPage_ScopeAll");
+        public static string HistoryPage_ScopeHistory => Get("HistoryPage_ScopeHistory");
+        public static string HistoryPage_ScopeFavorites => Get("HistoryPage_ScopeFavorites");
+        public static string HistoryPage_TypeTitle => Get("HistoryPage_TypeTitle");
+        public static string HistoryPage_TypeAll => Get("HistoryPage_TypeAll");
+        public static string HistoryPage_TypeCourse => Get("HistoryPage_TypeCourse");
+        public static string HistoryPage_TypeEvent => Get("HistoryPage_TypeEvent");
+        public static string HistoryPage_BrowsingHistoryTitle => Get("HistoryPage_BrowsingHistoryTitle");
+        public static string HistoryPage_ClearHistory => Get("HistoryPage_ClearHistory");
+        public static string HistoryPage_FavoriteCoursesTitle => Get("HistoryPage_FavoriteCoursesTitle");
+        public static string HistoryPage_ClearFavorites => Get("HistoryPage_ClearFavorites");
+        public static string HistoryPage_Delete => Get("HistoryPage_Delete");
+        public static string HistoryPage_Add => Get("HistoryPage_Add");
+
+
+
 
 
 

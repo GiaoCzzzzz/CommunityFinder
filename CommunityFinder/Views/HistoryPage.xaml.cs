@@ -16,8 +16,8 @@ namespace CommunityFinder.Views
         public ObservableCollection<HistoryItem> FilteredFavoriteCourses { get; } = new();
 
         public string SearchText { get; set; } = string.Empty;
-        private string _selectedScope = "All";
-        private string _selectedType = "All";
+        private string _selectedScope = LangManager.HistoryPage_ScopeAll;
+        private string _selectedType = LangManager.HistoryPage_TypeAll;
 
         public ICommand DeleteHistoryCommand { get; }
         public ICommand ClearAllHistoryCommand { get; }
@@ -39,15 +39,46 @@ namespace CommunityFinder.Views
             ClearAllFavoritesCommand = new Command(ClearAllFavoritesAsync);
 
             IsSelectionMode = selectionMode;
+
+            // 绑定搜索框文本变化事件
+            SearchEntry.TextChanged += OnSearchTextChanged;
         }
 
-        // ==================== 搜索按钮点击 ====================
-        private void OnSearchButtonClicked(object sender, EventArgs e)
+        private void UpdateLanguage()
         {
+            BtnSearch.Text = LangManager.HistoryPage_SearchButton;
+            ScopePicker.Title = LangManager.HistoryPage_ScopeTitle;
+            TypePicker.Title = LangManager.HistoryPage_TypeTitle;
+
+            LblBrowsingHistory.Text = LangManager.HistoryPage_BrowsingHistoryTitle;
+            BtnClearHistory.Text = LangManager.HistoryPage_ClearHistory;
+
+            LblFavoriteCourses.Text = LangManager.HistoryPage_FavoriteCoursesTitle;
+            BtnClearFavorites.Text = LangManager.HistoryPage_ClearFavorites;
+        }
+
+        private void OnSearchButtonClicked(object sender, EventArgs e) => ApplyFilters();
+
+        private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+        {
+            SearchText = e.NewTextValue ?? string.Empty;
             ApplyFilters();
         }
 
-        // ==================== 过滤 ====================
+        private void OnScopeChanged(object sender, EventArgs e)
+        {
+            if (ScopePicker.SelectedItem is string value)
+                _selectedScope = value;
+            ApplyFilters();
+        }
+
+        private void OnTypeChanged(object sender, EventArgs e)
+        {
+            if (TypePicker.SelectedItem is string value)
+                _selectedType = value;
+            ApplyFilters();
+        }
+
         private void ApplyFilters()
         {
             FilteredBrowsingHistory.Clear();
@@ -80,30 +111,10 @@ namespace CommunityFinder.Views
             return true;
         }
 
-        private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
-        {
-            SearchText = e.NewTextValue ?? string.Empty;
-            ApplyFilters();
-        }
-
-        private void OnScopeChanged(object sender, EventArgs e)
-        {
-            if (ScopePicker.SelectedItem is string value)
-                _selectedScope = value;
-            ApplyFilters();
-        }
-
-        private void OnTypeChanged(object sender, EventArgs e)
-        {
-            if (TypePicker.SelectedItem is string value)
-                _selectedType = value;
-            ApplyFilters();
-        }
-
-        // ==================== 数据加载 (保持原样) ====================
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            UpdateLanguage();
 
             try
             {
@@ -121,26 +132,22 @@ namespace CommunityFinder.Views
 
                 if (courseStatus != null)
                 {
-                    var courseHistoryIds = courseStatus.history ?? Array.Empty<string>();
-                    foreach (var id in courseHistoryIds)
+                    foreach (var id in courseStatus.history ?? Array.Empty<string>())
                     {
                         var course = await _authService.Client
                             .From<CourseItem>()
                             .Where(x => x.ClassId == id)
                             .Single();
-                        if (course != null)
-                            BrowsingHistory.Add(HistoryItem.FromCourse(course));
+                        if (course != null) BrowsingHistory.Add(HistoryItem.FromCourse(course));
                     }
 
-                    var courseFavoriteIds = courseStatus.favorites ?? Array.Empty<string>();
-                    foreach (var id in courseFavoriteIds)
+                    foreach (var id in courseStatus.favorites ?? Array.Empty<string>())
                     {
                         var course = await _authService.Client
                             .From<CourseItem>()
                             .Where(x => x.ClassId == id)
                             .Single();
-                        if (course != null)
-                            FavoriteCourses.Add(HistoryItem.FromCourse(course));
+                        if (course != null) FavoriteCourses.Add(HistoryItem.FromCourse(course));
                     }
                 }
 
@@ -151,26 +158,22 @@ namespace CommunityFinder.Views
 
                 if (eventStatus != null)
                 {
-                    var eventHistoryIds = eventStatus.history ?? Array.Empty<string>();
-                    foreach (var id in eventHistoryIds)
+                    foreach (var id in eventStatus.history ?? Array.Empty<string>())
                     {
                         var ev = await _authService.Client
                             .From<EventItem>()
                             .Where(x => x.EventId == id)
                             .Single();
-                        if (ev != null)
-                            BrowsingHistory.Add(HistoryItem.FromEvent(ev));
+                        if (ev != null) BrowsingHistory.Add(HistoryItem.FromEvent(ev));
                     }
 
-                    var eventFavoriteIds = eventStatus.favorites ?? Array.Empty<string>();
-                    foreach (var id in eventFavoriteIds)
+                    foreach (var id in eventStatus.favorites ?? Array.Empty<string>())
                     {
                         var ev = await _authService.Client
                             .From<EventItem>()
                             .Where(x => x.EventId == id)
                             .Single();
-                        if (ev != null)
-                            FavoriteCourses.Add(HistoryItem.FromEvent(ev));
+                        if (ev != null) FavoriteCourses.Add(HistoryItem.FromEvent(ev));
                     }
                 }
 
@@ -182,7 +185,6 @@ namespace CommunityFinder.Views
             }
         }
 
-        // ==================== 其他点击逻辑 (保持原样) ====================
         private async void DeleteHistoryAsync(HistoryItem item) { }
         private async void ClearAllHistoryAsync() { }
         private async void DeleteFavoriteAsync(HistoryItem item) { }
