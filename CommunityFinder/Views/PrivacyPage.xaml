@@ -4,7 +4,6 @@
              Title="Personal Data Protection"
              BackgroundColor="#F9FFE3">
 
-
     <!-- 背景渐变 -->
     <ContentPage.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -20,17 +19,20 @@
             <Frame CornerRadius="16" Padding="16" BackgroundColor="White" HasShadow="True">
                 <VerticalStackLayout Spacing="12">
                     <Label x:Name="PrivacyTitleLabel" Text="Personal Data Protection" FontSize="20" FontAttributes="Bold" TextColor="#5DBB63"/>
-                    <Label x:Name="PrivacyTextLabel" Text="At Community Finder, protecting your personal information is our top priority. This privacy policy explains how we collect, use, and safeguard your data." FontSize="14" TextColor="#2A2A2A"/>
+                    <Label x:Name="PrivacyTextLabel" 
+                           Text="At Community Finder, protecting your personal information is our top priority. This privacy policy explains how we collect, use, and safeguard your data in accordance with Singapore’s Personal Data Protection Act (PDPA)." 
+                           FontSize="14" TextColor="#2A2A2A"/>
 
                     <Label x:Name="DataCollectionLabel" Text="Data Collection" FontAttributes="Bold" FontSize="16"/>
-                    <Label x:Name="DataCollection1Label" Text="• We collect information you provide during registration, such as email and password." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
-                    <Label x:Name="DataCollection2Label" Text="• We also track your course browsing, favorites, and event participation to provide personalized recommendations." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
+                    <Label x:Name="DataCollection1Label" Text="• We collect information you provide during registration, such as email and password, only after obtaining your consent." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
+                    <Label x:Name="DataCollection2Label" Text="• We track your course browsing, favorites, and event participation to provide personalized recommendations." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
                     <Label x:Name="DataCollection3Label" Text="• Data collection is limited to what is necessary for the core functionalities of the app." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
 
                     <Label x:Name="DataUsageLabel" Text="Data Usage" FontAttributes="Bold" FontSize="16"/>
                     <Label x:Name="DataUsage1Label" Text="• Personal data is used to authenticate your account, provide services, and deliver personalized content." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
                     <Label x:Name="DataUsage2Label" Text="• Anonymized data may be used for improving AI recommendation algorithms." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
-                    <Label x:Name="DataUsage3Label" Text="• We do not sell or share your personal information with third parties without your consent." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
+                    <Label x:Name="DataUsage3Label" Text="• We may share personal data with trusted service providers for operational purposes under strict confidentiality agreements. No personal information is sold or shared without your consent." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
+                    <Label x:Name="DataUsage4Label" Text="• Personal data is retained only for as long as necessary to fulfill the purposes for which it was collected." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
 
                     <Label x:Name="DataSecurityLabel" Text="Data Security" FontAttributes="Bold" FontSize="16"/>
                     <Label x:Name="DataSecurity1Label" Text="• All personal data is encrypted in transit and at rest." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
@@ -38,12 +40,12 @@
                     <Label x:Name="DataSecurity3Label" Text="• We implement industry-standard measures to protect against unauthorized access, alteration, or deletion." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
 
                     <Label x:Name="UserRightsLabel" Text="User Rights" FontAttributes="Bold" FontSize="16"/>
-                    <Label x:Name="UserRights1Label" Text="• Users can request access, correction, or deletion of their personal information." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
+                    <Label x:Name="UserRights1Label" Text="• Users can request access, correction, or deletion of their personal information by contacting us at support@communityfinder.com." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
                     <Label x:Name="UserRights2Label" Text="• You can opt out of AI-based personalized recommendations at any time." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
-                    <Label x:Name="UserRights3Label" Text="• Users are informed about all data collection practices and changes to privacy policies." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
+                    <Label x:Name="UserRights3Label" Text="• Users are informed about all data collection practices and any changes to privacy policies." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
 
                     <Label x:Name="ComplianceLabel" Text="Compliance" FontAttributes="Bold" FontSize="16"/>
-                    <Label x:Name="Compliance1Label" Text="• We comply with GDPR and relevant local privacy regulations." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
+                    <Label x:Name="Compliance1Label" Text="• We comply with Singapore’s Personal Data Protection Act (PDPA) and relevant regulations." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
                     <Label x:Name="Compliance2Label" Text="• Any breach of data privacy will be promptly reported and addressed according to legal requirements." FontSize="14" TextColor="#2A2A2A" LineBreakMode="WordWrap"/>
                 </VerticalStackLayout>
             </Frame>
@@ -51,3 +53,4 @@
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
+
