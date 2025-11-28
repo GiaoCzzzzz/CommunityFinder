@@ -124,7 +124,7 @@
                 <VerticalStackLayout Spacing="12">
 
                     <Label x:Name="PrivacyTitleLabel" 
-                           Text="Privacy &amp; Data Protection" 
+                           Text="Personal Data Protection" 
                            FontSize="20" 
                            FontAttributes="Bold"
                            TextColor="#5DBB63"
