@@ -54,7 +54,7 @@
 
             <!-- 👉 新增：历史兴趣区域 -->
             <VerticalStackLayout x:Name="HistorySection" IsVisible="False" Spacing="8">
-                <Label Text="Previously Selected Interests"
+                <Label Text="Pre-selected interests"
                        FontSize="16"
                        FontAttributes="Bold"
                        TextColor="#8B4513"/>
