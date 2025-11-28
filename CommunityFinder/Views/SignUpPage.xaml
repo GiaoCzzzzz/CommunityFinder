@@ -83,7 +83,7 @@
                 <!-- 隐私政策勾选 -->
                 <StackLayout Orientation="Horizontal" Spacing="10" VerticalOptions="Center">
                     <CheckBox x:Name="PrivacyCheckBox" VerticalOptions="Center"/>
-                    <Label Text="User Privacy Policy of CommunityFinder"
+                    <Label Text="User Terms of CommunityFinder"
                            TextColor="#2196F3"
                            VerticalOptions="Center">
                         <Label.GestureRecognizers>
