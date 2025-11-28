@@ -137,7 +137,16 @@ namespace CommunityFinder.Services
                 ["HistoryPage_Delete"] = "Delete",
                 ["HistoryPage_Add"] = "+",
                 ["Events"] = "Events",
-                ["SelectEventCategory"] = "Select Event Category",
+                ["Forum"] = "Forum",
+                ["SearchPostsPlaceholder"] = "Search posts by topic...",
+                ["Search"] = "Search",
+                ["RecommendedForYou"] = "Recommended for you",
+                ["DeleteCategory"] = "Delete Category",
+                ["AddCategoryAdmin"] = "+ Add Category (Admin)",
+                ["Reports"] = "Reports",
+                ["MyPosts"] = "My Posts",
+
+
 
 
 
@@ -269,7 +278,16 @@ namespace CommunityFinder.Services
                 ["HistoryPage_Delete"] = "删除",
                 ["HistoryPage_Add"] = "+",
                 ["Events"] = "活动",
-                ["SelectEventCategory"] = "选择活动类别",
+                ["Forum"] = "论坛",
+                ["SearchPostsPlaceholder"] = "按主题搜索帖子...",
+                ["Search"] = "搜索",
+                ["RecommendedForYou"] = "为你推荐",
+                ["DeleteCategory"] = "删除分类",
+                ["AddCategoryAdmin"] = "+ 添加分类（管理员）",
+                ["Reports"] = "举报",
+                ["MyPosts"] = "我的帖子",
+
+
 
 
 
@@ -401,6 +419,23 @@ namespace CommunityFinder.Services
                 ["HistoryPage_Add"] = "+",
                 ["Events"] = "Acara",
                 ["SelectEventCategory"] = "Pilih Kategori Acara",
+                ["SearchPostsPlaceholder"] = "Cari posts mengikut topik...",
+                ["Search"] = "Cari",
+                ["RecommendedForYou"] = "Disyorkan untuk anda",
+                ["DeleteCategory"] = "Padam Kategori",
+                ["AddCategoryAdmin"] = "+ Tambah Kategori (Admin)",
+                ["Reports"] = "Laporan",
+                ["MyPosts"] = "Pos Saya",
+                ["Forum"] = "Forum",
+                ["SearchPostsPlaceholder"] = "Cari siaran mengikut topik...",
+                ["Search"] = "Cari",
+                ["RecommendedForYou"] = "Disyorkan untuk anda",
+                ["DeleteCategory"] = "Padam Kategori",
+                ["AddCategoryAdmin"] = "+ Tambah Kategori (Admin)",
+                ["Reports"] = "Laporan",
+                ["MyPosts"] = "Siaran Saya",
+
+
 
 
 
@@ -490,6 +525,16 @@ namespace CommunityFinder.Services
         public static string HistoryPage_ClearFavorites => Get("HistoryPage_ClearFavorites");
         public static string HistoryPage_Delete => Get("HistoryPage_Delete");
         public static string HistoryPage_Add => Get("HistoryPage_Add");
+
+        public static string SearchPostsPlaceholder => Get("SearchPostsPlaceholder");
+        public static string Search => Get("Search");
+        public static string RecommendedForYou => Get("RecommendedForYou");
+        public static string AddCategoryAdmin => Get("AddCategoryAdmin");
+        public static string Reports => Get("Reports");
+        public static string MyPosts => Get("MyPosts");
+        public static string DeleteCategory => Get("DeleteCategory");
+    
+
 
 
 

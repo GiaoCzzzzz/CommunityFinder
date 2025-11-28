@@ -46,6 +46,31 @@ namespace CommunityFinder.Views
             }
         }
 
+
+        public void LoadTexts()
+        {
+            // 页面标题
+            Title = LangManager.Get("Forum");
+
+            // 搜索框
+            SearchEntry.Placeholder = LangManager.Get("SearchPostsPlaceholder");
+            SearchButton.Text = LangManager.Get("Search");
+
+            // 推荐标题
+            TopVisitedTitleLabel.Text = LangManager.Get("RecommendedForYou");
+
+            // 管理按钮
+            AddCategoryButton.Text = LangManager.Get("AddCategoryAdmin");
+            ReportsButton.Text = LangManager.Get("Reports");
+
+            // 我的帖子浮动按钮
+            MyPostsLabel.Text = LangManager.Get("MyPosts");
+
+            // 删除按钮（模板内的动态内容）
+           
+        }
+
+
         protected override async void OnAppearing()
         {
             base.OnAppearing();
