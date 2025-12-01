@@ -85,8 +85,7 @@
 
             <CollectionView x:Name="CVBrowsingHistory"
                             ItemsSource="{Binding FilteredBrowsingHistory}"
-                            SelectionMode="Single"
-                            SelectionChanged="OnHistoryItemTapped">
+                            SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame x:Name="FrameHistoryItem"
@@ -94,6 +93,10 @@
                                Padding="10"
                                HasShadow="True"
                                CornerRadius="8">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnHistoryCardTapped" 
+                                     CommandParameter="{Binding .}"/>
+                            </Frame.GestureRecognizers>
                             <Frame.Style>
                                 <Style TargetType="Frame">
                                     <Setter Property="BackgroundColor" Value="#D5B7B6"/>
@@ -171,8 +174,7 @@
 
             <CollectionView x:Name="CVFavoriteCourses"
                             ItemsSource="{Binding FilteredFavoriteCourses}"
-                            SelectionMode="Single"
-                            SelectionChanged="OnFavoriteItemTapped">
+                            SelectionMode="None">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame x:Name="FrameFavoriteItem"
@@ -180,6 +182,10 @@
                                Padding="10"
                                HasShadow="True"
                                CornerRadius="8">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnFavoriteCardTapped" 
+                                         CommandParameter="{Binding .}"/>
+                            </Frame.GestureRecognizers>
                             <Frame.Style>
                                 <Style TargetType="Frame">
                                     <Setter Property="BackgroundColor" Value="#88ACBC"/>

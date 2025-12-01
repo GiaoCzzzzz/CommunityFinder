@@ -121,6 +121,13 @@ namespace CommunityFinder.Views
             }
         }
 
+        private async void OnPostCardTapped(object sender, EventArgs e)
+        {
+            if (sender is Frame frame && frame.BindingContext is ForumPost post)
+            {
+                await Navigation.PushAsync(new PostDetailPage(post, _forumService, _authService));
+            }
+        }
         private void OnPostTypeChanged(object sender, EventArgs e)
         {
             _selectedPostType = PostTypePicker.SelectedItem?.ToString() ?? "All";

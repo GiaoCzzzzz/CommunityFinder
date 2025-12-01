@@ -98,6 +98,10 @@
                                BackgroundColor="White"
                                CornerRadius="8"
                                HasShadow="True">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnPostCardTapped" 
+                                 CommandParameter="{Binding .}"/>
+                            </Frame.GestureRecognizers>
                             <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,Auto">
                                 <!-- Username (Left Top) -->
                                 <Label Grid.Row="0" Grid.Column="0"
