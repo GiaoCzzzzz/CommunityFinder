@@ -185,10 +185,114 @@ namespace CommunityFinder.Views
             }
         }
 
-        private async void DeleteHistoryAsync(HistoryItem item) { }
-        private async void ClearAllHistoryAsync() { }
-        private async void DeleteFavoriteAsync(HistoryItem item) { }
-        private async void ClearAllFavoritesAsync() { }
+        private async void DeleteHistoryAsync(HistoryItem item)
+        {
+            try
+            {
+                if (item.IsEvent)
+                {
+                    await _authService.RemoveEventHistoryAsync(item.Id);
+                }
+                else
+                {
+                    await _authService.RemoveHistoryAsync(item.Id);
+                }
+
+                // 从本地集合中移除
+                BrowsingHistory.Remove(item);
+                FilteredBrowsingHistory.Remove(item);
+
+                await DisplayAlert("Success", "Item removed from history", "OK");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to delete: {ex.Message}", "OK");
+            }
+        }
+        private async void ClearAllHistoryAsync()
+        {
+            var confirm = await DisplayAlert("Confirm", "Are you sure you want to clear all browsing history?", "Yes", "No");
+            if (!confirm) return;
+
+            try
+            {
+                var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
+
+                // 清空 Course History
+                await _authService.Client
+                    .From<CourseStatus>()
+                    .Where(x => x.id == userGuid)
+                    .Set(x => x.history, Array.Empty<string>())
+                    .Update();
+
+                // 清空 Event History
+                await _authService.ClearAllEventHistoryAsync();
+
+                // 清空本地集合
+                BrowsingHistory.Clear();
+                FilteredBrowsingHistory.Clear();
+
+                await DisplayAlert("Success", "All browsing history cleared", "OK");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to clear history: {ex.Message}", "OK");
+            }
+        }
+        private async void DeleteFavoriteAsync(HistoryItem item)
+        {
+            try
+            {
+                if (item.IsEvent)
+                {
+                    await _authService.UnfavoriteEventAsync(item.Id);
+                }
+                else
+                {
+                    await _authService.UnfavoriteCourseAsync(item.Id);
+                }
+
+                // 从本地集合中移除
+                FavoriteCourses.Remove(item);
+                FilteredFavoriteCourses.Remove(item);
+
+                await DisplayAlert("Success", "Item removed from favorites", "OK");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to delete: {ex.Message}", "OK");
+            }
+        }
+        private async void ClearAllFavoritesAsync()
+        {
+            var confirm = await DisplayAlert("Confirm", "Are you sure you want to clear all favorites?", "Yes", "No");
+            if (!confirm) return;
+
+            try
+            {
+                var userGuid = Guid.Parse(_authService.Client.Auth.CurrentSession.User.Id);
+
+                // 清空 Course Favorites
+                await _authService.Client
+                    .From<CourseStatus>()
+                    .Where(x => x.id == userGuid)
+                    .Set(x => x.favorites, Array.Empty<string>())
+                    .Update();
+
+                // 清空 Event Favorites
+                await _authService.ClearAllEventFavoritesAsync();
+
+                // 清空本地集合
+                FavoriteCourses.Clear();
+                FilteredFavoriteCourses.Clear();
+
+                await DisplayAlert("Success", "All favorites cleared", "OK");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Failed to clear favorites: {ex.Message}", "OK");
+            }
+        }
 
         private void OnClearAllHistoryClicked(object sender, EventArgs e)
         {
@@ -202,12 +306,10 @@ namespace CommunityFinder.Views
                 ClearAllFavoritesCommand.Execute(null);
         }
 
-        private async void OnHistoryItemTapped(object sender, SelectionChangedEventArgs e)
+        private async void OnHistoryCardTapped(object sender, EventArgs e)
         {
-            if (e.CurrentSelection?.FirstOrDefault() is HistoryItem item)
+            if (sender is Frame frame && frame.BindingContext is HistoryItem item)
             {
-                if (sender is CollectionView cv) cv.SelectedItem = null;
-
                 if (IsSelectionMode)
                 {
                     ItemSelected?.Invoke(this, item);
@@ -235,12 +337,10 @@ namespace CommunityFinder.Views
             }
         }
 
-        private async void OnFavoriteItemTapped(object sender, SelectionChangedEventArgs e)
+        private async void OnFavoriteCardTapped(object sender, EventArgs e)
         {
-            if (e.CurrentSelection?.FirstOrDefault() is HistoryItem item)
+            if (sender is Frame frame && frame.BindingContext is HistoryItem item)
             {
-                if (sender is CollectionView cv) cv.SelectedItem = null;
-
                 if (IsSelectionMode)
                 {
                     ItemSelected?.Invoke(this, item);
